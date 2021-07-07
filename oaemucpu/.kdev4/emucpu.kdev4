@@ -1,0 +1,15 @@
+[Buildset]
+BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00\x0c\x00e\x00m\x00u\x00c\x00p\x00u)
+
+[QMake_Builder]
+Build_Folder=/home/dmax/projects/emu/emucpu/build
+Build_Type=0
+Extra_Arguments=
+Install_Prefix=
+QMake_Binary=/usr/bin/qmake
+
+[QMake_Builder][/home/dmax/projects/emu/emucpu/build]
+Build_Type=0
+Extra_Arguments=
+Install_Prefix=
+QMake_Binary=/usr/bin/qmake
