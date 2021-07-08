@@ -14,7 +14,7 @@
 #include <QSlider>
 #include <QTimer>
 
-#include "../emumemory/headers/nesmemory.h"
+#include "../oaemumemory/headers/oanesmemory.h"
 
 class EmuAudio : public QIODevice
 {

@@ -1,9 +1,9 @@
 #ifndef M6502_H
 #define M6502_H
 
-#include "basecpu.h"
+#include "oabasecpu.h"
 
-#include "../emumemory/headers/nesmemory.h"
+#include "../oaemumemory/headers/oanesmemory.h"
 
 /**
  * @todo write docs

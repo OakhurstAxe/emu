@@ -1,5 +1,5 @@
 
-#include "headers/emuapu.h"
+#include "headers/oaemuapu.h"
 
 EmuApu::EmuApu(QObject *parent)
 {

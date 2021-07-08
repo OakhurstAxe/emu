@@ -1,5 +1,5 @@
 
-#include "headers/nesmemory.h"
+#include "headers/oanesmemory.h"
 
 #include <QString>
 

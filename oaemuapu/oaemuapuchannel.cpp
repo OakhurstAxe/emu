@@ -2,7 +2,7 @@
 #include <QDebug>
 #include <qendian.h>
 
-#include "headers/emuapuchannel.h"
+#include "headers/oaemuapuchannel.h"
 
 const int DurationSeconds = 1;
 const int ToneSampleRateHz = 600;

@@ -1,8 +1,8 @@
 #ifndef _EMUAPU_H
 #define _EMUAPU_H
 
-#include "../emuapu/headers/emuapuchannel.h"
-#include "../emumemory/headers/nesmemory.h"
+#include "../oaemuapu/headers/oaemuapuchannel.h"
+#include "../oaemumemory/headers/oanesmemory.h"
 
 class EmuApu
 {

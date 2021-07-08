@@ -4,8 +4,8 @@ QT += widgets core gui testlib gamepad multimedia
 
 CONFIG += debug
 
-HEADERS += headers/emuaudiooutput.h headers/emuapu.h headers/emuapuchannel.h
-SOURCES += emuaudiooutput.cpp emuapu.cpp emuapuchannel.cpp
+HEADERS += headers/oaemuaudiooutput.h headers/oaemuapu.h headers/oaemuapuchannel.h
+SOURCES += oaemuaudiooutput.cpp oaemuapu.cpp oaemuapuchannel.cpp
 
 MOC_DIR = build
 OBJECTS_DIR = build

@@ -1,8 +1,8 @@
 #ifndef _NESMEMORY_H
 #define _NESMEMORY_H
 
-#include "memoryram.h"
-#include "memoryrom.h"
+#include "oamemoryram.h"
+#include "oamemoryrom.h"
 
 class NesMemory
 {

@@ -1,8 +1,9 @@
+
 TEMPLATE = lib
 
 CONFIG += debug
 
-SOURCES += basecpu.cpp m6502.cpp nesppu.cpp
+SOURCES += oamemoryram.cpp oamemoryrom.cpp oanesmemory.cpp
 
 MOC_DIR = build
 OBJECTS_DIR = build

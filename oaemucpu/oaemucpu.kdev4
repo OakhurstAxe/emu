@@ -1,4 +1,4 @@
 [Project]
 CreatedFrom=emucpu.pro
 Manager=KDevQMakeManager
-Name=emucpu
+Name=oaemucpu

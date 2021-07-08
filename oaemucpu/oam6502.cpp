@@ -1,4 +1,4 @@
-#include "headers/m6502.h"
+#include "headers/oam6502.h"
 
 #include <QString>
 

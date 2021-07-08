@@ -6,10 +6,10 @@
 #include <QTimer>
 #include <QImage>
 
-#include "../emucpu/headers/m6502.h"
-#include "../emucpu/headers/nesppu.h"
-#include "../emuapu/headers/emuaudiooutput.h"
-#include "../emuapu/headers/emuapu.h"
+#include "../oaemucpu/headers/oam6502.h"
+#include "../oaemucpu/headers/oanesppu.h"
+#include "../oaemuapu/headers/oaemuaudiooutput.h"
+#include "../oaemuapu/headers/oaemuapu.h"
 
 QT_BEGIN_NAMESPACE
 class QGamepad;

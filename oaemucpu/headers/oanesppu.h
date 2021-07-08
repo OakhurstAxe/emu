@@ -1,10 +1,10 @@
 #ifndef _NESPPU_H
 #define _NESPPU_H
 
-#include "basecpu.h"
+#include "oabasecpu.h"
 
-#include "../emumemory/headers/nesmemory.h"
-#include "m6502.h"
+#include "../oaemumemory/headers/oanesmemory.h"
+#include "oam6502.h"
 
 class NesPpu : BaseCpu
 {

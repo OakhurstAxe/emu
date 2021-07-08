@@ -1,7 +1,7 @@
 #ifndef _MEMORYROM_H
 #define _MEMORYROM_H
 
-#include "basememory.h"
+#include "oabasememory.h"
 
 class MemoryRom : BaseMemory
 {

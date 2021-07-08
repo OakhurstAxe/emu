@@ -5,7 +5,7 @@
 #include <qmath.h>
 #include <qendian.h>
 
-#include "headers/emuaudiooutput.h"
+#include "headers/oaemuaudiooutput.h"
 
 #define PUSH_MODE_LABEL "Enable push mode"
 #define PULL_MODE_LABEL "Enable pull mode"
