@@ -128,14 +128,14 @@ void EmuMainWindow::loadClicked()
     {
         prgRom[i] = dKongFile[i+16];
     }
-    cpu.memory.loadProgRom(prgRom);
+    cpu.memory.LoadProgRom(prgRom,0x4000);
     
     unsigned char charRom[0x2000];
     for (int i=0; i<0x2000; i++)
     {
         charRom[i] = dKongFile[i+16+0x4000];
     }
-    cpu.memory.loadCharRom(charRom);
+    cpu.memory.LoadCharRom(charRom,0x2000);
     
     try 
     {
@@ -286,10 +286,10 @@ void EmuMainWindow::startNextFrame()
 
 void EmuMainWindow::readGamepad()
 {
-    if (cpu.memory.loadController == 1)
+    if (cpu.memory.loadController_ == 1)
     {
-        cpu.memory.loadController = 0;
-        cpu.memory.leftController = leftController;
+        cpu.memory.loadController_ = 0;
+        cpu.memory.leftController_ = leftController;
     }
 }
 

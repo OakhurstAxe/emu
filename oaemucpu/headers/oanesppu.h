@@ -3,13 +3,13 @@
 
 #include "oabasecpu.h"
 
-#include "../oaemumemory/headers/oanesmemory.h"
+#include "../oaemumemory/headers/nesmemory.h"
 #include "oam6502.h"
 
 class NesPpu : BaseCpu
 {
 public:
-    NesMemory *memory;
+    oa::emu::NesMemory *memory;
     int executeTicks(int count);
     void reset();
     M6502 *cpu;

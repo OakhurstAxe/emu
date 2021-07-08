@@ -52,12 +52,14 @@ OBJECTS_DIR   = build/
 
 ####### Files
 
-SOURCES       = ../oamemoryram.cpp \
-		../oamemoryrom.cpp \
-		../oanesmemory.cpp 
-OBJECTS       = build/oamemoryram.o \
-		build/oamemoryrom.o \
-		build/oanesmemory.o
+SOURCES       = ../memoryram.cc \
+		../memoryrom.cc \
+		../nesmemory.cc \
+		../basememory.cc 
+OBJECTS       = build/memoryram.o \
+		build/memoryrom.o \
+		build/nesmemory.o \
+		build/basememory.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -127,6 +129,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf \
+		../.qmake.stash \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
@@ -144,9 +147,10 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
-		../../oaemumemory.pro  ../oamemoryram.cpp \
-		../oamemoryrom.cpp \
-		../oanesmemory.cpp
+		../../oaemumemory.pro  ../memoryram.cc \
+		../memoryrom.cc \
+		../nesmemory.cc \
+		../basememory.cc
 QMAKE_TARGET  = oaemumemory
 DESTDIR       = 
 TARGET        = liboaemumemory.so.1.0.0
@@ -244,6 +248,7 @@ Makefile: ../oaemumemory.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qma
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
@@ -332,6 +337,7 @@ Makefile: ../oaemumemory.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qma
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf:
+.qmake.stash:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf:
@@ -365,7 +371,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../oamemoryram.cpp ../oamemoryrom.cpp ../oanesmemory.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../memoryram.cc ../memoryrom.cc ../nesmemory.cc ../basememory.cc $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -414,14 +420,17 @@ compiler_clean: compiler_moc_predefs_clean
 
 ####### Compile
 
-build/oamemoryram.o: ../oamemoryram.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/oamemoryram.o ../oamemoryram.cpp
+build/memoryram.o: ../memoryram.cc 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/memoryram.o ../memoryram.cc
 
-build/oamemoryrom.o: ../oamemoryrom.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/oamemoryrom.o ../oamemoryrom.cpp
+build/memoryrom.o: ../memoryrom.cc 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/memoryrom.o ../memoryrom.cc
 
-build/oanesmemory.o: ../oanesmemory.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/oanesmemory.o ../oanesmemory.cpp
+build/nesmemory.o: ../nesmemory.cc 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nesmemory.o ../nesmemory.cc
+
+build/basememory.o: ../basememory.cc 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/basememory.o ../basememory.cc
 
 ####### Install
 

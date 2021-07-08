@@ -3,7 +3,7 @@
 
 #include "oabasecpu.h"
 
-#include "../oaemumemory/headers/oanesmemory.h"
+#include "../oaemumemory/headers/nesmemory.h"
 
 /**
  * @todo write docs
@@ -12,7 +12,7 @@ class M6502 : BaseCpu
 {
 
 public:
-    NesMemory memory;
+    oa::emu::NesMemory memory;
     virtual int executeTicks(int count);
     virtual void reset();
     

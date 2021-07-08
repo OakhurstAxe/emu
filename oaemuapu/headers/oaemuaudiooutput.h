@@ -14,7 +14,7 @@
 #include <QSlider>
 #include <QTimer>
 
-#include "../oaemumemory/headers/oanesmemory.h"
+#include "../oaemumemory/headers/nesmemory.h"
 
 class EmuAudio : public QIODevice
 {
@@ -31,7 +31,7 @@ public:
     qint64 writeData(const char *data, qint64 len) override;
     qint64 bytesAvailable() const override;
     void playSound(qint64 durationUs, int sampleRate);
-    NesMemory *memory;
+    oa::emu::NesMemory *memory;
     void executeTicks();
 private:
     int frequency = 0;

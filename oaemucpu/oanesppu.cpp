@@ -5,7 +5,7 @@ void NesPpu::renderPixel()
 {
     int screenScanLine = scanLine - 1;
     int screenCycle = cycle - 1;
-    unsigned char ppuController = memory->cpuRead(0x2000);
+    unsigned char ppuController = memory->CpuRead(0x2000);
     unsigned char attributeValue = 0;
 
     if (screenCycle == 0)
@@ -17,7 +17,7 @@ void NesPpu::renderPixel()
         int spriteCount = 0;
         for (int i=0; i<64; i++)
         {
-            unsigned char yPos = memory->ppuOamRead(i*4);
+            unsigned char yPos = memory->PpuOamRead(i*4);
             if (screenScanLine - yPos >= 0 && screenScanLine - yPos < 8)
             {
                 renderSprites[spriteCount] = i;
@@ -32,7 +32,7 @@ void NesPpu::renderPixel()
     
     if (screenCycle == 254)
     {
-        unsigned char background = memory->ppuRead(0x3f00);
+        unsigned char background = memory->PpuRead(0x3f00);
         for (int i=0; i<8; i++)
         {
             int spritePos = renderSprites[i];
@@ -40,21 +40,21 @@ void NesPpu::renderPixel()
             {
                 continue;
             }
-            int yPos = memory->ppuOamRead(spritePos*4);
-            unsigned short patternAddress = memory->ppuOamRead(spritePos*4 + 1) << 4;
-            unsigned char attr = memory->ppuOamRead(spritePos*4 + 2);
-            int xPos = memory->ppuOamRead(spritePos*4 + 3);
+            int yPos = memory->PpuOamRead(spritePos*4);
+            unsigned short patternAddress = memory->PpuOamRead(spritePos*4 + 1) << 4;
+            unsigned char attr = memory->PpuOamRead(spritePos*4 + 2);
+            int xPos = memory->PpuOamRead(spritePos*4 + 3);
             unsigned char spriteLsb = 0;
             unsigned char spriteMsb = 0;
             if ((attr & 0x80) == 0) // flip verticle
             {
-                spriteLsb = memory->ppuRead(patternAddress | ((screenScanLine - yPos) & 0x07));
-                spriteMsb = memory->ppuRead(patternAddress | ((screenScanLine - yPos) & 0x07) | 0x08);
+                spriteLsb = memory->PpuRead(patternAddress | ((screenScanLine - yPos) & 0x07));
+                spriteMsb = memory->PpuRead(patternAddress | ((screenScanLine - yPos) & 0x07) | 0x08);
             }
             else
             {
-                spriteLsb = memory->ppuRead(patternAddress | ((7 - screenScanLine - yPos) & 0x07));
-                spriteMsb = memory->ppuRead(patternAddress | ((7 - screenScanLine - yPos) & 0x07) | 0x08);
+                spriteLsb = memory->PpuRead(patternAddress | ((7 - screenScanLine - yPos) & 0x07));
+                spriteMsb = memory->PpuRead(patternAddress | ((7 - screenScanLine - yPos) & 0x07) | 0x08);
             }
             if ((attr & 0x40) > 0)
             {
@@ -67,7 +67,7 @@ void NesPpu::renderPixel()
                 unsigned char palette = (attr & 0x03) + 0x04;
                 if (pixel != 0)
                 {
-                    unsigned char color = memory->ppuRead(pixel + (palette << 2) + 0x3f00);
+                    unsigned char color = memory->PpuRead(pixel + (palette << 2) + 0x3f00);
                     if (background != color)
                     {
                         screen[screenScanLine * 256 + j] = color;
@@ -82,16 +82,16 @@ void NesPpu::renderPixel()
     if ((screenCycle % 32) == 0)
     {
         unsigned short attributeAddress = ((screenScanLine / 32) * 8 + (screenCycle / 32)) + 0x23c0 + (0x0400 * (ppuController & 0x03));
-        attributeByte = memory->ppuRead(attributeAddress);
+        attributeByte = memory->PpuRead(attributeAddress);
     }
     if ((screenCycle & 0x07) == 0)
     {
         unsigned short line = screenScanLine / 8;
         unsigned short cycle = screenCycle / 8;
         nametableAddress = (((line) * 32) + (cycle)) + 0x2000 + (0x0400 * (ppuController & 0x03));
-        patternEntryAddress = (memory->ppuRead(nametableAddress) << 4) + 0x1000;
-        charTableEntryLsb = memory->ppuRead(patternEntryAddress | (screenScanLine & 0x07));
-        charTableEntryMsb = memory->ppuRead(patternEntryAddress | (screenScanLine & 0x07) | 0x08);
+        patternEntryAddress = (memory->PpuRead(nametableAddress) << 4) + 0x1000;
+        charTableEntryLsb = memory->PpuRead(patternEntryAddress | (screenScanLine & 0x07));
+        charTableEntryMsb = memory->PpuRead(patternEntryAddress | (screenScanLine & 0x07) | 0x08);
     }
     if (((screenScanLine % 32) < 16) && ((screenCycle % 32) < 16))
     {
@@ -112,7 +112,7 @@ void NesPpu::renderPixel()
     unsigned char pixel = ((charTableEntryMsb & 0x80) >> 6) | ((charTableEntryLsb & 0x80) >> 7);
     unsigned short pixelAddress = 0x3f00;
     pixelAddress += pixel + (attributeValue << 2);
-    int color = memory->ppuRead(pixelAddress);
+    int color = memory->PpuRead(pixelAddress);
     screen[screenScanLine * 256 + screenCycle] = color;
     charTableEntryLsb = charTableEntryLsb << 1;
     charTableEntryMsb = charTableEntryMsb << 1;
@@ -151,8 +151,8 @@ int NesPpu::executeTicks(int count)
         
         if (scanLine == 240 && cycle == 1)
         {
-            memory->cpuSetVblank(1);
-            control.reg = memory->cpuRead(0x2000);
+            memory->CpuSetVblank(1);
+            control.reg = memory->CpuRead(0x2000);
             if (control.enableNmi)
             {
                 cpu->nmiSet = 1;
@@ -160,7 +160,7 @@ int NesPpu::executeTicks(int count)
         }
         if (scanLine == 260 && cycle == 1)
         {
-            memory->cpuSetVblank(0);
+            memory->CpuSetVblank(0);
         }
         cycleCount++;
     }
@@ -170,14 +170,14 @@ int NesPpu::executeTicks(int count)
 
 void NesPpu::reset()
 {
-    memory->cpuWrite(0x2000, 0x80);
-    memory->cpuWrite(0x2001, 0);
-    memory->cpuWrite(0x2002, 0);
-    memory->cpuWrite(0x2003, 0);
-    memory->cpuWrite(0x2004, 0);
-    memory->cpuWrite(0x2005, 0);
-    memory->cpuWrite(0x2006, 0);
-    memory->cpuWrite(0x2007, 0);
+    memory->CpuWrite(0x2000, 0x80);
+    memory->CpuWrite(0x2001, 0);
+    memory->CpuWrite(0x2002, 0);
+    memory->CpuWrite(0x2003, 0);
+    memory->CpuWrite(0x2004, 0);
+    memory->CpuWrite(0x2005, 0);
+    memory->CpuWrite(0x2006, 0);
+    memory->CpuWrite(0x2007, 0);
     scanLine = -1;
     cycle = 0;
 }

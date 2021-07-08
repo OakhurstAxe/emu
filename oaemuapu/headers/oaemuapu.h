@@ -2,13 +2,13 @@
 #define _EMUAPU_H
 
 #include "../oaemuapu/headers/oaemuapuchannel.h"
-#include "../oaemumemory/headers/oanesmemory.h"
+#include "../oaemumemory/headers/nesmemory.h"
 
 class EmuApu
 {
 public:
     EmuApu(QObject *parent);
-    NesMemory *memory;
+    oa::emu::NesMemory *memory;
     void executeTicks();
     QObject *parent;
 private:

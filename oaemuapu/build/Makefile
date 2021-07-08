@@ -417,10 +417,10 @@ compiler_moc_header_make_all: build/moc_oaemuaudiooutput.cpp build/moc_oaemuapuc
 compiler_moc_header_clean:
 	-$(DEL_FILE) build/moc_oaemuaudiooutput.cpp build/moc_oaemuapuchannel.cpp
 build/moc_oaemuaudiooutput.cpp: ../headers/oaemuaudiooutput.h \
-		../../oaemumemory/headers/oanesmemory.h \
-		../../oaemumemory/headers/oamemoryram.h \
-		../../oaemumemory/headers/oabasememory.h \
-		../../oaemumemory/headers/oamemoryrom.h \
+		../../oaemumemory/headers/nesmemory.h \
+		../../oaemumemory/headers/memoryram.h \
+		../../oaemumemory/headers/basememory.h \
+		../../oaemumemory/headers/memoryrom.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/dmax/projects/oaemu/oaemuapu/build/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/dmax/projects/oaemu/oaemuapu -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGamepad -I/usr/include/x86_64-linux-gnu/qt5/QtMultimedia -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../headers/oaemuaudiooutput.h -o build/moc_oaemuaudiooutput.cpp
@@ -446,13 +446,22 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 
 ####### Compile
 
-build/oaemuaudiooutput.o: ../oaemuaudiooutput.cpp 
+build/oaemuaudiooutput.o: ../oaemuaudiooutput.cpp ../headers/oaemuaudiooutput.h \
+		../../oaemumemory/headers/nesmemory.h \
+		../../oaemumemory/headers/memoryram.h \
+		../../oaemumemory/headers/basememory.h \
+		../../oaemumemory/headers/memoryrom.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/oaemuaudiooutput.o ../oaemuaudiooutput.cpp
 
-build/oaemuapu.o: ../oaemuapu.cpp 
+build/oaemuapu.o: ../oaemuapu.cpp ../headers/oaemuapu.h \
+		../headers/oaemuapuchannel.h \
+		../../oaemumemory/headers/nesmemory.h \
+		../../oaemumemory/headers/memoryram.h \
+		../../oaemumemory/headers/basememory.h \
+		../../oaemumemory/headers/memoryrom.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/oaemuapu.o ../oaemuapu.cpp
 
-build/oaemuapuchannel.o: ../oaemuapuchannel.cpp 
+build/oaemuapuchannel.o: ../oaemuapuchannel.cpp ../headers/oaemuapuchannel.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/oaemuapuchannel.o ../oaemuapuchannel.cpp
 
 build/moc_oaemuaudiooutput.o: build/moc_oaemuaudiooutput.cpp 

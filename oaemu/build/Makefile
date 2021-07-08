@@ -392,6 +392,16 @@ compiler_moc_header_make_all: build/moc_oaemumainwindow.cpp
 compiler_moc_header_clean:
 	-$(DEL_FILE) build/moc_oaemumainwindow.cpp
 build/moc_oaemumainwindow.cpp: ../headers/oaemumainwindow.h \
+		../../oaemucpu/headers/oam6502.h \
+		../../oaemucpu/headers/oabasecpu.h \
+		../../oaemumemory/headers/nesmemory.h \
+		../../oaemumemory/headers/memoryram.h \
+		../../oaemumemory/headers/basememory.h \
+		../../oaemumemory/headers/memoryrom.h \
+		../../oaemucpu/headers/oanesppu.h \
+		../../oaemuapu/headers/oaemuaudiooutput.h \
+		../../oaemuapu/headers/oaemuapu.h \
+		../../oaemuapu/headers/oaemuapuchannel.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/dmax/projects/oaemu/oaemu/build/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/dmax/projects/oaemu/oaemu -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGamepad -I/usr/include/x86_64-linux-gnu/qt5/QtMultimedia -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../headers/oaemumainwindow.h -o build/moc_oaemumainwindow.cpp
@@ -417,10 +427,30 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 
 ####### Compile
 
-build/main.o: ../main.cpp 
+build/main.o: ../main.cpp ../headers/oaemumainwindow.h \
+		../../oaemucpu/headers/oam6502.h \
+		../../oaemucpu/headers/oabasecpu.h \
+		../../oaemumemory/headers/nesmemory.h \
+		../../oaemumemory/headers/memoryram.h \
+		../../oaemumemory/headers/basememory.h \
+		../../oaemumemory/headers/memoryrom.h \
+		../../oaemucpu/headers/oanesppu.h \
+		../../oaemuapu/headers/oaemuaudiooutput.h \
+		../../oaemuapu/headers/oaemuapu.h \
+		../../oaemuapu/headers/oaemuapuchannel.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/main.o ../main.cpp
 
-build/oaemumainwindow.o: ../oaemumainwindow.cpp 
+build/oaemumainwindow.o: ../oaemumainwindow.cpp ../headers/oaemumainwindow.h \
+		../../oaemucpu/headers/oam6502.h \
+		../../oaemucpu/headers/oabasecpu.h \
+		../../oaemumemory/headers/nesmemory.h \
+		../../oaemumemory/headers/memoryram.h \
+		../../oaemumemory/headers/basememory.h \
+		../../oaemumemory/headers/memoryrom.h \
+		../../oaemucpu/headers/oanesppu.h \
+		../../oaemuapu/headers/oaemuaudiooutput.h \
+		../../oaemuapu/headers/oaemuapu.h \
+		../../oaemuapu/headers/oaemuapuchannel.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/oaemumainwindow.o ../oaemumainwindow.cpp
 
 build/moc_oaemumainwindow.o: build/moc_oaemumainwindow.cpp 

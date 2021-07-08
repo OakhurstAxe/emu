@@ -34,9 +34,9 @@ void EmuAudio::executeTicks()
 {
     int timer = 0;
     
-    unsigned char byte = memory->cpuRead(0x4006);
+    unsigned char byte = memory->CpuRead(0x4006);
     timer |= byte;
-    byte = (memory->cpuRead(0x4007) & 0x07);
+    byte = (memory->CpuRead(0x4007) & 0x07);
     timer |= byte << 8;
     if (timer < 8)
     {
