@@ -52,14 +52,12 @@ OBJECTS_DIR   = build/
 
 ####### Files
 
-SOURCES       = ../memoryram.cc \
-		../memoryrom.cc \
-		../nesmemory.cc \
-		../basememory.cc 
-OBJECTS       = build/memoryram.o \
-		build/memoryrom.o \
-		build/nesmemory.o \
-		build/basememory.o
+SOURCES       = ../basememory.cc \
+		../memoryram.cc \
+		../memoryrom.cc 
+OBJECTS       = build/basememory.o \
+		build/memoryram.o \
+		build/memoryrom.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -147,10 +145,9 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
-		../../oaemumemory.pro  ../memoryram.cc \
-		../memoryrom.cc \
-		../nesmemory.cc \
-		../basememory.cc
+		../../oaemumemory.pro  ../basememory.cc \
+		../memoryram.cc \
+		../memoryrom.cc
 QMAKE_TARGET  = oaemumemory
 DESTDIR       = 
 TARGET        = liboaemumemory.so.1.0.0
@@ -371,7 +368,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../memoryram.cc ../memoryrom.cc ../nesmemory.cc ../basememory.cc $(DISTDIR)/
+	$(COPY_FILE) --parents ../basememory.cc ../memoryram.cc ../memoryrom.cc $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -420,17 +417,16 @@ compiler_clean: compiler_moc_predefs_clean
 
 ####### Compile
 
-build/memoryram.o: ../memoryram.cc 
+build/basememory.o: ../basememory.cc ../headers/basememory.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/basememory.o ../basememory.cc
+
+build/memoryram.o: ../memoryram.cc ../headers/memoryram.h \
+		../headers/basememory.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/memoryram.o ../memoryram.cc
 
-build/memoryrom.o: ../memoryrom.cc 
+build/memoryrom.o: ../memoryrom.cc ../headers/memoryrom.h \
+		../headers/basememory.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/memoryrom.o ../memoryrom.cc
-
-build/nesmemory.o: ../nesmemory.cc 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nesmemory.o ../nesmemory.cc
-
-build/basememory.o: ../basememory.cc 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/basememory.o ../basememory.cc
 
 ####### Install
 

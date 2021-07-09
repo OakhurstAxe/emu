@@ -1,15 +1,15 @@
 #include <QApplication>
 #include <QMainWindow>
 
-#include "headers/oaemumainwindow.h"
+#include "../oanes/headers/nesmainwindow.h"
 
 int main(int argc, char** argv)
 {
     QApplication app(argc, argv);
 
-    EmuMainWindow emu;
-    emu.resize(1024, 768);
-    emu.show();
+    oa::nes::NesMainWindow nes;
+    nes.resize(1024, 768);
+    nes.show();
     
     return app.exec();
 }

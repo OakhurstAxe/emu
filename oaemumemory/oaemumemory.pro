@@ -3,7 +3,7 @@ TEMPLATE = lib
 
 CONFIG += debug
 
-SOURCES += memoryram.cc memoryrom.cc nesmemory.cc basememory.cc
+SOURCES += basememory.cc memoryram.cc memoryrom.cc
 
 MOC_DIR = build
 OBJECTS_DIR = build

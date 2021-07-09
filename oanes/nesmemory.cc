@@ -1,25 +1,23 @@
 
 #include "headers/nesmemory.h"
 
-#include <QString>
-
 namespace oa
 {
-    namespace emu
+    namespace nes
     {
         
         NesMemory::NesMemory()
         {
-            cpuWorkRam_ = new MemoryRam(0x0800, "CPU Work RAM");
-            cpuPpuRegisters_ = new MemoryRam(0x0008, "PPU Registers");
-            cpuPrgRom_ = new MemoryRom(0x4000, "CPU Program ROM");
-            cpuApuIoRegisters_ = new MemoryRam(0x001f, "APU IO Registers");
-            cpuCartridgeRom_ = new MemoryRom(0x1fdf, "Cartridge ROM");
+            cpuWorkRam_ = new emu::MemoryRam(0x0800, "CPU Work RAM");
+            cpuPpuRegisters_ = new emu::MemoryRam(0x0008, "PPU Registers");
+            cpuPrgRom_ = new emu::MemoryRom(0x4000, "CPU Program ROM");
+            cpuApuIoRegisters_ = new emu::MemoryRam(0x001f, "APU IO Registers");
+            cpuCartridgeRom_ = new emu::MemoryRom(0x1fdf, "Cartridge ROM");
             
-            ppuCharRom_ = new MemoryRom(0x2000, "PPU Character ROM");
-            ppuNameTable_ = new MemoryRam(0x1f00, "PPU Name Table RAM");
-            ppuPalette_ = new MemoryRam(0x0100, "PPU Palette RAM");
-            ppuOam_ = new MemoryRam(0x0100, "PPU OAM RAM");
+            ppuCharRom_ = new emu::MemoryRom(0x2000, "PPU Character ROM");
+            ppuNameTable_ = new emu::MemoryRam(0x1f00, "PPU Name Table RAM");
+            ppuPalette_ = new emu::MemoryRam(0x0100, "PPU Palette RAM");
+            ppuOam_ = new emu::MemoryRam(0x0100, "PPU OAM RAM");
         }
 
         NesMemory::~NesMemory()

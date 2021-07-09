@@ -17,7 +17,7 @@ CXX           = g++
 DEFINES       = -DQT_WIDGETS_LIB -DQT_GAMEPAD_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -DQT_TESTLIB_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_TESTCASE_BUILDDIR='"/home/dmax/projects/oaemu/oaemu/build"'
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../../oaemu -I. -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGamepad -isystem /usr/include/x86_64-linux-gnu/qt5/QtMultimedia -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtTest -isystem /usr/include/x86_64-linux-gnu/qt5/QtNetwork -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -Ibuild -Ibuild -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
+INCPATH       = -I../../oaemu -I. -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGamepad -isystem /usr/include/x86_64-linux-gnu/qt5/QtMultimedia -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtTest -isystem /usr/include/x86_64-linux-gnu/qt5/QtNetwork -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -Ibuild -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
 QMAKE         = /usr/lib/qt5/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -40,7 +40,7 @@ DISTNAME      = oaemu1.0.0
 DISTDIR = /home/dmax/projects/oaemu/oaemu/build/build/oaemu1.0.0
 LINK          = g++
 LFLAGS        = 
-LIBS          = $(SUBLIBS) -L/home/dmax/projects/oaemu/oaemu/../oaemucpu/build -loaemucpu -L/home/dmax/projects/oaemu/oaemu/../oaemumemory/build -loaemumemory -L/home/dmax/projects/oaemu/oaemu/../oaemuapu/build -loaemuapu /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gamepad.so /usr/lib/x86_64-linux-gnu/libQt5Multimedia.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Test.so /usr/lib/x86_64-linux-gnu/libQt5Network.so /usr/lib/x86_64-linux-gnu/libQt5Core.so /usr/lib/x86_64-linux-gnu/libGL.so -lpthread   
+LIBS          = $(SUBLIBS) -L/home/dmax/projects/oaemu/oaemu/../oaemumemory/build -loaemumemory -L/home/dmax/projects/oaemu/oaemu/../oaemucpu/build -loaemucpu -L/home/dmax/projects/oaemu/oaemu/../oanes/build -loanes /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gamepad.so /usr/lib/x86_64-linux-gnu/libQt5Multimedia.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Test.so /usr/lib/x86_64-linux-gnu/libQt5Network.so /usr/lib/x86_64-linux-gnu/libQt5Core.so /usr/lib/x86_64-linux-gnu/libGL.so -lpthread   
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -52,11 +52,8 @@ OBJECTS_DIR   = build/
 
 ####### Files
 
-SOURCES       = ../main.cpp \
-		../oaemumainwindow.cpp build/moc_oaemumainwindow.cpp
-OBJECTS       = build/main.o \
-		build/oaemumainwindow.o \
-		build/moc_oaemumainwindow.o
+SOURCES       = ../main.cc 
+OBJECTS       = build/main.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -146,8 +143,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
-		../../oaemu.pro ../headers/oaemumainwindow.h ../main.cpp \
-		../oaemumainwindow.cpp
+		../../oaemu.pro  ../main.cc
 QMAKE_TARGET  = oaemu
 DESTDIR       = 
 TARGET        = oaemu
@@ -156,7 +152,7 @@ TARGET        = oaemu
 first: all
 ####### Build rules
 
-oaemu: build/ui_oaemumainwindow.h $(OBJECTS)  
+oaemu:  $(OBJECTS)  
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS)
 
 Makefile: ../oaemu.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
@@ -355,9 +351,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../headers/oaemumainwindow.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../main.cpp ../oaemumainwindow.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../oaemumainwindow.ui $(DISTDIR)/
+	$(COPY_FILE) --parents ../main.cc $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -388,73 +382,37 @@ compiler_moc_predefs_clean:
 build/moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -g -Wall -W -dM -E -o build/moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: build/moc_oaemumainwindow.cpp
+compiler_moc_header_make_all:
 compiler_moc_header_clean:
-	-$(DEL_FILE) build/moc_oaemumainwindow.cpp
-build/moc_oaemumainwindow.cpp: ../headers/oaemumainwindow.h \
-		../../oaemucpu/headers/oam6502.h \
-		../../oaemucpu/headers/oabasecpu.h \
-		../../oaemumemory/headers/nesmemory.h \
-		../../oaemumemory/headers/memoryram.h \
-		../../oaemumemory/headers/basememory.h \
-		../../oaemumemory/headers/memoryrom.h \
-		../../oaemucpu/headers/oanesppu.h \
-		../../oaemuapu/headers/oaemuaudiooutput.h \
-		../../oaemuapu/headers/oaemuapu.h \
-		../../oaemuapu/headers/oaemuapuchannel.h \
-		build/moc_predefs.h \
-		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/dmax/projects/oaemu/oaemu/build/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/dmax/projects/oaemu/oaemu -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGamepad -I/usr/include/x86_64-linux-gnu/qt5/QtMultimedia -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../headers/oaemumainwindow.h -o build/moc_oaemumainwindow.cpp
-
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
-compiler_uic_make_all: build/ui_oaemumainwindow.h
+compiler_uic_make_all:
 compiler_uic_clean:
-	-$(DEL_FILE) build/ui_oaemumainwindow.h
-build/ui_oaemumainwindow.h: ../oaemumainwindow.ui \
-		/usr/lib/qt5/bin/uic
-	/usr/lib/qt5/bin/uic ../oaemumainwindow.ui -o build/ui_oaemumainwindow.h
-
 compiler_yacc_decl_make_all:
 compiler_yacc_decl_clean:
 compiler_yacc_impl_make_all:
 compiler_yacc_impl_clean:
 compiler_lex_make_all:
 compiler_lex_clean:
-compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_uic_clean 
+compiler_clean: compiler_moc_predefs_clean 
 
 ####### Compile
 
-build/main.o: ../main.cpp ../headers/oaemumainwindow.h \
-		../../oaemucpu/headers/oam6502.h \
-		../../oaemucpu/headers/oabasecpu.h \
-		../../oaemumemory/headers/nesmemory.h \
+build/main.o: ../main.cc ../../oanes/headers/nesmainwindow.h \
+		../../oanes/headers/r2a03.h \
+		../../oaemucpu/headers/m6502.h \
+		../../oaemucpu/headers/basecpu.h \
+		../../oanes/headers/nesmemory.h \
 		../../oaemumemory/headers/memoryram.h \
 		../../oaemumemory/headers/basememory.h \
 		../../oaemumemory/headers/memoryrom.h \
-		../../oaemucpu/headers/oanesppu.h \
-		../../oaemuapu/headers/oaemuaudiooutput.h \
-		../../oaemuapu/headers/oaemuapu.h \
-		../../oaemuapu/headers/oaemuapuchannel.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/main.o ../main.cpp
-
-build/oaemumainwindow.o: ../oaemumainwindow.cpp ../headers/oaemumainwindow.h \
-		../../oaemucpu/headers/oam6502.h \
-		../../oaemucpu/headers/oabasecpu.h \
-		../../oaemumemory/headers/nesmemory.h \
-		../../oaemumemory/headers/memoryram.h \
-		../../oaemumemory/headers/basememory.h \
-		../../oaemumemory/headers/memoryrom.h \
-		../../oaemucpu/headers/oanesppu.h \
-		../../oaemuapu/headers/oaemuaudiooutput.h \
-		../../oaemuapu/headers/oaemuapu.h \
-		../../oaemuapu/headers/oaemuapuchannel.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/oaemumainwindow.o ../oaemumainwindow.cpp
-
-build/moc_oaemumainwindow.o: build/moc_oaemumainwindow.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/moc_oaemumainwindow.o build/moc_oaemumainwindow.cpp
+		../../oanes/headers/nesppu.h \
+		../../oanes/headers/oaemuaudiooutput.h \
+		../../oanes/headers/nesapu.h \
+		../../oanes/headers/nesapuchannel.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/main.o ../main.cc
 
 ####### Install
 

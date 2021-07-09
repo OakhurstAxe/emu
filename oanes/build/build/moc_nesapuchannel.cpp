@@ -1,16 +1,16 @@
 /****************************************************************************
-** Meta object code from reading C++ file 'emuapuchannel.h'
+** Meta object code from reading C++ file 'nesapuchannel.h'
 **
 ** Created by: The Qt Meta Object Compiler version 67 (Qt 5.12.8)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "../../headers/emuapuchannel.h"
+#include "../../headers/nesapuchannel.h"
 #include <QtCore/qbytearray.h>
 #include <QtCore/qmetatype.h>
 #if !defined(Q_MOC_OUTPUT_REVISION)
-#error "The header file 'emuapuchannel.h' doesn't include <QObject>."
+#error "The header file 'nesapuchannel.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
 #error "This file was generated using the moc from 5.12.8. It"
 #error "cannot be used with the include files from this version of Qt."
@@ -20,25 +20,25 @@
 QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
-struct qt_meta_stringdata_EmuApuChannel_t {
+struct qt_meta_stringdata_oa__nes__EmuApuChannel_t {
     QByteArrayData data[1];
-    char stringdata0[14];
+    char stringdata0[23];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_EmuApuChannel_t, stringdata0) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_oa__nes__EmuApuChannel_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
-static const qt_meta_stringdata_EmuApuChannel_t qt_meta_stringdata_EmuApuChannel = {
+static const qt_meta_stringdata_oa__nes__EmuApuChannel_t qt_meta_stringdata_oa__nes__EmuApuChannel = {
     {
-QT_MOC_LITERAL(0, 0, 13) // "EmuApuChannel"
+QT_MOC_LITERAL(0, 0, 22) // "oa::nes::EmuApuChannel"
 
     },
-    "EmuApuChannel"
+    "oa::nes::EmuApuChannel"
 };
 #undef QT_MOC_LITERAL
 
-static const uint qt_meta_data_EmuApuChannel[] = {
+static const uint qt_meta_data_oa__nes__EmuApuChannel[] = {
 
  // content:
        8,       // revision
@@ -54,7 +54,7 @@ static const uint qt_meta_data_EmuApuChannel[] = {
        0        // eod
 };
 
-void EmuApuChannel::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void oa::nes::EmuApuChannel::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     Q_UNUSED(_o);
     Q_UNUSED(_id);
@@ -62,30 +62,30 @@ void EmuApuChannel::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
     Q_UNUSED(_a);
 }
 
-QT_INIT_METAOBJECT const QMetaObject EmuApuChannel::staticMetaObject = { {
+QT_INIT_METAOBJECT const QMetaObject oa::nes::EmuApuChannel::staticMetaObject = { {
     &QIODevice::staticMetaObject,
-    qt_meta_stringdata_EmuApuChannel.data,
-    qt_meta_data_EmuApuChannel,
+    qt_meta_stringdata_oa__nes__EmuApuChannel.data,
+    qt_meta_data_oa__nes__EmuApuChannel,
     qt_static_metacall,
     nullptr,
     nullptr
 } };
 
 
-const QMetaObject *EmuApuChannel::metaObject() const
+const QMetaObject *oa::nes::EmuApuChannel::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *EmuApuChannel::qt_metacast(const char *_clname)
+void *oa::nes::EmuApuChannel::qt_metacast(const char *_clname)
 {
     if (!_clname) return nullptr;
-    if (!strcmp(_clname, qt_meta_stringdata_EmuApuChannel.stringdata0))
+    if (!strcmp(_clname, qt_meta_stringdata_oa__nes__EmuApuChannel.stringdata0))
         return static_cast<void*>(this);
     return QIODevice::qt_metacast(_clname);
 }
 
-int EmuApuChannel::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int oa::nes::EmuApuChannel::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QIODevice::qt_metacall(_c, _id, _a);
     return _id;

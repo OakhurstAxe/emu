@@ -52,12 +52,10 @@ OBJECTS_DIR   = build/
 
 ####### Files
 
-SOURCES       = ../oabasecpu.cpp \
-		../oam6502.cpp \
-		../oanesppu.cpp 
-OBJECTS       = build/oabasecpu.o \
-		build/oam6502.o \
-		build/oanesppu.o
+SOURCES       = ../basecpu.cc \
+		../m6502.cc 
+OBJECTS       = build/basecpu.o \
+		build/m6502.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -127,6 +125,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf \
+		../.qmake.stash \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
@@ -144,9 +143,9 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
-		../../oaemucpu.pro  ../oabasecpu.cpp \
-		../oam6502.cpp \
-		../oanesppu.cpp
+		../../oaemucpu.pro ../headers/basecpu.h \
+		../headers/m6502.h ../basecpu.cc \
+		../m6502.cc
 QMAKE_TARGET  = oaemucpu
 DESTDIR       = 
 TARGET        = liboaemucpu.so.1.0.0
@@ -244,6 +243,7 @@ Makefile: ../oaemucpu.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
@@ -332,6 +332,7 @@ Makefile: ../oaemucpu.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf:
+.qmake.stash:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf:
@@ -365,7 +366,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../oabasecpu.cpp ../oam6502.cpp ../oanesppu.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../headers/basecpu.h ../headers/m6502.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../basecpu.cc ../m6502.cc $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -414,14 +416,16 @@ compiler_clean: compiler_moc_predefs_clean
 
 ####### Compile
 
-build/oabasecpu.o: ../oabasecpu.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/oabasecpu.o ../oabasecpu.cpp
+build/basecpu.o: ../basecpu.cc ../headers/basecpu.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/basecpu.o ../basecpu.cc
 
-build/oam6502.o: ../oam6502.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/oam6502.o ../oam6502.cpp
-
-build/oanesppu.o: ../oanesppu.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/oanesppu.o ../oanesppu.cpp
+build/m6502.o: ../m6502.cc ../headers/m6502.h \
+		../headers/basecpu.h \
+		../../oanes/headers/nesmemory.h \
+		../../oaemumemory/headers/memoryram.h \
+		../../oaemumemory/headers/basememory.h \
+		../../oaemumemory/headers/memoryrom.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/m6502.o ../m6502.cc
 
 ####### Install
 

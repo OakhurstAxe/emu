@@ -1,12 +1,12 @@
-#ifndef _OA_EMU_NESMEMORY_H
-#define _OA_EMU_NESMEMORY_H
+#ifndef _OA_NES_NESMEMORY_H
+#define _OA_NES_NESMEMORY_H
 
-#include "memoryram.h"
-#include "memoryrom.h"
+#include "../oaemumemory/headers/memoryram.h"
+#include "../oaemumemory/headers/memoryrom.h"
 
 namespace oa
 {
-    namespace emu
+    namespace nes
     {
         
         class NesMemory
@@ -26,16 +26,16 @@ namespace oa
             uint8_t leftController_ = 0;
             uint8_t loadController_ = 0;
         private:
-            MemoryRam* cpuWorkRam_;
-            MemoryRam* cpuPpuRegisters_;
-            MemoryRam* cpuApuIoRegisters_;
-            MemoryRom* cpuPrgRom_;
-            MemoryRom* cpuCartridgeRom_;
+            emu::MemoryRam* cpuWorkRam_;
+            emu::MemoryRam* cpuPpuRegisters_;
+            emu::MemoryRam* cpuApuIoRegisters_;
+            emu::MemoryRom* cpuPrgRom_;
+            emu::MemoryRom* cpuCartridgeRom_;
             
-            MemoryRom* ppuCharRom_;
-            MemoryRam* ppuNameTable_;
-            MemoryRam* ppuPalette_;
-            MemoryRam* ppuOam_;
+            emu::MemoryRom* ppuCharRom_;
+            emu::MemoryRam* ppuNameTable_;
+            emu::MemoryRam* ppuPalette_;
+            emu::MemoryRam* ppuOam_;
             
             uint8_t ppuAddrH_;
             uint8_t ppuAddrL_;
