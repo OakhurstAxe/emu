@@ -12,6 +12,9 @@ namespace oa
         {
         public:
             R2A03();
+            void ExecuteTick();
+        private:
+            int overflowTicks_;
         };
         
     }

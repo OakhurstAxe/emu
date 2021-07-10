@@ -3,7 +3,7 @@
 
 #include "basecpu.h"
 
-#include "../oanes/headers/nesmemory.h"
+#include "../oaemumemory/headers/memorymapper.h"
 
 namespace oa
 {
@@ -14,7 +14,7 @@ namespace oa
         {
 
         public:
-            oa::nes::NesMemory memory;
+            MemoryMapper *memory;
             virtual int executeTicks(int count);
             virtual void reset();
             

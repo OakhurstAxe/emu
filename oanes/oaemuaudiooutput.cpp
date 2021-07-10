@@ -171,8 +171,8 @@ void EmuAudio::createAudioOutput()
     m_audioOutput = new QAudioOutput(m_device, m_format, this);
     m_audioOutput->setVolume(qreal(0.5f));
     m_audioOutput->start(this);
-    QAudio::State state = m_audioOutput->state();
-    QAudio::Error error = m_audioOutput->error();
+    //QAudio::State state = m_audioOutput->state();
+    //QAudio::Error error = m_audioOutput->error();
    
     //m_audioOutput->resume();
 }

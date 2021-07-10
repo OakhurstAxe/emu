@@ -11,17 +11,19 @@ namespace oa
     namespace nes
     {
         
-        class NesPpu : emu::BaseCpu
+        class Ppu : emu::BaseCpu
         {
         public:
             oa::nes::NesMemory *memory;
             int executeTicks(int count);
+            void ExecuteTick();
             void reset();
             emu::M6502 *cpu;
-            int screen[61440];
+            uint8_t screen[61440];
             
             char renderSprites[8];
         private:
+            int overflowTicks_ = 0;
             uint8_t reverseBits(uint8_t n);
 
             uint16_t nametableAddress;

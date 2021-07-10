@@ -1,24 +1,24 @@
 
-#include "headers/nesapu.h"
+#include "headers/apu.h"
 
 namespace oa
 {
     namespace nes
     {
         
-        EmuApu::EmuApu(QObject *parent)
+        Apu::Apu()
         {
-            channels[0] = new EmuApuChannel(parent);
-            channels[1] = new EmuApuChannel(parent);    
+            channels[0] = new EmuApuChannel();
+            channels[1] = new EmuApuChannel();    
         }
 
-        EmuApu::~EmuApu()
+        Apu::~Apu()
         {
             delete channels[0];
             delete channels[1];
         }
 
-        void EmuApu::executeTicks()
+        void Apu::ExecuteTick()
         {
             //return;
             for (int i=0; i<2; i++)

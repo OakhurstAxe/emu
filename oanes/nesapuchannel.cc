@@ -14,8 +14,8 @@ namespace oa
     namespace nes
     {
         
-        EmuApuChannel::EmuApuChannel(QObject *parent) : QIODevice(parent)
-            , m_device(QAudioDeviceInfo::defaultOutputDevice())
+        EmuApuChannel::EmuApuChannel() : 
+              m_device(QAudioDeviceInfo::defaultOutputDevice())
             , m_audioOutput(0)
         {
             m_pos = 0;

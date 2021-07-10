@@ -53,24 +53,30 @@ OBJECTS_DIR   = build/
 ####### Files
 
 SOURCES       = ../nesmemory.cc \
-		../nesapu.cc \
+		../apu.cc \
 		../nesapuchannel.cc \
 		../oaemuaudiooutput.cpp \
-		../nesppu.cc \
+		../ppu.cc \
 		../nesmainwindow.cc \
-		../r2a03.cc build/moc_nesapuchannel.cpp \
+		../r2a03.cc \
+		../nesconsole.cc \
+		../nespalette.cc build/moc_nesapuchannel.cpp \
 		build/moc_oaemuaudiooutput.cpp \
-		build/moc_nesmainwindow.cpp
+		build/moc_nesmainwindow.cpp \
+		build/moc_nesconsole.cpp
 OBJECTS       = build/nesmemory.o \
-		build/nesapu.o \
+		build/apu.o \
 		build/nesapuchannel.o \
 		build/oaemuaudiooutput.o \
-		build/nesppu.o \
+		build/ppu.o \
 		build/nesmainwindow.o \
 		build/r2a03.o \
+		build/nesconsole.o \
+		build/nespalette.o \
 		build/moc_nesapuchannel.o \
 		build/moc_oaemuaudiooutput.o \
-		build/moc_nesmainwindow.o
+		build/moc_nesmainwindow.o \
+		build/moc_nesconsole.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -161,18 +167,22 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
 		../../oanes.pro ../headers/nesmemory.h \
-		../headers/nesapu.h \
+		../headers/apu.h \
 		../headers/nesapuchannel.h \
 		../headers/oaemuaudiooutput.h \
-		../headers/nesppu.h \
+		../headers/ppu.h \
 		../headers/nesmainwindow.h \
-		../headers/r2a03.h ../nesmemory.cc \
-		../nesapu.cc \
+		../headers/r2a03.h \
+		../headers/nesconsole.h \
+		../headers/nespalette.h ../nesmemory.cc \
+		../apu.cc \
 		../nesapuchannel.cc \
 		../oaemuaudiooutput.cpp \
-		../nesppu.cc \
+		../ppu.cc \
 		../nesmainwindow.cc \
-		../r2a03.cc
+		../r2a03.cc \
+		../nesconsole.cc \
+		../nespalette.cc
 QMAKE_TARGET  = oanes
 DESTDIR       = 
 TARGET        = liboanes.so.1.0.0
@@ -397,8 +407,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../headers/nesmemory.h ../headers/nesapu.h ../headers/nesapuchannel.h ../headers/oaemuaudiooutput.h ../headers/nesppu.h ../headers/nesmainwindow.h ../headers/r2a03.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../nesmemory.cc ../nesapu.cc ../nesapuchannel.cc ../oaemuaudiooutput.cpp ../nesppu.cc ../nesmainwindow.cc ../r2a03.cc $(DISTDIR)/
+	$(COPY_FILE) --parents ../headers/nesmemory.h ../headers/apu.h ../headers/nesapuchannel.h ../headers/oaemuaudiooutput.h ../headers/ppu.h ../headers/nesmainwindow.h ../headers/r2a03.h ../headers/nesconsole.h ../headers/nespalette.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../nesmemory.cc ../apu.cc ../nesapuchannel.cc ../oaemuaudiooutput.cpp ../ppu.cc ../nesmainwindow.cc ../r2a03.cc ../nesconsole.cc ../nespalette.cc $(DISTDIR)/
 	$(COPY_FILE) --parents ../nesmainwindow.ui $(DISTDIR)/
 
 
@@ -432,9 +442,9 @@ compiler_moc_predefs_clean:
 build/moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -g -Wall -W -dM -E -o build/moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: build/moc_nesapuchannel.cpp build/moc_oaemuaudiooutput.cpp build/moc_nesmainwindow.cpp
+compiler_moc_header_make_all: build/moc_nesapuchannel.cpp build/moc_oaemuaudiooutput.cpp build/moc_nesmainwindow.cpp build/moc_nesconsole.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) build/moc_nesapuchannel.cpp build/moc_oaemuaudiooutput.cpp build/moc_nesmainwindow.cpp
+	-$(DEL_FILE) build/moc_nesapuchannel.cpp build/moc_oaemuaudiooutput.cpp build/moc_nesmainwindow.cpp build/moc_nesconsole.cpp
 build/moc_nesapuchannel.cpp: ../headers/nesapuchannel.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
@@ -445,25 +455,47 @@ build/moc_oaemuaudiooutput.cpp: ../headers/oaemuaudiooutput.h \
 		../../oaemumemory/headers/memoryram.h \
 		../../oaemumemory/headers/basememory.h \
 		../../oaemumemory/headers/memoryrom.h \
+		../../oaemumemory/headers/memorymapper.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/dmax/projects/oaemu/oanes/build/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/dmax/projects/oaemu/oanes -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGamepad -I/usr/include/x86_64-linux-gnu/qt5/QtMultimedia -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../headers/oaemuaudiooutput.h -o build/moc_oaemuaudiooutput.cpp
 
 build/moc_nesmainwindow.cpp: ../headers/nesmainwindow.h \
+		../headers/nespalette.h \
 		../headers/r2a03.h \
 		../../oaemucpu/headers/m6502.h \
 		../../oaemucpu/headers/basecpu.h \
+		../../oaemumemory/headers/memorymapper.h \
+		../headers/ppu.h \
 		../headers/nesmemory.h \
 		../../oaemumemory/headers/memoryram.h \
 		../../oaemumemory/headers/basememory.h \
 		../../oaemumemory/headers/memoryrom.h \
-		../headers/nesppu.h \
 		../headers/oaemuaudiooutput.h \
-		../headers/nesapu.h \
+		../headers/apu.h \
 		../headers/nesapuchannel.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/dmax/projects/oaemu/oanes/build/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/dmax/projects/oaemu/oanes -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGamepad -I/usr/include/x86_64-linux-gnu/qt5/QtMultimedia -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../headers/nesmainwindow.h -o build/moc_nesmainwindow.cpp
+
+build/moc_nesconsole.cpp: ../headers/nesconsole.h \
+		../../oaemumemory/headers/memoryram.h \
+		../../oaemumemory/headers/basememory.h \
+		../../oaemumemory/headers/memoryrom.h \
+		../headers/r2a03.h \
+		../../oaemucpu/headers/m6502.h \
+		../../oaemucpu/headers/basecpu.h \
+		../../oaemumemory/headers/memorymapper.h \
+		../headers/ppu.h \
+		../headers/nesmemory.h \
+		../headers/apu.h \
+		../headers/nesapuchannel.h \
+		../headers/nesmainwindow.h \
+		../headers/nespalette.h \
+		../headers/oaemuaudiooutput.h \
+		build/moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/dmax/projects/oaemu/oanes/build/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/dmax/projects/oaemu/oanes -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGamepad -I/usr/include/x86_64-linux-gnu/qt5/QtMultimedia -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../headers/nesconsole.h -o build/moc_nesconsole.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -489,16 +521,18 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 build/nesmemory.o: ../nesmemory.cc ../headers/nesmemory.h \
 		../../oaemumemory/headers/memoryram.h \
 		../../oaemumemory/headers/basememory.h \
-		../../oaemumemory/headers/memoryrom.h
+		../../oaemumemory/headers/memoryrom.h \
+		../../oaemumemory/headers/memorymapper.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nesmemory.o ../nesmemory.cc
 
-build/nesapu.o: ../nesapu.cc ../headers/nesapu.h \
+build/apu.o: ../apu.cc ../headers/apu.h \
 		../headers/nesapuchannel.h \
 		../headers/nesmemory.h \
 		../../oaemumemory/headers/memoryram.h \
 		../../oaemumemory/headers/basememory.h \
-		../../oaemumemory/headers/memoryrom.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nesapu.o ../nesapu.cc
+		../../oaemumemory/headers/memoryrom.h \
+		../../oaemumemory/headers/memorymapper.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/apu.o ../apu.cc
 
 build/nesapuchannel.o: ../nesapuchannel.cc ../headers/nesapuchannel.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nesapuchannel.o ../nesapuchannel.cc
@@ -507,40 +541,62 @@ build/oaemuaudiooutput.o: ../oaemuaudiooutput.cpp ../headers/oaemuaudiooutput.h 
 		../headers/nesmemory.h \
 		../../oaemumemory/headers/memoryram.h \
 		../../oaemumemory/headers/basememory.h \
-		../../oaemumemory/headers/memoryrom.h
+		../../oaemumemory/headers/memoryrom.h \
+		../../oaemumemory/headers/memorymapper.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/oaemuaudiooutput.o ../oaemuaudiooutput.cpp
 
-build/nesppu.o: ../nesppu.cc ../headers/nesppu.h \
+build/ppu.o: ../ppu.cc ../headers/ppu.h \
 		../../oaemucpu/headers/basecpu.h \
 		../headers/nesmemory.h \
 		../../oaemumemory/headers/memoryram.h \
 		../../oaemumemory/headers/basememory.h \
 		../../oaemumemory/headers/memoryrom.h \
+		../../oaemumemory/headers/memorymapper.h \
 		../../oaemucpu/headers/m6502.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nesppu.o ../nesppu.cc
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/ppu.o ../ppu.cc
 
 build/nesmainwindow.o: ../nesmainwindow.cc ../headers/nesmainwindow.h \
+		../headers/nespalette.h \
 		../headers/r2a03.h \
 		../../oaemucpu/headers/m6502.h \
 		../../oaemucpu/headers/basecpu.h \
+		../../oaemumemory/headers/memorymapper.h \
+		../headers/ppu.h \
 		../headers/nesmemory.h \
 		../../oaemumemory/headers/memoryram.h \
 		../../oaemumemory/headers/basememory.h \
 		../../oaemumemory/headers/memoryrom.h \
-		../headers/nesppu.h \
 		../headers/oaemuaudiooutput.h \
-		../headers/nesapu.h \
-		../headers/nesapuchannel.h
+		../headers/apu.h \
+		../headers/nesapuchannel.h \
+		../headers/nesconsole.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nesmainwindow.o ../nesmainwindow.cc
 
 build/r2a03.o: ../r2a03.cc ../headers/r2a03.h \
 		../../oaemucpu/headers/m6502.h \
 		../../oaemucpu/headers/basecpu.h \
-		../headers/nesmemory.h \
+		../../oaemumemory/headers/memorymapper.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/r2a03.o ../r2a03.cc
+
+build/nesconsole.o: ../nesconsole.cc ../headers/nesconsole.h \
 		../../oaemumemory/headers/memoryram.h \
 		../../oaemumemory/headers/basememory.h \
-		../../oaemumemory/headers/memoryrom.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/r2a03.o ../r2a03.cc
+		../../oaemumemory/headers/memoryrom.h \
+		../headers/r2a03.h \
+		../../oaemucpu/headers/m6502.h \
+		../../oaemucpu/headers/basecpu.h \
+		../../oaemumemory/headers/memorymapper.h \
+		../headers/ppu.h \
+		../headers/nesmemory.h \
+		../headers/apu.h \
+		../headers/nesapuchannel.h \
+		../headers/nesmainwindow.h \
+		../headers/nespalette.h \
+		../headers/oaemuaudiooutput.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nesconsole.o ../nesconsole.cc
+
+build/nespalette.o: ../nespalette.cc ../headers/nespalette.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nespalette.o ../nespalette.cc
 
 build/moc_nesapuchannel.o: build/moc_nesapuchannel.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/moc_nesapuchannel.o build/moc_nesapuchannel.cpp
@@ -550,6 +606,9 @@ build/moc_oaemuaudiooutput.o: build/moc_oaemuaudiooutput.cpp
 
 build/moc_nesmainwindow.o: build/moc_nesmainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/moc_nesmainwindow.o build/moc_nesmainwindow.cpp
+
+build/moc_nesconsole.o: build/moc_nesconsole.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/moc_nesconsole.o build/moc_nesconsole.cpp
 
 ####### Install
 

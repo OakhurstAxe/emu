@@ -1,12 +1,12 @@
 
-#include "headers/nesppu.h"
+#include "headers/ppu.h"
 
 namespace oa
 {
     namespace nes
     {
         
-        void NesPpu::renderPixel()
+        void Ppu::renderPixel()
         {
             int screenScanLine = scanLine - 1;
             int screenCycle = cycle - 1;
@@ -123,7 +123,7 @@ namespace oa
             charTableEntryMsb = charTableEntryMsb << 1;
         }
 
-        unsigned char NesPpu::reverseBits(unsigned char n) 
+        unsigned char Ppu::reverseBits(unsigned char n) 
         {
             unsigned char ans = 0;
             for(int i = 7; i >= 0; i--){
@@ -133,7 +133,17 @@ namespace oa
             return ans;
         }
         
-        int NesPpu::executeTicks(int count)
+        void Ppu::ExecuteTick()
+        {
+            if (overflowTicks_ > 0)
+            {
+                overflowTicks_--;
+                return;
+            }
+            overflowTicks_ = executeTicks(1) - 1;
+        }    
+        
+        int Ppu::executeTicks(int count)
         {
             int cycleCount = 0;
             while (cycleCount < count)
@@ -173,7 +183,7 @@ namespace oa
             return cycleCount;
         }
 
-        void NesPpu::reset()
+        void Ppu::reset()
         {
             memory->CpuWrite(0x2000, 0x80);
             memory->CpuWrite(0x2001, 0);

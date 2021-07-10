@@ -3,20 +3,21 @@
 
 #include "../oaemumemory/headers/memoryram.h"
 #include "../oaemumemory/headers/memoryrom.h"
+#include "../oaemumemory/headers/memorymapper.h"
 
 namespace oa
 {
     namespace nes
     {
         
-        class NesMemory
+        class NesMemory: public emu::MemoryMapper
         {
         public:
             NesMemory();
             ~NesMemory();
             void LoadProgRom(uint8_t* data, uint16_t size);
-            uint8_t CpuRead(unsigned short location);
-            void CpuWrite(uint16_t location, uint8_t byte);
+            uint8_t CpuRead(unsigned short location) override;
+            void CpuWrite(uint16_t location, uint8_t byte) override;
             void CpuSetVblank(uint8_t value);
             
             void LoadCharRom(uint8_t* data, uint16_t size);

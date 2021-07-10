@@ -19,13 +19,13 @@ namespace oa
                     pushStack(programCounter & 0x00ff);
                     nmiSet = 0;
                     cycleCount += OpPHP();
-                    unsigned char loadl = memory.CpuRead(0xfffa);
-                    unsigned char loadh = memory.CpuRead(0xfffb);
+                    unsigned char loadl = memory->CpuRead(0xfffa);
+                    unsigned char loadh = memory->CpuRead(0xfffb);
                     programCounter = (loadh << 8) + loadl;
                 }
                 else
                 {
-                    unsigned char instruction = memory.CpuRead(programCounter);
+                    unsigned char instruction = memory->CpuRead(programCounter);
                     
                     switch(instruction) {
                         case 0x01: { cycleCount += OpORAIndirectX(); break; }
@@ -203,7 +203,7 @@ namespace oa
             {
                 throw "Stack overflow";
             }
-            memory.CpuWrite(stackPointer, byte);
+            memory->CpuWrite(stackPointer, byte);
             stackPointer--;
         }
 
@@ -214,14 +214,14 @@ namespace oa
                 throw "Stack underflow";
             }
             stackPointer++;
-            return memory.CpuRead(stackPointer);
+            return memory->CpuRead(stackPointer);
         }
 
         void M6502::reset()
         {
             stackPointer = 0x01ff;
-            unsigned char pcl = memory.CpuRead(0xfffc);
-            unsigned char pch = memory.CpuRead(0xfffd);
+            unsigned char pcl = memory->CpuRead(0xfffc);
+            unsigned char pch = memory->CpuRead(0xfffd);
             programCounter = (pch << 8) + pcl;
             accumulator = 0;
             registerX = 0;
@@ -232,71 +232,71 @@ namespace oa
         unsigned short M6502::ZeroAddress()
         {
             programCounter++;
-            return memory.CpuRead(programCounter) % 0xFF;
+            return memory->CpuRead(programCounter) % 0xFF;
         }
 
         unsigned short M6502::ZeroXAddress()
         {
             programCounter++;
-            return (memory.CpuRead(programCounter) + registerX) % 0xFF;
+            return (memory->CpuRead(programCounter) + registerX) % 0xFF;
         }
         unsigned short M6502::ZeroYAddress()
         {
             programCounter++;
-            return (memory.CpuRead(programCounter) + registerY) % 0xFF;
+            return (memory->CpuRead(programCounter) + registerY) % 0xFF;
         }
         unsigned short M6502::AbsoluteAddress()
         {
             programCounter++;
-            unsigned char loadl = memory.CpuRead(programCounter);
+            unsigned char loadl = memory->CpuRead(programCounter);
             programCounter++;
-            unsigned char loadh = memory.CpuRead(programCounter);
+            unsigned char loadh = memory->CpuRead(programCounter);
             return (loadh << 8) + loadl;
         }
         unsigned short M6502::AbsoluteXAddress()
         {
             programCounter++;
-            unsigned char loadl = memory.CpuRead(programCounter);
+            unsigned char loadl = memory->CpuRead(programCounter);
             programCounter++;
-            unsigned char loadh = memory.CpuRead(programCounter);
+            unsigned char loadh = memory->CpuRead(programCounter);
             return (loadh << 8) + loadl + registerX;
         }
         unsigned short M6502::AbsoluteYAddress()
         {
             programCounter++;
-            unsigned char loadl = memory.CpuRead(programCounter);
+            unsigned char loadl = memory->CpuRead(programCounter);
             programCounter++;
-            unsigned char loadh = memory.CpuRead(programCounter);
+            unsigned char loadh = memory->CpuRead(programCounter);
             return (loadh << 8) + loadl + registerY;
         }
         unsigned short M6502::IndirectAddress()
         {
             programCounter++;
-            unsigned char loadl = memory.CpuRead(programCounter);
+            unsigned char loadl = memory->CpuRead(programCounter);
             programCounter++;
-            unsigned char loadh = memory.CpuRead(programCounter);
+            unsigned char loadh = memory->CpuRead(programCounter);
             unsigned char load = (loadh << 8) + loadl;
-            loadl = memory.CpuRead(load);
+            loadl = memory->CpuRead(load);
             load++;
-            loadh = memory.CpuRead(load);
+            loadh = memory->CpuRead(load);
             return (loadh << 8) + loadl;
         }
         unsigned short M6502::IndirectXAddress()
         {
             programCounter++;
-            unsigned char indirect = (memory.CpuRead(programCounter) + registerX) % 0xff;
-            unsigned char loadl = memory.CpuRead(indirect);
+            unsigned char indirect = (memory->CpuRead(programCounter) + registerX) % 0xff;
+            unsigned char loadl = memory->CpuRead(indirect);
             indirect++;
-            unsigned char loadh = memory.CpuRead(indirect);
+            unsigned char loadh = memory->CpuRead(indirect);
             return (loadh << 8) + loadl;
         }
         unsigned short M6502::IndirectYAddress()
         {
             programCounter++;
-            unsigned char indirect = memory.CpuRead(programCounter) % 0xff;
-            unsigned char loadl = memory.CpuRead(indirect);
+            unsigned char indirect = memory->CpuRead(programCounter) % 0xff;
+            unsigned char loadl = memory->CpuRead(indirect);
             indirect++;
-            unsigned char loadh = memory.CpuRead(indirect);
+            unsigned char loadh = memory->CpuRead(indirect);
             unsigned short address = (loadh << 8) + loadl;
             address += registerY;
             return address;
@@ -304,76 +304,76 @@ namespace oa
         unsigned char M6502::readRelative()
         {
             programCounter++;
-            return memory.CpuRead(programCounter);
+            return memory->CpuRead(programCounter);
         }
         unsigned char M6502::readImmediate()
         {
             programCounter++;
-            return memory.CpuRead(programCounter);
+            return memory->CpuRead(programCounter);
         }
         unsigned char M6502::readZero()
         {
-            return memory.CpuRead(ZeroAddress());
+            return memory->CpuRead(ZeroAddress());
         }
         unsigned char M6502::readZeroX()
         {
-            return memory.CpuRead(ZeroXAddress());
+            return memory->CpuRead(ZeroXAddress());
         }
         unsigned char M6502::readZeroY()
         {
-            return memory.CpuRead(ZeroYAddress());
+            return memory->CpuRead(ZeroYAddress());
         }
         unsigned char M6502::readAbsolute()
         {
-            return memory.CpuRead(AbsoluteAddress());
+            return memory->CpuRead(AbsoluteAddress());
         }
         unsigned char M6502::readAbsoluteX()
         {
-            return memory.CpuRead(AbsoluteXAddress());
+            return memory->CpuRead(AbsoluteXAddress());
         }
         unsigned char M6502::readAbsoluteY()
         {
-            return memory.CpuRead(AbsoluteYAddress());
+            return memory->CpuRead(AbsoluteYAddress());
         }
         unsigned char M6502::readIndirectX()
         {
-            return memory.CpuRead(IndirectXAddress());
+            return memory->CpuRead(IndirectXAddress());
         }
         unsigned char M6502::readIndirectY()
         {
-            return memory.CpuRead(IndirectYAddress());
+            return memory->CpuRead(IndirectYAddress());
         }
         void M6502::writeZero(unsigned char byte)
         {
-            memory.CpuWrite(ZeroAddress(), byte);
+            memory->CpuWrite(ZeroAddress(), byte);
         }
         void M6502::writeZeroX(unsigned char byte)
         {
-            memory.CpuWrite(ZeroXAddress(), byte);
+            memory->CpuWrite(ZeroXAddress(), byte);
         }
         void M6502::writeZeroY(unsigned char byte)
         {
-            memory.CpuWrite(ZeroYAddress(), byte);
+            memory->CpuWrite(ZeroYAddress(), byte);
         }
         void M6502::writeAbsolute(unsigned char byte)
         {
-            memory.CpuWrite(AbsoluteAddress(), byte);
+            memory->CpuWrite(AbsoluteAddress(), byte);
         }
         void M6502::writeAbsoluteX(unsigned char byte)
         {
-            memory.CpuWrite(AbsoluteXAddress(), byte);
+            memory->CpuWrite(AbsoluteXAddress(), byte);
         }
         void M6502::writeAbsoluteY(unsigned char byte)
         {
-            memory.CpuWrite(AbsoluteYAddress(), byte);
+            memory->CpuWrite(AbsoluteYAddress(), byte);
         }
         void M6502::writeIndirectX(unsigned char byte)
         {
-            memory.CpuWrite(IndirectXAddress(), byte);
+            memory->CpuWrite(IndirectXAddress(), byte);
         }
         void M6502::writeIndirectY(unsigned char byte)
         {
-            memory.CpuWrite(IndirectYAddress(), byte);
+            memory->CpuWrite(IndirectYAddress(), byte);
         }
 
         // Load Store operations
@@ -1153,9 +1153,9 @@ namespace oa
         int M6502::OpINCZero()
         {
             unsigned short address = ZeroAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             byte++;
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             status.zeroFlag = (byte == 0);
             status.negativeFlag = (byte & 0x80) > 0;
             return 5;
@@ -1163,9 +1163,9 @@ namespace oa
         int M6502::OpINCZeroX()
         {
             unsigned short address = ZeroXAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             byte++;
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             status.zeroFlag = (byte == 0);
             status.negativeFlag = (byte & 0x80) > 0;
             return 6;
@@ -1173,9 +1173,9 @@ namespace oa
         int M6502::OpINCAbsolute()
         {
             unsigned short address = AbsoluteAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             byte++;
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             status.zeroFlag = (byte == 0);
             status.negativeFlag = (byte & 0x80) > 0;
             return 6;
@@ -1183,9 +1183,9 @@ namespace oa
         int M6502::OpINCAbsoluteX()
         {
             unsigned short address = AbsoluteXAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             byte++;
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             status.zeroFlag = (byte == 0);
             status.negativeFlag = (byte & 0x80) > 0;
             return 7;
@@ -1207,41 +1207,41 @@ namespace oa
         int M6502::OpDECZero() 
         {
             unsigned short address = ZeroAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             byte--;
             status.zeroFlag = (byte == 0);
             status.negativeFlag = (byte & 0x80) > 0;
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             return 5;
         }
         int M6502::OpDECZeroX() 
         {
             unsigned short address = ZeroXAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             byte--;
             status.zeroFlag = (byte == 0);
             status.negativeFlag = (byte & 0x80) > 0;
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             return 6;
         }
         int M6502::OpDECAbsolute()
         {
             unsigned short address = AbsoluteAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             byte--;
             status.zeroFlag = (byte == 0);
             status.negativeFlag = (byte & 0x80) > 0;
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             return 6;
         }
         int M6502::OpDECAbsoluteX()
         {
             unsigned short address = AbsoluteXAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             byte--;
             status.zeroFlag = (byte == 0);
             status.negativeFlag = (byte & 0x80) > 0;
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             return 7;
         }
         int M6502::OpDEX()
@@ -1271,45 +1271,45 @@ namespace oa
         int M6502::OpASLZero()
         {
             unsigned char address = ZeroAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             status.carryFlag = (byte & 0x80) > 0;
             byte = byte << 1;
             status.negativeFlag = (byte & 0x80) > 0;
             status.zeroFlag = (byte == 0);
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             return 5;
         }    
         int M6502::OpASLZeroX()
         {
             unsigned char address = ZeroXAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             status.carryFlag = (byte & 0x80) > 0;
             byte = byte << 1;
             status.negativeFlag = (byte & 0x80) > 0;
             status.zeroFlag = (byte == 0);
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             return 6;
         }    
         int M6502::OpASLAbsolute()
         {
             unsigned char address = AbsoluteAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             status.carryFlag = (byte & 0x80) > 0;
             byte = byte << 1;
             status.negativeFlag = (byte & 0x80) > 0;
             status.zeroFlag = (byte == 0);
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             return 6;
         }
         int M6502::OpASLAbsoluteX()
         {
             unsigned char address = AbsoluteXAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             status.carryFlag = (byte & 0x80) > 0;
             byte = byte << 1;
             status.negativeFlag = (byte & 0x80) > 0;
             status.zeroFlag = (byte == 0);
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             return 7;
         }    
             
@@ -1324,45 +1324,45 @@ namespace oa
         int M6502::OpLSRZero()
         {
             unsigned short address = ZeroAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             status.carryFlag = (byte & 0x01) > 0;
             byte = byte >> 1;
             status.negativeFlag = (byte & 0x80) > 0;
             status.zeroFlag = (byte == 0);
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             return 5;    
         }
         int M6502::OpLSRZeroX()
         {
             unsigned short address = ZeroXAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             status.carryFlag = (byte & 0x01) > 0;
             byte = byte >> 1;
             status.negativeFlag = (byte & 0x80) > 0;
             status.zeroFlag = (byte == 0);
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             return 6;    
         }
         int M6502::OpLSRAbsolute()
         {
             unsigned short address = AbsoluteAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             status.carryFlag = (byte & 0x01) > 0;
             byte = byte >> 1;
             status.negativeFlag = (byte & 0x80) > 0;
             status.zeroFlag = (byte == 0);
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             return 6;    
         }
         int M6502::OpLSRAbsoluteX()
         {
             unsigned short address = AbsoluteXAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             status.carryFlag = (byte & 0x01) > 0;
             byte = byte >> 1;
             status.negativeFlag = (byte & 0x80) > 0;
             status.zeroFlag = (byte == 0);
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             return 7;    
         }
 
@@ -1378,49 +1378,49 @@ namespace oa
         int M6502::OpROLZero()
         {
             unsigned short address = ZeroAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             unsigned char newCarry = byte & 0x80;
             byte = (byte << 1) + status.carryFlag;
             status.negativeFlag = (byte & 0x80) > 0;
             status.zeroFlag = (byte == 0);
             status.carryFlag = newCarry > 0;
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             return 5;
         }
         int M6502::OpROLZeroX()
         {
             unsigned short address = ZeroXAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             unsigned char newCarry = byte & 0x80;
             byte = (byte << 1) + status.carryFlag;
             status.negativeFlag = (byte & 0x80) > 0;
             status.zeroFlag = (byte == 0);
             status.carryFlag = newCarry > 0;
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             return 6;
         }
         int M6502::OpROLAbsolute()
         {
             unsigned short address = AbsoluteAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             unsigned char newCarry = byte & 0x80;
             byte = (byte << 1) + status.carryFlag;
             status.negativeFlag = (byte & 0x80) > 0;
             status.zeroFlag = (byte == 0);
             status.carryFlag = newCarry > 0;
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             return 6;
         }
         int M6502::OpROLAbsoluteX()
         {
             unsigned short address = AbsoluteXAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             unsigned char newCarry = byte & 0x80;
             byte = (byte << 1) + status.carryFlag;
             status.negativeFlag = (byte & 0x80) > 0;
             status.zeroFlag = (byte == 0);
             status.carryFlag = newCarry > 0;
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             return 7;
         }
             
@@ -1436,49 +1436,49 @@ namespace oa
         int M6502::OpRORZero()
         {
             unsigned short address = ZeroAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             unsigned char newCarry = byte & 0x01;
             byte = (byte >> 1) + (status.carryFlag << 7);
             status.negativeFlag = (byte & 0x80) > 0;
             status.zeroFlag = (byte == 0);
             status.carryFlag = newCarry > 0;
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             return 5;
         }
         int M6502::OpRORZeroX()
         {
             unsigned short address = ZeroXAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             unsigned char newCarry = byte & 0x01;
             byte = (byte >> 1) + (status.carryFlag << 7);
             status.negativeFlag = (byte & 0x80) > 0;
             status.zeroFlag = (byte == 0);
             status.carryFlag = newCarry > 0;
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             return 6;
         }
         int M6502::OpRORAbsolute()
         {
             unsigned short address = AbsoluteAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             unsigned char newCarry = byte & 0x01;
             byte = (byte >> 1) + (status.carryFlag << 7);
             status.negativeFlag = (byte & 0x80) > 0;
             status.zeroFlag = (byte == 0);
             status.carryFlag = newCarry > 0;
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             return 6;
         }
         int M6502::OpRORAbsoluteX()
         {
             unsigned short address = AbsoluteXAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             unsigned char newCarry = byte & 0x01;
             byte = (byte >> 1) + (status.carryFlag << 7);
             status.negativeFlag = (byte & 0x80) > 0;
             status.zeroFlag = (byte == 0);
             status.carryFlag = newCarry > 0;
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             return 7;
         }
 
@@ -1652,9 +1652,9 @@ namespace oa
         int M6502::OpISCZero()
         {
             unsigned short address = ZeroAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             byte++;
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             accumulator -= byte;
             status.zeroFlag = (accumulator == 0);
             status.negativeFlag = (accumulator & 0x80) > 0;
@@ -1663,9 +1663,9 @@ namespace oa
         int M6502::OpISCZeroX()
         {
             unsigned short address = ZeroXAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             byte++;
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             accumulator -= byte;
             status.zeroFlag = (accumulator == 0);
             status.negativeFlag = (accumulator & 0x80) > 0;
@@ -1674,9 +1674,9 @@ namespace oa
         int M6502::OpISCAbsolute()
         {
             unsigned short address = AbsoluteAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             byte++;
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             accumulator -= byte;
             status.zeroFlag = (accumulator == 0);
             status.negativeFlag = (accumulator & 0x80) > 0;
@@ -1685,9 +1685,9 @@ namespace oa
         int M6502::OpISCAbsoluteX()
         {
             unsigned short address = AbsoluteXAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             byte++;
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             accumulator -= byte;
             status.zeroFlag = (accumulator == 0);
             status.negativeFlag = (accumulator & 0x80) > 0;
@@ -1696,9 +1696,9 @@ namespace oa
         int M6502::OpISCAbsoluteY()
         {
             unsigned short address = AbsoluteYAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             byte++;
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             accumulator -= byte;
             status.zeroFlag = (accumulator == 0);
             status.negativeFlag = (accumulator & 0x80) > 0;
@@ -1707,9 +1707,9 @@ namespace oa
         int M6502::OpISCIndirectX()
         {
             unsigned short address = IndirectXAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             byte++;
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             accumulator -= byte;
             status.zeroFlag = (accumulator == 0);
             status.negativeFlag = (accumulator & 0x80) > 0;
@@ -1718,9 +1718,9 @@ namespace oa
         int M6502::OpISCIndirectY()
         {
             unsigned short address = IndirectYAddress();
-            unsigned char byte = memory.CpuRead(address);
+            unsigned char byte = memory->CpuRead(address);
             byte++;
-            memory.CpuWrite(address, byte);
+            memory->CpuWrite(address, byte);
             accumulator -= byte;
             status.zeroFlag = (accumulator == 0);
             status.negativeFlag = (accumulator & 0x80) > 0;

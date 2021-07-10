@@ -16,7 +16,7 @@ namespace oa
             Q_OBJECT
 
         public:
-            EmuApuChannel(QObject *parent);
+            EmuApuChannel();
             virtual ~EmuApuChannel();
 
             void start();

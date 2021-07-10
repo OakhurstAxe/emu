@@ -6,10 +6,12 @@
 #include <QTimer>
 #include <QImage>
 
+#include "../headers/nespalette.h"
 #include "../oanes/headers/r2a03.h"
-#include "../oanes/headers/nesppu.h"
+#include "../oanes/headers/ppu.h"
 #include "../oanes/headers/oaemuaudiooutput.h"
-#include "../oanes/headers/nesapu.h"
+#include "../oanes/headers/apu.h"
+
 
 QT_BEGIN_NAMESPACE
 class QGamepad;
@@ -19,7 +21,9 @@ namespace oa
 {
     namespace nes
     {
-    
+
+        class NesConsole;
+        
         class NesMainWindow : public QWidget
         {
             Q_OBJECT
@@ -27,10 +31,10 @@ namespace oa
         public:
             NesMainWindow();
             ~NesMainWindow();
+            void DrawFrame(uint8_t *screen);
             unsigned char leftController;
             unsigned char rightController;
         public slots:
-            void startNextFrame();
             void leftControllerLeftRight(double value);
             void leftControllerUpDown(double value);
             void leftControllerSelect(bool value);
@@ -41,21 +45,12 @@ namespace oa
             void paintEvent(QPaintEvent *event);
             void readGamepad();
         private:
+            NesPalette nesPalette_;
+            NesConsole *nesConsole_;
+            uint8_t *screen_;
             bool inFrame = false;
             QGamepad *m_gamepad;
-            QImage *qImage2;
-            
-            QColor palette[64];
-            
-            void loadClicked();
-            void loadDKong();
-            QTimer *cpuTimer;
-            oa::nes::R2A03 cpu;
-            oa::nes::NesPpu ppu;
-            //EmuAudio *apu;
-            oa::nes::EmuApu *apu;
-            const static int SIZE = 16384 + 8192;
-            char dKongFile[SIZE];
+            QImage *qImage;
         };
 
     }
