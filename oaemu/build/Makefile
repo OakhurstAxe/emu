@@ -401,14 +401,16 @@ compiler_clean: compiler_moc_predefs_clean
 ####### Compile
 
 build/main.o: ../main.cc ../../oanes/headers/nesmainwindow.h \
+		../../oanes/headers/nespalette.h \
 		../../oanes/headers/r2a03.h \
 		../../oaemucpu/headers/m6502.h \
 		../../oaemucpu/headers/basecpu.h \
+		../../oaemumemory/headers/memorymapper.h \
+		../../oanes/headers/ppu.h \
 		../../oanes/headers/nesmemory.h \
 		../../oaemumemory/headers/memoryram.h \
 		../../oaemumemory/headers/basememory.h \
 		../../oaemumemory/headers/memoryrom.h \
-		../../oanes/headers/ppu.h \
 		../../oanes/headers/oaemuaudiooutput.h \
 		../../oanes/headers/apu.h \
 		../../oanes/headers/nesapuchannel.h

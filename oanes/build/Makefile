@@ -16,7 +16,7 @@ CC            = gcc
 CXX           = g++
 DEFINES       = -DQT_WIDGETS_LIB -DQT_GAMEPAD_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -DQT_TESTLIB_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_TESTCASE_BUILDDIR='"/home/dmax/projects/oaemu/oanes/build"'
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-CXXFLAGS      = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
+CXXFLAGS      = -pipe -g -std=gnu++1z -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 INCPATH       = -I../../oanes -I. -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGamepad -isystem /usr/include/x86_64-linux-gnu/qt5/QtMultimedia -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtTest -isystem /usr/include/x86_64-linux-gnu/qt5/QtNetwork -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -Ibuild -Ibuild -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
 QMAKE         = /usr/lib/qt5/bin/qmake
 DEL_FILE      = rm -f
@@ -440,7 +440,7 @@ compiler_moc_predefs_make_all: build/moc_predefs.h
 compiler_moc_predefs_clean:
 	-$(DEL_FILE) build/moc_predefs.h
 build/moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
-	g++ -pipe -g -Wall -W -dM -E -o build/moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
+	g++ -pipe -g -std=gnu++1z -Wall -W -dM -E -o build/moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
 compiler_moc_header_make_all: build/moc_nesapuchannel.cpp build/moc_oaemuaudiooutput.cpp build/moc_nesmainwindow.cpp build/moc_nesconsole.cpp
 compiler_moc_header_clean:
@@ -552,6 +552,7 @@ build/ppu.o: ../ppu.cc ../headers/ppu.h \
 		../../oaemumemory/headers/basememory.h \
 		../../oaemumemory/headers/memoryrom.h \
 		../../oaemumemory/headers/memorymapper.h \
+		../headers/r2a03.h \
 		../../oaemucpu/headers/m6502.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/ppu.o ../ppu.cc
 

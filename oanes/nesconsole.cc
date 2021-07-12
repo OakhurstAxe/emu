@@ -12,9 +12,9 @@ namespace oa
     {
         NesConsole::NesConsole(NesMainWindow* nesMainWindow)
         {
-            cpu_.memory = &nesMemory_;
+            cpu_ = new R2A03(&nesMemory_);
             ppu_.memory = &nesMemory_;
-            ppu_.cpu = &cpu_;
+            ppu_.cpu = cpu_;
             apu_.memory = &nesMemory_;
             
             nesMainWindow_ = nesMainWindow;
@@ -22,6 +22,7 @@ namespace oa
         
         NesConsole::~NesConsole()
         {
+            delete cpu_;
         }
         
         void NesConsole::StartUp()
@@ -40,7 +41,7 @@ namespace oa
                 charRom[i] = dKongFile[i+16+0x4000];
             }
             nesMemory_.LoadCharRom(charRom,0x2000);
-            cpu_.reset();
+            cpu_->Reset();
 
             
             connect(&cpuTimer_, SIGNAL(timeout()), SLOT(StartNextFrame()));
@@ -75,7 +76,7 @@ namespace oa
                 {
                     if ((ticks % 3) == 0)
                     {
-                        cpu_.ExecuteTick();
+                        cpu_->ExecuteTick();
                     }
                     ppu_.ExecuteTick();
                     apu_.ExecuteTick();
@@ -84,7 +85,7 @@ namespace oa
                 }
                 nesMainWindow_->DrawFrame(ppu_.screen);
             }
-            catch (std::exception exception)
+            catch (std::exception &exception)
             {
                 QMessageBox::information(0, QString("Error in frame"), QString(exception.what()), QMessageBox::Ok);
             }  

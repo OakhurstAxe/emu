@@ -1,5 +1,5 @@
-#ifndef BASECPU_H
-#define BASECPU_H
+#ifndef OA_EMU_BASECPU_H
+#define OA_EMU_BASECPU_H
 
 namespace oa
 {
@@ -9,7 +9,11 @@ namespace oa
         class BaseCpu
         {
         public:
-            virtual int executeTicks(int count) = 0;
+            virtual void ExecuteTick() = 0;
+            virtual void Reset();
+        protected:
+            bool IsOverflowed();
+            int overflowTicks_ = 0;
         };
 
     }

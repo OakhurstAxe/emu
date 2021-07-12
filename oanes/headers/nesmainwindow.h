@@ -1,5 +1,5 @@
-#ifndef EMUMAINWINDOW_H
-#define EMUMAINWINDOW_H
+#ifndef _OA_NES_MAINWINDOW_H
+#define _OA_NES_MAINWINDOW_H
 
 #include <QObject>
 #include <QMainWindow>
@@ -32,8 +32,8 @@ namespace oa
             NesMainWindow();
             ~NesMainWindow();
             void DrawFrame(uint8_t *screen);
-            unsigned char leftController;
-            unsigned char rightController;
+            unsigned char leftController = 0;
+            unsigned char rightController = 0;
         public slots:
             void leftControllerLeftRight(double value);
             void leftControllerUpDown(double value);

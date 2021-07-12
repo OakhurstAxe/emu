@@ -1,1730 +1,915 @@
 #include "headers/m6502.h"
 
+#include <functional>
 #include <QString>
 
+           
 namespace oa
 {
     namespace emu
     {
         
-        int M6502::executeTicks(int count)
+        M6502::M6502(MemoryMapper *memory)
         {
-            int cycleCount = 0;
-            while (cycleCount < count)
+            memory_ = memory;
+            SetOpCodes();
+        }
+        
+        void M6502::SetOpCodes()
+        {
+            opCodeLookup_[0x00] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x01] = {&M6502::OpORA, &M6502::IndirectXAddress};
+            opCodeLookup_[0x02] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x03] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x04] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x05] = {&M6502::OpORA, &M6502::ZeroAddress};
+            opCodeLookup_[0x06] = {&M6502::OpASL, &M6502::ZeroAddress};
+            opCodeLookup_[0x07] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x08] = {&M6502::OpPHP, &M6502::NullAddress};
+            opCodeLookup_[0x09] = {&M6502::OpORA, &M6502::ImmediateAddress};
+            opCodeLookup_[0x0a] = {&M6502::OpASLAccumlator, &M6502::NullAddress};
+            opCodeLookup_[0x0b] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x0c] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x0d] = {&M6502::OpORA, &M6502::AbsoluteAddress};
+            opCodeLookup_[0x0e] = {&M6502::OpASL, &M6502::AbsoluteAddress};
+            opCodeLookup_[0x0f] = {&M6502::OpBRK, &M6502::NullAddress};
+
+            opCodeLookup_[0x10] = {&M6502::OpBPL, &M6502::ImmediateAddress};
+            opCodeLookup_[0x11] = {&M6502::OpORA, &M6502::IndirectYAddress};
+            opCodeLookup_[0x12] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x13] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x14] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x15] = {&M6502::OpORA, &M6502::ZeroXAddress};
+            opCodeLookup_[0x16] = {&M6502::OpASL, &M6502::ZeroXAddress};
+            opCodeLookup_[0x17] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x18] = {&M6502::OpCLC, &M6502::NullAddress};
+            opCodeLookup_[0x19] = {&M6502::OpORA, &M6502::AbsoluteYAddress};
+            opCodeLookup_[0x1a] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x1b] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x1c] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x1d] = {&M6502::OpORA, &M6502::AbsoluteXAddress};
+            opCodeLookup_[0x1e] = {&M6502::OpASL, &M6502::AbsoluteXAddress};
+            opCodeLookup_[0x1f] = {&M6502::OpBRK, &M6502::NullAddress};
+
+            opCodeLookup_[0x20] = {&M6502::OpJSR, &M6502::AbsoluteAddress};
+            opCodeLookup_[0x21] = {&M6502::OpAND, &M6502::IndirectXAddress};
+            opCodeLookup_[0x22] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x23] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x24] = {&M6502::OpBIT, &M6502::ZeroAddress};
+            opCodeLookup_[0x25] = {&M6502::OpAND, &M6502::ZeroAddress};
+            opCodeLookup_[0x26] = {&M6502::OpROL, &M6502::ZeroAddress};
+            opCodeLookup_[0x27] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x28] = {&M6502::OpPLP, &M6502::NullAddress};
+            opCodeLookup_[0x29] = {&M6502::OpAND, &M6502::ImmediateAddress};
+            opCodeLookup_[0x2a] = {&M6502::OpROLAccululator, &M6502::NullAddress};
+            opCodeLookup_[0x2b] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x2c] = {&M6502::OpBIT, &M6502::AbsoluteAddress};
+            opCodeLookup_[0x2d] = {&M6502::OpAND, &M6502::AbsoluteAddress};
+            opCodeLookup_[0x2e] = {&M6502::OpROL, &M6502::AbsoluteAddress};
+            opCodeLookup_[0x2f] = {&M6502::OpBRK, &M6502::NullAddress};
+
+            opCodeLookup_[0x30] = {&M6502::OpBMI, &M6502::ImmediateAddress};
+            opCodeLookup_[0x31] = {&M6502::OpAND, &M6502::IndirectYAddress};
+            opCodeLookup_[0x32] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x33] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x34] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x35] = {&M6502::OpAND, &M6502::ZeroXAddress};
+            opCodeLookup_[0x36] = {&M6502::OpROL, &M6502::ZeroXAddress};
+            opCodeLookup_[0x37] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x38] = {&M6502::OpSEC, &M6502::NullAddress};
+            opCodeLookup_[0x39] = {&M6502::OpAND, &M6502::AbsoluteYAddress};
+            opCodeLookup_[0x3a] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x3b] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x3c] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x3d] = {&M6502::OpAND, &M6502::AbsoluteXAddress};
+            opCodeLookup_[0x3e] = {&M6502::OpROL, &M6502::AbsoluteXAddress};
+            opCodeLookup_[0x3f] = {&M6502::OpBRK, &M6502::NullAddress};
+
+            opCodeLookup_[0x40] = {&M6502::OpRTI, &M6502::NullAddress};
+            opCodeLookup_[0x41] = {&M6502::OpEOR, &M6502::IndirectXAddress};
+            opCodeLookup_[0x42] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x43] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x44] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x45] = {&M6502::OpEOR, &M6502::ZeroAddress};
+            opCodeLookup_[0x46] = {&M6502::OpLSR, &M6502::ZeroAddress};
+            opCodeLookup_[0x47] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x48] = {&M6502::OpPHA, &M6502::NullAddress};
+            opCodeLookup_[0x49] = {&M6502::OpEOR, &M6502::ImmediateAddress};
+            opCodeLookup_[0x4a] = {&M6502::OpLSRAccululator, &M6502::NullAddress};
+            opCodeLookup_[0x4b] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x4c] = {&M6502::OpJMP, &M6502::AbsoluteAddress};
+            opCodeLookup_[0x4d] = {&M6502::OpEOR, &M6502::AbsoluteAddress};
+            opCodeLookup_[0x4e] = {&M6502::OpLSR, &M6502::AbsoluteAddress};
+            opCodeLookup_[0x4f] = {&M6502::OpBRK, &M6502::NullAddress};
+
+            opCodeLookup_[0x50] = {&M6502::OpBVC, &M6502::ImmediateAddress};
+            opCodeLookup_[0x51] = {&M6502::OpEOR, &M6502::IndirectYAddress};
+            opCodeLookup_[0x52] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x53] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x54] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x55] = {&M6502::OpEOR, &M6502::ZeroXAddress};
+            opCodeLookup_[0x56] = {&M6502::OpLSR, &M6502::ZeroXAddress};
+            opCodeLookup_[0x57] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x58] = {&M6502::OpCLI, &M6502::NullAddress};
+            opCodeLookup_[0x59] = {&M6502::OpEOR, &M6502::AbsoluteYAddress};
+            opCodeLookup_[0x5a] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x5b] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x5c] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x5d] = {&M6502::OpEOR, &M6502::AbsoluteXAddress};
+            opCodeLookup_[0x5e] = {&M6502::OpLSR, &M6502::AbsoluteXAddress};
+            opCodeLookup_[0x5f] = {&M6502::OpBRK, &M6502::NullAddress};
+
+            opCodeLookup_[0x60] = {&M6502::OpRTS, &M6502::NullAddress};
+            opCodeLookup_[0x61] = {&M6502::OpADC, &M6502::IndirectXAddress};
+            opCodeLookup_[0x62] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x63] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x64] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x65] = {&M6502::OpADC, &M6502::ZeroAddress};
+            opCodeLookup_[0x66] = {&M6502::OpROR, &M6502::ZeroAddress};
+            opCodeLookup_[0x67] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x68] = {&M6502::OpPLA, &M6502::NullAddress};
+            opCodeLookup_[0x69] = {&M6502::OpADC, &M6502::ImmediateAddress};
+            opCodeLookup_[0x6a] = {&M6502::OpRORAccumulator, &M6502::NullAddress};
+            opCodeLookup_[0x6b] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x6c] = {&M6502::OpJMP, &M6502::IndirectAddress};
+            opCodeLookup_[0x6d] = {&M6502::OpADC, &M6502::AbsoluteAddress};
+            opCodeLookup_[0x6e] = {&M6502::OpROR, &M6502::AbsoluteAddress};
+            opCodeLookup_[0x6f] = {&M6502::OpBRK, &M6502::NullAddress};
+
+            opCodeLookup_[0x70] = {&M6502::OpBVS, &M6502::ImmediateAddress};
+            opCodeLookup_[0x71] = {&M6502::OpADC, &M6502::IndirectYAddress};
+            opCodeLookup_[0x72] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x73] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x74] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x75] = {&M6502::OpADC, &M6502::ZeroXAddress};
+            opCodeLookup_[0x76] = {&M6502::OpROR, &M6502::ZeroXAddress};
+            opCodeLookup_[0x77] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x78] = {&M6502::OpSEI, &M6502::NullAddress};
+            opCodeLookup_[0x79] = {&M6502::OpADC, &M6502::AbsoluteYAddress};
+            opCodeLookup_[0x7a] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x7b] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x7c] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x7d] = {&M6502::OpADC, &M6502::AbsoluteXAddress};
+            opCodeLookup_[0x7e] = {&M6502::OpROR, &M6502::AbsoluteXAddress};
+            opCodeLookup_[0x7f] = {&M6502::OpBRK, &M6502::NullAddress};
+
+            opCodeLookup_[0x80] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x81] = {&M6502::OpSTA, &M6502::IndirectXAddress};
+            opCodeLookup_[0x82] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x83] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x84] = {&M6502::OpSTY, &M6502::ZeroAddress};
+            opCodeLookup_[0x85] = {&M6502::OpSTA, &M6502::ZeroAddress};
+            opCodeLookup_[0x86] = {&M6502::OpSTX, &M6502::ZeroAddress};
+            opCodeLookup_[0x87] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x88] = {&M6502::OpDEY, &M6502::NullAddress};
+            opCodeLookup_[0x89] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x8a] = {&M6502::OpTXA, &M6502::NullAddress};
+            opCodeLookup_[0x8b] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x8c] = {&M6502::OpSTY, &M6502::AbsoluteAddress};
+            opCodeLookup_[0x8d] = {&M6502::OpSTA, &M6502::AbsoluteAddress};
+            opCodeLookup_[0x8e] = {&M6502::OpSTX, &M6502::AbsoluteAddress};
+            opCodeLookup_[0x8f] = {&M6502::OpBRK, &M6502::NullAddress};
+
+            opCodeLookup_[0x90] = {&M6502::OpBCC, &M6502::ImmediateAddress};
+            opCodeLookup_[0x91] = {&M6502::OpSTA, &M6502::IndirectYAddress};
+            opCodeLookup_[0x92] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x93] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x94] = {&M6502::OpSTY, &M6502::ZeroXAddress};
+            opCodeLookup_[0x95] = {&M6502::OpSTA, &M6502::ZeroXAddress};
+            opCodeLookup_[0x96] = {&M6502::OpSTX, &M6502::ZeroYAddress};
+            opCodeLookup_[0x97] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x98] = {&M6502::OpTYA, &M6502::NullAddress};
+            opCodeLookup_[0x99] = {&M6502::OpSTA, &M6502::AbsoluteYAddress};
+            opCodeLookup_[0x9a] = {&M6502::OpTXS, &M6502::NullAddress};
+            opCodeLookup_[0x9b] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x9c] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x9d] = {&M6502::OpSTA, &M6502::AbsoluteXAddress};
+            opCodeLookup_[0x9e] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0x9f] = {&M6502::OpBRK, &M6502::NullAddress};
+
+            opCodeLookup_[0xa0] = {&M6502::OpLDY, &M6502::ImmediateAddress};
+            opCodeLookup_[0xa1] = {&M6502::OpLDA, &M6502::IndirectXAddress};
+            opCodeLookup_[0xa2] = {&M6502::OpLDX, &M6502::ImmediateAddress};
+            opCodeLookup_[0xa3] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xa4] = {&M6502::OpLDY, &M6502::ZeroAddress};
+            opCodeLookup_[0xa5] = {&M6502::OpLDA, &M6502::ZeroAddress};
+            opCodeLookup_[0xa6] = {&M6502::OpLDX, &M6502::ZeroAddress};
+            opCodeLookup_[0xa7] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xa8] = {&M6502::OpTAY, &M6502::NullAddress};
+            opCodeLookup_[0xa9] = {&M6502::OpLDA, &M6502::ImmediateAddress};
+            opCodeLookup_[0xaa] = {&M6502::OpTAX, &M6502::NullAddress};
+            opCodeLookup_[0xab] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xac] = {&M6502::OpLDY, &M6502::AbsoluteAddress};
+            opCodeLookup_[0xad] = {&M6502::OpLDA, &M6502::AbsoluteAddress};
+            opCodeLookup_[0xae] = {&M6502::OpLDX, &M6502::AbsoluteAddress};
+            opCodeLookup_[0xaf] = {&M6502::OpBRK, &M6502::NullAddress};
+
+            opCodeLookup_[0xb0] = {&M6502::OpBCS, &M6502::ImmediateAddress};
+            opCodeLookup_[0xb1] = {&M6502::OpLDA, &M6502::IndirectYAddress};
+            opCodeLookup_[0xb2] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xb3] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xb4] = {&M6502::OpLDY, &M6502::ZeroXAddress};
+            opCodeLookup_[0xb5] = {&M6502::OpLDA, &M6502::ZeroXAddress};
+            opCodeLookup_[0xb6] = {&M6502::OpLDX, &M6502::ZeroYAddress};
+            opCodeLookup_[0xb7] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xb8] = {&M6502::OpCLV, &M6502::NullAddress};
+            opCodeLookup_[0xb9] = {&M6502::OpLDA, &M6502::AbsoluteYAddress};
+            opCodeLookup_[0xba] = {&M6502::OpTSX, &M6502::NullAddress};
+            opCodeLookup_[0xbb] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xbc] = {&M6502::OpLDY, &M6502::AbsoluteXAddress};
+            opCodeLookup_[0xbd] = {&M6502::OpLDA, &M6502::AbsoluteXAddress};
+            opCodeLookup_[0xbe] = {&M6502::OpLDX, &M6502::AbsoluteYAddress};
+            opCodeLookup_[0xbf] = {&M6502::OpBRK, &M6502::NullAddress};
+
+            opCodeLookup_[0xc0] = {&M6502::OpCPY, &M6502::ImmediateAddress};
+            opCodeLookup_[0xc1] = {&M6502::OpCMP, &M6502::IndirectXAddress};
+            opCodeLookup_[0xc2] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xc3] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xc4] = {&M6502::OpCPY, &M6502::ZeroAddress};
+            opCodeLookup_[0xc5] = {&M6502::OpCMP, &M6502::ZeroAddress};
+            opCodeLookup_[0xc6] = {&M6502::OpDEC, &M6502::ZeroAddress};
+            opCodeLookup_[0xc7] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xc8] = {&M6502::OpINY, &M6502::NullAddress};
+            opCodeLookup_[0xc9] = {&M6502::OpCMP, &M6502::ImmediateAddress};
+            opCodeLookup_[0xca] = {&M6502::OpDEX, &M6502::NullAddress};
+            opCodeLookup_[0xcb] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xcc] = {&M6502::OpCPY, &M6502::AbsoluteAddress};
+            opCodeLookup_[0xcd] = {&M6502::OpCMP, &M6502::AbsoluteAddress};
+            opCodeLookup_[0xce] = {&M6502::OpDEC, &M6502::AbsoluteAddress};
+            opCodeLookup_[0xcf] = {&M6502::OpBRK, &M6502::NullAddress};
+            
+            opCodeLookup_[0xd0] = {&M6502::OpBNE, &M6502::ImmediateAddress};
+            opCodeLookup_[0xd1] = {&M6502::OpCMP, &M6502::IndirectYAddress};
+            opCodeLookup_[0xd2] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xd3] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xd4] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xd5] = {&M6502::OpCMP, &M6502::ZeroXAddress};
+            opCodeLookup_[0xd6] = {&M6502::OpDEC, &M6502::ZeroXAddress};
+            opCodeLookup_[0xd7] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xd8] = {&M6502::OpCLD, &M6502::NullAddress};
+            opCodeLookup_[0xd9] = {&M6502::OpCMP, &M6502::AbsoluteYAddress};
+            opCodeLookup_[0xda] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xdb] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xdc] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xdd] = {&M6502::OpCMP, &M6502::AbsoluteXAddress};
+            opCodeLookup_[0xde] = {&M6502::OpDEC, &M6502::AbsoluteXAddress};
+            opCodeLookup_[0xdf] = {&M6502::OpBRK, &M6502::NullAddress};     
+            
+            opCodeLookup_[0xe0] = {&M6502::OpCPX, &M6502::ImmediateAddress};
+            opCodeLookup_[0xe1] = {&M6502::OpSBC, &M6502::IndirectXAddress};
+            opCodeLookup_[0xe2] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xe3] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xe4] = {&M6502::OpCPX, &M6502::ZeroAddress};
+            opCodeLookup_[0xe5] = {&M6502::OpSBC, &M6502::ZeroAddress};
+            opCodeLookup_[0xe6] = {&M6502::OpINC, &M6502::ZeroAddress};
+            opCodeLookup_[0xe7] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xe8] = {&M6502::OpINX, &M6502::NullAddress};
+            opCodeLookup_[0xe9] = {&M6502::OpSBC, &M6502::ImmediateAddress};
+            opCodeLookup_[0xea] = {&M6502::OpNOP, &M6502::NullAddress};
+            opCodeLookup_[0xeb] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xec] = {&M6502::OpCPX, &M6502::AbsoluteAddress};
+            opCodeLookup_[0xed] = {&M6502::OpSBC, &M6502::AbsoluteAddress};
+            opCodeLookup_[0xee] = {&M6502::OpINC, &M6502::AbsoluteAddress};
+            opCodeLookup_[0xef] = {&M6502::OpBRK, &M6502::NullAddress};            
+
+            opCodeLookup_[0xf0] = {&M6502::OpBEQ, &M6502::ImmediateAddress};
+            opCodeLookup_[0xf1] = {&M6502::OpSBC, &M6502::IndirectYAddress};
+            opCodeLookup_[0xf2] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xf3] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xf4] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xf5] = {&M6502::OpSBC, &M6502::ZeroXAddress};
+            opCodeLookup_[0xf6] = {&M6502::OpINC, &M6502::ZeroXAddress};
+            opCodeLookup_[0xf7] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xf8] = {&M6502::OpSED, &M6502::NullAddress};
+            opCodeLookup_[0xf9] = {&M6502::OpSBC, &M6502::AbsoluteYAddress};
+            opCodeLookup_[0xfa] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xfb] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xfc] = {&M6502::OpBRK, &M6502::NullAddress};
+            opCodeLookup_[0xfd] = {&M6502::OpSBC, &M6502::AbsoluteXAddress};
+            opCodeLookup_[0xfe] = {&M6502::OpINC, &M6502::AbsoluteXAddress};
+            opCodeLookup_[0xff] = {&M6502::OpBRK, &M6502::NullAddress};              
+        }
+        
+        void M6502::ExecuteTick()
+        {
+            if (IsOverflowed())
             {
-                if (nmiSet == 1)
-                {
-                    programCounter--;
-                    pushStack((programCounter & 0xff00) >> 8);
-                    pushStack(programCounter & 0x00ff);
-                    nmiSet = 0;
-                    cycleCount += OpPHP();
-                    unsigned char loadl = memory->CpuRead(0xfffa);
-                    unsigned char loadh = memory->CpuRead(0xfffb);
-                    programCounter = (loadh << 8) + loadl;
-                }
-                else
-                {
-                    unsigned char instruction = memory->CpuRead(programCounter);
-                    
-                    switch(instruction) {
-                        case 0x01: { cycleCount += OpORAIndirectX(); break; }
-                        case 0x05: { cycleCount += OpORAZero(); break; }
-                        case 0x06: { cycleCount += OpASLZero(); break; }
-                        case 0x08: { cycleCount += OpPHP(); break; }
-                        case 0x09: { cycleCount += OpORAImmediate(); break; }
-                        case 0x0a: { cycleCount += OpASLAccumlator(); break; }
-                        case 0x0e: { cycleCount += OpASLAbsolute(); break; }
-                        case 0x0d: { cycleCount += OpORAAbsolute(); break; }
-                        case 0x10: { cycleCount += OpBPL(); break; }
-                        case 0x11: { cycleCount += OpORAIndirectY(); break; }
-                        case 0x15: { cycleCount += OpORAZeroX(); break; }
-                        case 0x16: { cycleCount += OpASLZeroX(); break; }
-                        case 0x18: { cycleCount += OpCLC(); break; }
-                        case 0x19: { cycleCount += OpORAAbsoluteY(); break; }
-                        case 0x1d: { cycleCount += OpORAAbsoluteX(); break; }
-                        case 0x1e: { cycleCount += OpASLAbsoluteX(); break; }
-                        case 0x20: { cycleCount += OpJSR(); break; }
-                        case 0x21: { cycleCount += OpANDIndirectX(); break; }
-                        case 0x24: { cycleCount += OpBITZero(); break; }
-                        case 0x25: { cycleCount += OpANDZero(); break; }
-                        case 0x26: { cycleCount += OpROLZero(); break; }                
-                        case 0x28: { cycleCount += OpPLP(); break; }
-                        case 0x29: { cycleCount += OpANDImmediate(); break; }
-                        case 0x2a: { cycleCount += OpROLAccululator(); break; }                
-                        case 0x2c: { cycleCount += OpBITAbsolute(); break; }
-                        case 0x2d: { cycleCount += OpANDAbsolute(); break; }
-                        case 0x2e: { cycleCount += OpROLAbsolute(); break; }                
-                        case 0x30: { cycleCount += OpBMI(); break; }
-                        case 0x31: { cycleCount += OpANDIndirectY(); break; }
-                        case 0x35: { cycleCount += OpANDZeroX(); break; }
-                        case 0x36: { cycleCount += OpROLZeroX(); break; }                
-                        case 0x38: { cycleCount += OpSEC(); break; }            
-                        case 0x39: { cycleCount += OpANDAbsoluteY(); break; }
-                        case 0x3d: { cycleCount += OpANDAbsoluteX(); break; }           
-                        case 0x3e: { cycleCount += OpROLAbsoluteX(); break; }   
-                        case 0x40: { cycleCount += OpRTI(); break; }
-                        case 0x41: { cycleCount += OpEORIndirectX(); break; }
-                        case 0x45: { cycleCount += OpEORZero(); break; }
-                        case 0x46: { cycleCount += OpLSRZero(); break; }                
-                        case 0x48: { cycleCount += OpPHA(); break; }
-                        case 0x49: { cycleCount += OpEORImmediate(); break; }
-                        case 0x4a: { cycleCount += OpLSRAccululator(); break; }                
-                        case 0x4c: { cycleCount += OpJMPAbsolute(); break; }
-                        case 0x4d: { cycleCount += OpEORAbsolute(); break; }
-                        case 0x4e: { cycleCount += OpLSRAbsolute(); break; }                
-                        case 0x50: { cycleCount += OpBVC(); break; }
-                        case 0x51: { cycleCount += OpEORIndirectY(); break; }
-                        case 0x55: { cycleCount += OpEORZeroX(); break; }
-                        case 0x56: { cycleCount += OpLSRZeroX(); break; }                
-                        case 0x58: { cycleCount += OpCLI(); break; }
-                        case 0x59: { cycleCount += OpEORAbsoluteY(); break; }
-                        case 0x5d: { cycleCount += OpEORAbsoluteX(); break; }
-                        case 0x5e: { cycleCount += OpLSRAbsoluteX(); break; }                
-                        case 0x60: { cycleCount += OpRTS(); break; }
-                        case 0x61: { cycleCount += OpADCIndirectX(); break; }
-                        case 0x65: { cycleCount += OpADCZero(); break; }
-                        case 0x66: { cycleCount += OpRORZero(); break; }
-                        case 0x68: { cycleCount += OpPLA(); break; }
-                        case 0x69: { cycleCount += OpADCImmediate(); break; }
-                        case 0x6a: { cycleCount += OpRORAccululator(); break; }
-                        case 0x6c: { cycleCount += OpJMPIndirect(); break; }
-                        case 0x6d: { cycleCount += OpADCAbsolute(); break; }
-                        case 0x6e: { cycleCount += OpRORAbsolute(); break; }
-                        case 0x70: { cycleCount += OpBVS(); break; }
-                        case 0x71: { cycleCount += OpADCIndirectY(); break; }
-                        case 0x75: { cycleCount += OpADCZeroX(); break; }
-                        case 0x76: { cycleCount += OpRORZeroX(); break; }
-                        case 0x78: { cycleCount += OpSEI(); break; }
-                        case 0x79: { cycleCount += OpADCAbsoluteY(); break; }
-                        case 0x7d: { cycleCount += OpADCAbsoluteX(); break; }
-                        case 0x7e: { cycleCount += OpRORAbsoluteX(); break; }
-                        case 0x81: { cycleCount += OpSTAIndirectX(); break; }
-                        case 0x84: { cycleCount += OpSTYZero(); break; }
-                        case 0x85: { cycleCount += OpSTAZero(); break; }
-                        case 0x86: { cycleCount += OpSTXZero(); break; }
-                        case 0x88: { cycleCount += OpDEY(); break; }
-                        case 0x8a: { cycleCount += OpTXA(); break; }
-                        case 0x8c: { cycleCount += OpSTYAbsolute(); break; }
-                        case 0x8d: { cycleCount += OpSTAAbsolute(); break; }
-                        case 0x8e: { cycleCount += OpSTXAbsolute(); break; }
-                        case 0x90: { cycleCount += OpBCC(); break; }
-                        case 0x91: { cycleCount += OpSTAIndirectY(); break; }
-                        case 0x94: { cycleCount += OpSTYZeroX(); break; }
-                        case 0x95: { cycleCount += OpSTAZeroX(); break; }
-                        case 0x96: { cycleCount += OpSTXZeroY(); break; }
-                        case 0x98: { cycleCount += OpTYA(); break; }
-                        case 0x99: { cycleCount += OpSTAAbsoluteY(); break; }
-                        case 0x9a: { cycleCount += OpTXS(); break; }
-                        case 0x9d: { cycleCount += OpSTAAbsoluteX(); break; }
-                        case 0xa0: { cycleCount += OpLDYImmediate(); break; }
-                        case 0xa1: { cycleCount += OpLDAIndirectX(); break; }
-                        case 0xa2: { cycleCount += OpLDXImmediate(); break; }
-                        case 0xa4: { cycleCount += OpLDYZero(); break; }
-                        case 0xa5: { cycleCount += OpLDAZero(); break; }
-                        case 0xa6: { cycleCount += OpLDXZero(); break; }
-                        case 0xa8: { cycleCount += OpTAY(); break; }
-                        case 0xa9: { cycleCount += OpLDAImmediate(); break; }
-                        case 0xaa: { cycleCount += OpTAX(); break; }
-                        case 0xac: { cycleCount += OpLDYAbsolute(); break; }
-                        case 0xad: { cycleCount += OpLDAAbsolute(); break; }
-                        case 0xae: { cycleCount += OpLDXAbsolute(); break; }
-                        case 0xb0: { cycleCount += OpBCS(); break; }
-                        case 0xb1: { cycleCount += OpLDAIndirectY(); break; }
-                        case 0xb4: { cycleCount += OpLDYZeroX(); break; }
-                        case 0xb5: { cycleCount += OpLDAZeroX(); break; }
-                        case 0xb6: { cycleCount += OpLDXZeroY(); break; }
-                        case 0xb8: { cycleCount += OpCLV(); break; }            
-                        case 0xb9: { cycleCount += OpLDAAbsoluteY(); break; }
-                        case 0xba: { cycleCount += OpTSX(); break; }
-                        case 0xbc: { cycleCount += OpLDYAbsoluteX(); break; }
-                        case 0xbd: { cycleCount += OpLDAAbsoluteX(); break; }
-                        case 0xbe: { cycleCount += OpLDXAbsoluteY(); break; }
-                        case 0xc0: { cycleCount += OpCPYImmediate(); break; }
-                        case 0xc1: { cycleCount += OpCMPIndirectX(); break; }
-                        case 0xc4: { cycleCount += OpCPYZero(); break; }
-                        case 0xc5: { cycleCount += OpCMPZero(); break; }
-                        case 0xc6: { cycleCount += OpDECZero(); break; }
-                        case 0xc8: { cycleCount += OpINY(); break; }
-                        case 0xc9: { cycleCount += OpCMPImmediate(); break; }
-                        case 0xca: { cycleCount += OpDEX(); break; }
-                        case 0xcc: { cycleCount += OpCPYAbsolute(); break; }
-                        case 0xcd: { cycleCount += OpCMPAbsolute(); break; }
-                        case 0xce: { cycleCount += OpDECAbsolute(); break; }
-                        case 0xd0: { cycleCount += OpBNE(); break; }
-                        case 0xd1: { cycleCount += OpCMPIndirectY(); break; }
-                        case 0xd5: { cycleCount += OpCMPZeroX(); break; }
-                        case 0xd6: { cycleCount += OpDECZeroX(); break; }
-                        case 0xd8: { cycleCount += OpCLD(); break; }
-                        case 0xd9: { cycleCount += OpCMPAbsoluteY(); break; }
-                        case 0xdd: { cycleCount += OpCMPAbsoluteX(); break; }
-                        case 0xde: { cycleCount += OpDECAbsoluteX(); break; }
-                        case 0xe0: { cycleCount += OpCPXImmediate(); break; }
-                        case 0xe1: { cycleCount += OpSBCIndirectX(); break; }
-                        case 0xe3: { cycleCount += OpISCIndirectX(); break; }
-                        case 0xe4: { cycleCount += OpCPXZero(); break; }
-                        case 0xe5: { cycleCount += OpSBCZero(); break; }
-                        case 0xe6: { cycleCount += OpINCZero(); break; }
-                        case 0xe7: { cycleCount += OpISCZero(); break; }
-                        case 0xe8: { cycleCount += OpINX(); break; }
-                        case 0xe9: { cycleCount += OpSBCImmediate(); break; }
-                        case 0xec: { cycleCount += OpCPXAbsolute(); break; }
-                        case 0xed: { cycleCount += OpSBCAbsolute(); break; }
-                        case 0xee: { cycleCount += OpINCAbsolute(); break; }
-                        case 0xef: { cycleCount += OpISCAbsolute(); break; }
-                        case 0xf0: { cycleCount += OpBEQ(); break; }
-                        case 0xf1: { cycleCount += OpSBCIndirectY(); break; }
-                        case 0xf2: { cycleCount += OpNOP(); break; }
-                        case 0xf3: { cycleCount += OpISCIndirectY(); break; }
-                        case 0xf5: { cycleCount += OpSBCZeroX(); break; }
-                        case 0xf6: { cycleCount += OpINCZeroX(); break; }
-                        case 0xf7: { cycleCount += OpISCZeroX(); break; }
-                        case 0xf8: { cycleCount += OpSED(); break; }
-                        case 0xf9: { cycleCount += OpSBCAbsoluteY(); break; }
-                        case 0xfa: { cycleCount += OpNOP(); break; }
-                        case 0xfb: { cycleCount += OpISCAbsoluteY(); break; }
-                        case 0xfd: { cycleCount += OpSBCAbsoluteX(); break; }
-                        case 0xfe: { cycleCount += OpINCAbsoluteX(); break; }
-                        case 0xff: { cycleCount += OpISCAbsoluteX(); break; }
-                        default:
-                            throw QString("Invalid instruction %1 previous %2")
-                            .arg(instruction).arg(prevInstruction).toLocal8Bit().data();
-                    }
-                    prevInstruction = instruction;
-                    programCounter++;
-                }
+                overflowTicks_--;
+                return;
             }
-            return count;
+
+            OperationStruct operation_;
+                        
+            unsigned char instruction = memory_->CpuRead(programCounter_);
+            operation_.operation_ = &M6502::OpBRK;
+            operation_.addressMethod_ = &M6502::NullAddress;
+            
+            operation_ = opCodeLookup_[instruction];
+            CallOpMethod(operation_.operation_, operation_.addressMethod_);
+            
+            prevInstruction_ = instruction;
+            programCounter_++;
+
+            overflowTicks_--;
         }
 
-        void M6502::pushStack(unsigned char byte)
+        void M6502::PushStack(unsigned char byte)
         {
-            if (stackPointer <= 255)
+            if (stackPointer_ <= 255)
             {
                 throw "Stack overflow";
             }
-            memory->CpuWrite(stackPointer, byte);
-            stackPointer--;
+            memory_->CpuWrite(stackPointer_, byte);
+            stackPointer_--;
         }
 
-        unsigned char M6502::popStack(void)
+        unsigned char M6502::PopStack(void)
         {
-            if (stackPointer >= 512)
+            if (stackPointer_ >= 512)
             {
                 throw "Stack underflow";
             }
-            stackPointer++;
-            return memory->CpuRead(stackPointer);
+            stackPointer_++;
+            return memory_->CpuRead(stackPointer_);
         }
 
-        void M6502::reset()
+        void M6502::Reset()
         {
-            stackPointer = 0x01ff;
-            unsigned char pcl = memory->CpuRead(0xfffc);
-            unsigned char pch = memory->CpuRead(0xfffd);
-            programCounter = (pch << 8) + pcl;
-            accumulator = 0;
-            registerX = 0;
-            registerY = 0;
-            status.interruptDisable = 1;
+            stackPointer_ = 0x01ff;
+            unsigned char pcl = memory_->CpuRead(0xfffc);
+            unsigned char pch = memory_->CpuRead(0xfffd);
+            programCounter_ = (pch << 8) + pcl;
+            accumulator_ = 0;
+            registerX_ = 0;
+            registerY_ = 0;
+            statusRegister_.interruptDisable = 1;
         }
 
+        uint16_t M6502::NullAddress()
+        {
+            return 0;
+        }
+        unsigned short M6502::ImmediateAddress()
+        {
+            programCounter_++;
+            return programCounter_;
+        }
         unsigned short M6502::ZeroAddress()
         {
-            programCounter++;
-            return memory->CpuRead(programCounter) % 0xFF;
+            programCounter_++;
+            return memory_->CpuRead(programCounter_) % 0xFF;
         }
 
         unsigned short M6502::ZeroXAddress()
         {
-            programCounter++;
-            return (memory->CpuRead(programCounter) + registerX) % 0xFF;
+            overflowTicks_ += 1;
+            programCounter_++;
+            return (memory_->CpuRead(programCounter_) + registerX_) % 0xFF;
         }
         unsigned short M6502::ZeroYAddress()
         {
-            programCounter++;
-            return (memory->CpuRead(programCounter) + registerY) % 0xFF;
+            programCounter_++;
+            return (memory_->CpuRead(programCounter_) + registerY_) % 0xFF;
         }
         unsigned short M6502::AbsoluteAddress()
         {
-            programCounter++;
-            unsigned char loadl = memory->CpuRead(programCounter);
-            programCounter++;
-            unsigned char loadh = memory->CpuRead(programCounter);
+            overflowTicks_ += 1;
+            programCounter_++;
+            unsigned char loadl = memory_->CpuRead(programCounter_);
+            programCounter_++;
+            unsigned char loadh = memory_->CpuRead(programCounter_);
             return (loadh << 8) + loadl;
         }
         unsigned short M6502::AbsoluteXAddress()
         {
-            programCounter++;
-            unsigned char loadl = memory->CpuRead(programCounter);
-            programCounter++;
-            unsigned char loadh = memory->CpuRead(programCounter);
-            return (loadh << 8) + loadl + registerX;
+            overflowTicks_ += 2;
+            programCounter_++;
+            unsigned char loadl = memory_->CpuRead(programCounter_);
+            programCounter_++;
+            unsigned char loadh = memory_->CpuRead(programCounter_);
+            return (loadh << 8) + loadl + registerX_;
         }
         unsigned short M6502::AbsoluteYAddress()
         {
-            programCounter++;
-            unsigned char loadl = memory->CpuRead(programCounter);
-            programCounter++;
-            unsigned char loadh = memory->CpuRead(programCounter);
-            return (loadh << 8) + loadl + registerY;
+            overflowTicks_ += 2;
+            programCounter_++;
+            unsigned char loadl = memory_->CpuRead(programCounter_);
+            programCounter_++;
+            unsigned char loadh = memory_->CpuRead(programCounter_);
+            return (loadh << 8) + loadl + registerY_;
         }
         unsigned short M6502::IndirectAddress()
         {
-            programCounter++;
-            unsigned char loadl = memory->CpuRead(programCounter);
-            programCounter++;
-            unsigned char loadh = memory->CpuRead(programCounter);
+            programCounter_++;
+            unsigned char loadl = memory_->CpuRead(programCounter_);
+            programCounter_++;
+            unsigned char loadh = memory_->CpuRead(programCounter_);
             unsigned char load = (loadh << 8) + loadl;
-            loadl = memory->CpuRead(load);
+            loadl = memory_->CpuRead(load);
             load++;
-            loadh = memory->CpuRead(load);
+            loadh = memory_->CpuRead(load);
             return (loadh << 8) + loadl;
         }
         unsigned short M6502::IndirectXAddress()
         {
-            programCounter++;
-            unsigned char indirect = (memory->CpuRead(programCounter) + registerX) % 0xff;
-            unsigned char loadl = memory->CpuRead(indirect);
+            overflowTicks_ += 3;
+            programCounter_++;
+            unsigned char indirect = (memory_->CpuRead(programCounter_) + registerX_) % 0xff;
+            unsigned char loadl = memory_->CpuRead(indirect);
             indirect++;
-            unsigned char loadh = memory->CpuRead(indirect);
+            unsigned char loadh = memory_->CpuRead(indirect);
             return (loadh << 8) + loadl;
         }
         unsigned short M6502::IndirectYAddress()
         {
-            programCounter++;
-            unsigned char indirect = memory->CpuRead(programCounter) % 0xff;
-            unsigned char loadl = memory->CpuRead(indirect);
+            overflowTicks_ += 3;
+            programCounter_++;
+            unsigned char indirect = memory_->CpuRead(programCounter_) % 0xff;
+            unsigned char loadl = memory_->CpuRead(indirect);
             indirect++;
-            unsigned char loadh = memory->CpuRead(indirect);
+            unsigned char loadh = memory_->CpuRead(indirect);
             unsigned short address = (loadh << 8) + loadl;
-            address += registerY;
+            address += registerY_;
             return address;
-        }
-        unsigned char M6502::readRelative()
-        {
-            programCounter++;
-            return memory->CpuRead(programCounter);
-        }
-        unsigned char M6502::readImmediate()
-        {
-            programCounter++;
-            return memory->CpuRead(programCounter);
-        }
-        unsigned char M6502::readZero()
-        {
-            return memory->CpuRead(ZeroAddress());
-        }
-        unsigned char M6502::readZeroX()
-        {
-            return memory->CpuRead(ZeroXAddress());
-        }
-        unsigned char M6502::readZeroY()
-        {
-            return memory->CpuRead(ZeroYAddress());
-        }
-        unsigned char M6502::readAbsolute()
-        {
-            return memory->CpuRead(AbsoluteAddress());
-        }
-        unsigned char M6502::readAbsoluteX()
-        {
-            return memory->CpuRead(AbsoluteXAddress());
-        }
-        unsigned char M6502::readAbsoluteY()
-        {
-            return memory->CpuRead(AbsoluteYAddress());
-        }
-        unsigned char M6502::readIndirectX()
-        {
-            return memory->CpuRead(IndirectXAddress());
-        }
-        unsigned char M6502::readIndirectY()
-        {
-            return memory->CpuRead(IndirectYAddress());
-        }
-        void M6502::writeZero(unsigned char byte)
-        {
-            memory->CpuWrite(ZeroAddress(), byte);
-        }
-        void M6502::writeZeroX(unsigned char byte)
-        {
-            memory->CpuWrite(ZeroXAddress(), byte);
-        }
-        void M6502::writeZeroY(unsigned char byte)
-        {
-            memory->CpuWrite(ZeroYAddress(), byte);
-        }
-        void M6502::writeAbsolute(unsigned char byte)
-        {
-            memory->CpuWrite(AbsoluteAddress(), byte);
-        }
-        void M6502::writeAbsoluteX(unsigned char byte)
-        {
-            memory->CpuWrite(AbsoluteXAddress(), byte);
-        }
-        void M6502::writeAbsoluteY(unsigned char byte)
-        {
-            memory->CpuWrite(AbsoluteYAddress(), byte);
-        }
-        void M6502::writeIndirectX(unsigned char byte)
-        {
-            memory->CpuWrite(IndirectXAddress(), byte);
-        }
-        void M6502::writeIndirectY(unsigned char byte)
-        {
-            memory->CpuWrite(IndirectYAddress(), byte);
         }
 
         // Load Store operations
-        int M6502::OpLDAImmediate() 
+        void M6502::OpLDA(AddressMethod addressMethod) 
         {
-            accumulator = readImmediate();
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 2;
+            accumulator_ = memory_->CpuRead(CallAddressMethod(addressMethod));
+            statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
+            statusRegister_.zeroFlag = (accumulator_ == 0);
+            overflowTicks_ += 2;
         }
-        int M6502::OpLDAZero()
+        void M6502::OpLDX(AddressMethod addressMethod) 
         {
-            accumulator = readZero();
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 3;
+            registerX_ = memory_->CpuRead(CallAddressMethod(addressMethod));
+            statusRegister_.negativeFlag = (registerX_ & 0x80) > 0;
+            statusRegister_.zeroFlag = (registerX_ == 0);
+            overflowTicks_ += 2;
         }
-        int M6502::OpLDAZeroX()
+        void M6502::OpLDY(AddressMethod addressMethod) 
         {
-            accumulator = readZeroX();
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 4;
+            registerY_ = memory_->CpuRead(CallAddressMethod(addressMethod));
+            statusRegister_.negativeFlag = (registerY_ & 0x80) > 0;
+            statusRegister_.zeroFlag = (registerY_ == 0);
+            overflowTicks_ += 2;
         }
-        int M6502::OpLDAAbsolute() 
+        void M6502::OpSTA(AddressMethod addressMethod)
         {
-            accumulator = readAbsolute();
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 4;
+            memory_->CpuWrite(CallAddressMethod(addressMethod), accumulator_);
+            overflowTicks_ += 3;
         }
-        int M6502::OpLDAAbsoluteX()
+        void M6502::OpSTX(AddressMethod addressMethod)
         {
-            accumulator = readAbsoluteX();
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 4;
+            memory_->CpuWrite(CallAddressMethod(addressMethod), registerX_);
+            overflowTicks_ += 3;
         }
-        int M6502::OpLDAAbsoluteY()
+        void M6502::OpSTY(AddressMethod addressMethod)
         {
-            accumulator = readAbsoluteY();
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 4;
-        }
-        int M6502::OpLDAIndirectX()
-        {
-            accumulator = readIndirectX();
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 6;
-        }
-        int M6502::OpLDAIndirectY()
-        {
-            accumulator = readIndirectY();
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 5;
+            memory_->CpuWrite(CallAddressMethod(addressMethod), registerY_);
+            overflowTicks_ += 3;
         }
 
-        int M6502::OpLDXImmediate() 
-        {
-            registerX = readImmediate();
-            status.negativeFlag = (registerX & 0x80) > 0;
-            status.zeroFlag = (registerX == 0);
-            return 2;    
-        }
-        int M6502::OpLDXZero()
-        {
-            registerX = readZero();
-            status.negativeFlag = (registerX & 0x80) > 0;
-            status.zeroFlag = (registerX == 0);
-            return 3;
-        }
-        int M6502::OpLDXZeroY()
-        {
-            registerX = readZeroY();
-            status.negativeFlag = (registerX & 0x80) > 0;
-            status.zeroFlag = (registerX == 0);
-            return 3;
-        }
-        int M6502::OpLDXAbsolute()
-        {
-            registerX = readAbsolute();
-            status.negativeFlag = (registerX & 0x80) > 0;
-            status.zeroFlag = (registerX == 0);
-            return 4;
-        }
-        int M6502::OpLDXAbsoluteY()
-        {
-            registerX = readAbsoluteY();
-            status.negativeFlag = (registerX & 0x80) > 0;
-            status.zeroFlag = (registerX == 0);
-            return 4;
-        }
-
-        int M6502::OpLDYImmediate()
-        {
-            registerY = readImmediate();
-            status.negativeFlag = (registerY & 0x80) > 0;
-            status.zeroFlag = (registerY == 0);
-            return 2;
-        }
-        int M6502::OpLDYZero()
-        {
-            registerY = readZero();
-            status.negativeFlag = (registerY & 0x80) > 0;
-            status.zeroFlag = (registerY == 0);
-            return 3;
-        }
-        int M6502::OpLDYZeroX()
-        {
-            registerY = readZeroX();
-            status.negativeFlag = (registerY & 0x80) > 0;
-            status.zeroFlag = (registerY == 0);
-            return 4;
-        }
-        int M6502::OpLDYAbsolute()
-        {
-            registerY = readAbsolute();
-            status.negativeFlag = (registerY & 0x80) > 0;
-            status.zeroFlag = (registerY == 0);
-            return 4;
-        }
-        int M6502::OpLDYAbsoluteX()
-        {
-            registerY = readAbsoluteX();
-            status.negativeFlag = (registerY & 0x80) > 0;
-            status.zeroFlag = (registerY == 0);
-            return 4;
-        }
-
-        int M6502::OpSTAZero()
-        {
-            writeZero(accumulator);
-            return 3;
-        }
-        int M6502::OpSTAZeroX()
-        {
-            writeZeroX(accumulator);
-            return 4;
-        }
-        int M6502::OpSTAAbsolute()
-        {
-            writeAbsolute(accumulator);
-            return 4;
-        }
-        int M6502::OpSTAAbsoluteX()
-        {
-            writeAbsoluteX(accumulator);
-            return 5;
-        }
-        int M6502::OpSTAAbsoluteY()
-        {
-            writeAbsoluteY(accumulator);
-            return 5;
-        }
-        int M6502::OpSTAIndirectX()
-        {
-            writeIndirectX(accumulator);
-            return 6;
-        }
-        int M6502::OpSTAIndirectY()
-        {
-            writeIndirectY(accumulator);
-            return 6;
-        }
-            
-        int M6502::OpSTXZero()
-        {
-            writeZero(registerX);
-            return 3;
-        }
-        int M6502::OpSTXZeroY()
-        {
-            writeZeroY(registerX);
-            return 4;
-        }
-        int M6502::OpSTXAbsolute()
-        {
-            writeAbsolute(registerX);
-            return 4;
-        }
-
-        int M6502::OpSTYZero()
-        {
-            writeZero(registerY);
-            return 3;
-        }
-        int M6502::OpSTYZeroX()
-        {
-            writeZeroX(registerY);
-            return 4;
-        }
-        int M6502::OpSTYAbsolute()
-        {
-            writeAbsolute(registerY);
-            return 4;
-        }
-            
         // Register transfers
-        int M6502::OpTAX() 
+        void M6502::OpTAX(AddressMethod addressMethod) 
         {
-            registerX = accumulator;
-            status.negativeFlag = (registerX & 0x80) > 0;
-            status.zeroFlag = (registerX == 0);
-            return 2;
+            registerX_ = accumulator_;
+            statusRegister_.negativeFlag = (registerX_ & 0x80) > 0;
+            statusRegister_.zeroFlag = (registerX_ == 0);
+            overflowTicks_ += 2;
         }
-        int M6502::OpTAY() 
+        void M6502::OpTAY(AddressMethod addressMethod) 
         {
-            registerY = accumulator;
-            status.negativeFlag = (registerY & 0x80) > 0;
-            status.zeroFlag = (registerY == 0);
-            return 2;
+            registerY_ = accumulator_;
+            statusRegister_.negativeFlag = (registerY_ & 0x80) > 0;
+            statusRegister_.zeroFlag = (registerY_ == 0);
+            overflowTicks_ += 2;
         }
-        int M6502::OpTXA() 
+        void M6502::OpTXA(AddressMethod addressMethod) 
         {
-            accumulator = registerX;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 2;
+            accumulator_ = registerX_;
+            statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
+            statusRegister_.zeroFlag = (accumulator_ == 0);
+            overflowTicks_ += 2;
         }
-        int M6502::OpTYA()
+        void M6502::OpTYA(AddressMethod addressMethod)
         {
-            accumulator = registerY;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 2;
+            accumulator_ = registerY_;
+            statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
+            statusRegister_.zeroFlag = (accumulator_ == 0);
+            overflowTicks_ += 2;
         }
 
         // Stack operaions
-        int M6502::OpTSX() 
+        void M6502::OpTSX(AddressMethod addressMethod) 
         {
-            registerX = popStack();
-            status.negativeFlag = (registerX & 0x80) > 0;
-            status.zeroFlag = (registerX == 0);
-            return 2;
+            registerX_ = PopStack();
+            statusRegister_.negativeFlag = (registerX_ & 0x80) > 0;
+            statusRegister_.zeroFlag = (registerX_ == 0);
+            overflowTicks_ += 2;
         }
-        int M6502::OpTXS() 
+        void M6502::OpTXS(AddressMethod addressMethod) 
         {
-            pushStack(registerX);
-            return 2;
+            PushStack(registerX_);
+            overflowTicks_ += 2;
         }
-        int M6502::OpPHA() 
+        void M6502::OpPHA(AddressMethod addressMethod) 
         {
-            pushStack(accumulator);
-            return 3;
+            PushStack(accumulator_);
+            overflowTicks_ += 3;
         }
-        int M6502::OpPHP()
+        void M6502::OpPHP(AddressMethod addressMethod)
         {
-            pushStack(status.reg);
-            status.reg = 0;
-            return 3;
+            PushStack(statusRegister_.register_);
+            statusRegister_.register_ = 0;
+            overflowTicks_ += 3;
         }
-        int M6502::OpPLA()
+        void M6502::OpPLA(AddressMethod addressMethod)
         {
-            accumulator = popStack();
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 4;
+            accumulator_ = PopStack();
+            statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
+            statusRegister_.zeroFlag = (accumulator_ == 0);
+            overflowTicks_ += 4;
         }
-        int M6502::OpPLP()
+        void M6502::OpPLP(AddressMethod addressMethod)
         {
-            status.reg = popStack();
-            return 4;
+            statusRegister_.register_ = PopStack();
+            overflowTicks_ += 4;
         }    
 
         // Logical operations
-        int M6502::OpANDImmediate()
+        void M6502::OpAND(AddressMethod addressMethod)
         {
-            unsigned char byte = readImmediate();
-            accumulator &= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 2;
+            unsigned char byte = memory_->CpuRead(CallAddressMethod(addressMethod));
+            accumulator_ &= byte;
+            statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
+            statusRegister_.zeroFlag = (accumulator_ == 0);
+            overflowTicks_ += 2;
         }
-        int M6502::OpANDZero()
+        void M6502::OpEOR(AddressMethod addressMethod)
         {
-            unsigned char byte = readZero();
-            accumulator &= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 3;
+            unsigned char byte = memory_->CpuRead(CallAddressMethod(addressMethod));
+            accumulator_ ^= byte;
+            statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
+            statusRegister_.zeroFlag = (accumulator_ == 0);
+            overflowTicks_ += 2;
         }
-        int M6502::OpANDZeroX()
+        void M6502::OpORA(AddressMethod addressMethod)
         {
-            unsigned char byte = readZeroX();
-            accumulator &= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 4;
+            unsigned char byte = memory_->CpuRead(CallAddressMethod(addressMethod));
+            accumulator_ |= byte;
+            statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
+            statusRegister_.zeroFlag = (accumulator_ == 0);
+            overflowTicks_ += 2;
         }
-        int M6502::OpANDAbsolute()
+        void M6502::OpBIT(AddressMethod addressMethod)
         {
-            unsigned char byte = readAbsolute();
-            accumulator &= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 4;
+            unsigned char byte = memory_->CpuRead(CallAddressMethod(addressMethod));
+            statusRegister_.zeroFlag = (((byte & accumulator_) & 0xff) > 0);
+            statusRegister_.negativeFlag = (byte & 0x80) > 0;
+            statusRegister_.overflowFlag = (byte & 0x40);
+            overflowTicks_ += 3;
         }
-        int M6502::OpANDAbsoluteX()
-        {
-            unsigned char byte = readAbsoluteX();
-            accumulator &= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 4;
-        }
-        int M6502::OpANDAbsoluteY()
-        {
-            unsigned char byte = readAbsoluteY();
-            accumulator &= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 4;
-        }
-        int M6502::OpANDIndirectX()
-        {
-            unsigned char byte = readIndirectX();
-            accumulator &= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 6;
-        }
-        int M6502::OpANDIndirectY()
-        {
-            unsigned char byte = readIndirectY();
-            accumulator &= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 5;
-        }
-
-        int M6502::OpEORImmediate()
-        {
-            unsigned char byte = readImmediate();
-            accumulator ^= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 2;
-        }
-        int M6502::OpEORZero()
-        {
-            unsigned char byte = readZero();
-            accumulator ^= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 3;
-        }
-        int M6502::OpEORZeroX()
-        {
-            unsigned char byte = readZeroX();
-            accumulator ^= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 4;
-        }
-        int M6502::OpEORAbsolute()
-        {
-            unsigned char byte = readAbsolute();
-            accumulator ^= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 4;
-        }
-        int M6502::OpEORAbsoluteX()
-        {
-            unsigned char byte = readAbsoluteX();
-            accumulator ^= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 4;
-        }
-        int M6502::OpEORAbsoluteY()
-        {
-            unsigned char byte = readAbsoluteY();
-            accumulator ^= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 4;
-        }
-        int M6502::OpEORIndirectX()
-        {
-            unsigned char byte = readIndirectX();
-            accumulator ^= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 6;
-        }
-        int M6502::OpEORIndirectY()
-        {
-            unsigned char byte = readIndirectY();
-            accumulator ^= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 5;
-        }
-
-        int M6502::OpORAImmediate()
-        {
-            unsigned char byte = readImmediate();
-            accumulator |= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 2;    
-        }
-        int M6502::OpORAZero()
-        {
-            unsigned char byte = readZero();
-            accumulator |= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 3;    
-        }
-        int M6502::OpORAZeroX()
-        {
-            unsigned char byte = readZeroX();
-            accumulator |= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 4;    
-        }
-        int M6502::OpORAAbsolute()
-        {
-            unsigned char byte = readAbsolute();
-            accumulator |= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 4;    
-        }
-        int M6502::OpORAAbsoluteX()
-        {
-            unsigned char byte = readAbsoluteX();
-            accumulator |= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 4;    
-        }
-        int M6502::OpORAAbsoluteY()
-        {
-            unsigned char byte = readAbsoluteY();
-            accumulator |= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 4;    
-        }
-        int M6502::OpORAIndirectX()
-        {
-            unsigned char byte = readIndirectX();
-            accumulator |= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 6;
-        }
-        int M6502::OpORAIndirectY()
-        {
-            unsigned char byte = readIndirectY();
-            accumulator |= byte;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 5;
-        }
-            
-        int M6502::OpBITZero()
-        {
-            unsigned char byte = readZero();
-            status.zeroFlag = (((byte & accumulator) & 0xff) > 0);
-            status.negativeFlag = (byte & 0x80) > 0;
-            status.overflowFlag = (byte & 0x40);
-            return 3;
-        }
-        int M6502::OpBITAbsolute()
-        {
-            unsigned char byte = readAbsolute();
-            status.zeroFlag = (((byte & accumulator) & 0xff) > 0);
-            status.negativeFlag = (byte & 0x80) > 0;
-            status.overflowFlag = (byte & 0x40);
-            return 4;
-        }
-
             
         // Arithmetic operations
-        int M6502::OpADCImmediate()
+        void M6502::OpADC(AddressMethod addressMethod)
         {
-            unsigned short byte = readImmediate();
-            unsigned short value = accumulator + byte + status.carryFlag;
-            status.negativeFlag = (value & 0x80) > 0;
-            status.overflowFlag = ~((accumulator^byte)&(accumulator^value) & 0x80);
-            status.carryFlag = (value > 255);
-            status.zeroFlag = ((value & 0x00ff) == 0);
-            accumulator = (value & 0xff);
-            return 3;
+            unsigned short byte = memory_->CpuRead(CallAddressMethod(addressMethod));
+            unsigned short value = accumulator_ + byte + statusRegister_.carryFlag;
+            statusRegister_.negativeFlag = (value & 0x80) > 0;
+            statusRegister_.overflowFlag = ~((accumulator_^byte)&(accumulator_^value) & 0x80);
+            statusRegister_.carryFlag = (value > 255);
+            statusRegister_.zeroFlag = ((value & 0x00ff) == 0);
+            accumulator_ = (value & 0xff);
+            overflowTicks_ += 3;
         }    
-        int M6502::OpADCZero()
+        void M6502::OpSBC(AddressMethod addressMethod)
         {
-            unsigned short byte = readZero();
-            unsigned short value = accumulator + byte + status.carryFlag;
-            status.negativeFlag = (value & 0x80) > 0;
-            status.overflowFlag = ~((accumulator^byte)&(accumulator^value) & 0x80);
-            status.carryFlag = (value > 255);
-            status.zeroFlag = ((value & 0x00ff) == 0);
-            accumulator = (value & 0xff);
-            return 3;
+            unsigned short byte = memory_->CpuRead(CallAddressMethod(addressMethod)) ^ 0x00ff;
+            unsigned short value = accumulator_ + byte + statusRegister_.carryFlag;
+            statusRegister_.negativeFlag = (value & 0x80) > 0;
+            statusRegister_.overflowFlag = ~((accumulator_^byte)&(accumulator_^value) & 0x80);
+            statusRegister_.carryFlag = (value > 255);
+            statusRegister_.zeroFlag = ((value & 0x00ff) == 0);
+            accumulator_ = (value & 0xff);
+            overflowTicks_ += 2;
         }
-        int M6502::OpADCZeroX()
+        void M6502::OpCMP(AddressMethod addressMethod)
         {
-            unsigned short byte = readZeroX();
-            unsigned short value = accumulator + byte + status.carryFlag;
-            status.negativeFlag = (value & 0x80) > 0;
-            status.overflowFlag = ~((accumulator^byte)&(accumulator^value) & 0x80);
-            status.carryFlag = (value > 255);
-            status.zeroFlag = ((value & 0x00ff) == 0);
-            accumulator = (value & 0xff);
-            return 4;
+            unsigned char byte = memory_->CpuRead(CallAddressMethod(addressMethod));
+            statusRegister_.carryFlag = (accumulator_ >= byte);
+            statusRegister_.zeroFlag = (accumulator_ == byte);
+            statusRegister_.negativeFlag = ((accumulator_ - byte) & 0x80) > 0;
+            overflowTicks_ +=  2;
         }
-        int M6502::OpADCAbsolute()
+        void M6502::OpCPX(AddressMethod addressMethod)
         {
-            unsigned short byte = readAbsolute();
-            unsigned short value = accumulator + byte + status.carryFlag;
-            status.negativeFlag = (value & 0x80) > 0;
-            status.overflowFlag = ~((accumulator^byte)&(accumulator^value) & 0x80);
-            status.carryFlag = (value > 255);
-            status.zeroFlag = ((value & 0x00ff) == 0);
-            accumulator = (value & 0xff);
-            return 4;
+            unsigned char byte = memory_->CpuRead(CallAddressMethod(addressMethod));
+            statusRegister_.carryFlag = (registerX_ >= byte);
+            statusRegister_.zeroFlag = (registerX_ == byte);
+            statusRegister_.negativeFlag = ((registerX_ - byte) & 0x80) > 0;
+            overflowTicks_ +=  2;
         }
-        int M6502::OpADCAbsoluteX()
+        void M6502::OpCPY(AddressMethod addressMethod)
         {
-            unsigned short byte = readAbsoluteX();
-            unsigned short value = accumulator + byte + status.carryFlag;
-            status.negativeFlag = (value & 0x80) > 0;
-            status.overflowFlag = ~((accumulator^byte)&(accumulator^value) & 0x80);
-            status.carryFlag = (value > 255);
-            status.zeroFlag = ((value & 0x00ff) == 0);
-            accumulator = (value & 0xff);
-            return 4;
-        }
-        int M6502::OpADCAbsoluteY()
-        {
-            unsigned short byte = readAbsoluteY();
-            unsigned short value = accumulator + byte + status.carryFlag;
-            status.negativeFlag = (value & 0x80) > 0;
-            status.overflowFlag = ~((accumulator^byte)&(accumulator^value) & 0x80);
-            status.carryFlag = (value > 255);
-            status.zeroFlag = ((value & 0x00ff) == 0);
-            accumulator = (value & 0xff);
-            return 4;
-        }
-        int M6502::OpADCIndirectX()
-        {
-            unsigned short byte = readIndirectX();
-            unsigned short value = accumulator + byte + status.carryFlag;
-            status.negativeFlag = (value & 0x80) > 0;
-            status.overflowFlag = ~((accumulator^byte)&(accumulator^value) & 0x80);
-            status.carryFlag = (value > 255);
-            status.zeroFlag = ((value & 0x00ff) == 0);
-            accumulator = (value & 0xff);
-            return 6;
-        }
-        int M6502::OpADCIndirectY()
-        {
-            unsigned short byte = readIndirectY();
-            unsigned short value = accumulator + byte + status.carryFlag;
-            status.negativeFlag = (value & 0x80) > 0;
-            status.overflowFlag = ~((accumulator^byte)&(accumulator^value) & 0x80);
-            status.carryFlag = (value > 255);
-            status.zeroFlag = ((value & 0x00ff) == 0);
-            accumulator = (value & 0xff);
-            return 5;
-        }
-            
-        int M6502::OpSBCImmediate()
-        {
-            unsigned short byte = readImmediate() ^ 0x00ff;
-            unsigned short value = accumulator + byte + status.carryFlag;
-            status.negativeFlag = (value & 0x80) > 0;
-            status.overflowFlag = ~((accumulator^byte)&(accumulator^value) & 0x80);
-            status.carryFlag = (value > 255);
-            status.zeroFlag = ((value & 0x00ff) == 0);
-            accumulator = (value & 0xff);
-            return 2;
-        }
-        int M6502::OpSBCZero()
-        {
-            unsigned short byte = readZero() ^ 0x00ff;
-            unsigned short value = accumulator + byte + status.carryFlag;
-            status.negativeFlag = (value & 0x80) > 0;
-            status.overflowFlag = ~((accumulator^byte)&(accumulator^value) & 0x80);
-            status.carryFlag = (value > 255);
-            status.zeroFlag = ((value & 0x00ff) == 0);
-            accumulator = (value & 0xff);
-            return 3;
-        }
-        int M6502::OpSBCZeroX()
-        {
-            unsigned short byte = readZeroX() ^ 0x00ff;
-            unsigned short value = accumulator + byte + status.carryFlag;
-            status.negativeFlag = (value & 0x80) > 0;
-            status.overflowFlag = ~((accumulator^byte)&(accumulator^value) & 0x80);
-            status.carryFlag = (value > 255);
-            status.zeroFlag = ((value & 0x00ff) == 0);
-            accumulator = (value & 0xff);
-            return 4;
-        }
-        int M6502::OpSBCAbsolute()
-        {
-            unsigned short byte = readAbsolute() ^ 0x00ff;
-            unsigned short value = accumulator + byte + status.carryFlag;
-            status.negativeFlag = (value & 0x80) > 0;
-            status.overflowFlag = ~((accumulator^byte)&(accumulator^value) & 0x80);
-            status.carryFlag = (value > 255);
-            status.zeroFlag = ((value & 0x00ff) == 0);
-            accumulator = (value & 0xff);
-            return 4;
-        }
-        int M6502::OpSBCAbsoluteX()
-        {
-            unsigned short byte = readAbsoluteX() ^ 0x00ff;
-            unsigned short value = accumulator + byte + status.carryFlag;
-            status.negativeFlag = (value & 0x80) > 0;
-            status.overflowFlag = ~((accumulator^byte)&(accumulator^value) & 0x80);
-            status.carryFlag = (value > 255);
-            status.zeroFlag = ((value & 0x00ff) == 0);
-            accumulator = (value & 0xff);
-            return 4;
-        }
-        int M6502::OpSBCAbsoluteY()
-        {
-            unsigned short byte = readAbsoluteY() ^ 0x00ff;
-            unsigned short value = accumulator + byte + status.carryFlag;
-            status.negativeFlag = (value & 0x80) > 0;
-            status.overflowFlag = ~((accumulator^byte)&(accumulator^value) & 0x80);
-            status.carryFlag = (value > 255);
-            status.zeroFlag = ((value & 0x00ff) == 0);
-            accumulator = (value & 0xff);
-            return 4;
-        }
-        int M6502::OpSBCIndirectX()
-        {
-            unsigned short byte = readIndirectX() ^ 0x00ff;
-            unsigned short value = accumulator + byte + status.carryFlag;
-            status.negativeFlag = (value & 0x80) > 0;
-            status.overflowFlag = ~((accumulator^byte)&(accumulator^value) & 0x80);
-            status.carryFlag = (value > 255);
-            status.zeroFlag = ((value & 0x00ff) == 0);
-            accumulator = (value & 0xff);
-            return 6;
-        }
-        int M6502::OpSBCIndirectY()
-        {
-            unsigned short byte = readIndirectY() ^ 0x00ff;
-            unsigned short value = accumulator + byte + status.carryFlag;
-            status.negativeFlag = (value & 0x80) > 0;
-            status.overflowFlag = ~((accumulator^byte)&(accumulator^value) & 0x80);
-            status.carryFlag = (value > 255);
-            status.zeroFlag = ((value & 0x00ff) == 0);
-            accumulator = (value & 0xff);
-            return 5;
-        }
-            
-        int M6502::OpCMPImmediate()
-        {
-            unsigned char byte = readImmediate();
-            status.carryFlag = (accumulator >= byte);
-            status.zeroFlag = (accumulator == byte);
-            status.negativeFlag = ((accumulator - byte) & 0x80) > 0;
-            return 2;
-        }
-        int M6502::OpCMPZero()
-        {
-            unsigned char byte = readZero();
-            status.carryFlag = (accumulator >= byte);
-            status.zeroFlag = (accumulator == byte);
-            status.negativeFlag = ((accumulator - byte) & 0x80) > 0;
-            return 3;
-        }
-        int M6502::OpCMPZeroX()
-        {
-            unsigned char byte = readZeroX();
-            status.carryFlag = (accumulator >= byte);
-            status.zeroFlag = (accumulator == byte);
-            status.negativeFlag = ((accumulator - byte) & 0x80) > 0;
-            return 4;
-        }
-        int M6502::OpCMPAbsolute()
-        {
-            unsigned char byte = readAbsolute();
-            status.carryFlag = (accumulator >= byte);
-            status.zeroFlag = (accumulator == byte);
-            status.negativeFlag = ((accumulator - byte) & 0x80) > 0;
-            return 4;
-        }
-        int M6502::OpCMPAbsoluteX()
-        {
-            unsigned char byte = readAbsoluteX();
-            status.carryFlag = (accumulator >= byte);
-            status.zeroFlag = (accumulator == byte);
-            status.negativeFlag = ((accumulator - byte) & 0x80) > 0;
-            return 4;
-        }
-        int M6502::OpCMPAbsoluteY()
-        {
-            unsigned char byte = readAbsoluteY();
-            status.carryFlag = (accumulator >= byte);
-            status.zeroFlag = (accumulator == byte);
-            status.negativeFlag = ((accumulator - byte) & 0x80) > 0;
-            return 4;
-        }
-        int M6502::OpCMPIndirectX()
-        {
-            unsigned char byte = readIndirectX();
-            status.carryFlag = (accumulator >= byte);
-            status.zeroFlag = (accumulator == byte);
-            status.negativeFlag = ((accumulator - byte) & 0x80) > 0;
-            return 6;
-        }
-        int M6502::OpCMPIndirectY()
-        {
-            unsigned char byte = readIndirectY();
-            status.carryFlag = (accumulator >= byte);
-            status.zeroFlag = (accumulator == byte);
-            status.negativeFlag = ((accumulator - byte) & 0x80) > 0;
-            return 5;
-        }
-            
-        int M6502::OpCPXImmediate()
-        {
-            unsigned char byte = readImmediate();
-            status.carryFlag = (registerX >= byte);
-            status.zeroFlag = (registerX == byte);
-            status.negativeFlag = ((registerX - byte) & 0x80) > 0;
-            return 2;
-        }
-        int M6502::OpCPXZero()
-        {
-            unsigned char byte = readZero();
-            status.carryFlag = (registerX >= byte);
-            status.zeroFlag = (registerX == byte);
-            status.negativeFlag = ((registerX - byte) & 0x80) > 0;
-            return 3;
-        }
-        int M6502::OpCPXAbsolute()
-        {
-            unsigned char byte = readAbsolute();
-            status.carryFlag = (registerX >= byte);
-            status.zeroFlag = (registerX == byte);
-            status.negativeFlag = ((registerX - byte) & 0x80) > 0;
-            return 4;
-        }
-            
-        int M6502::OpCPYImmediate()
-        {
-            unsigned char byte = readImmediate();
-            status.carryFlag = (registerY >= byte);
-            status.zeroFlag = (registerY == byte);
-            status.negativeFlag = ((registerY - byte) & 0x80) > 0;
-            return 2;
-        }
-        int M6502::OpCPYZero()
-        {
-            unsigned char byte = readZero();
-            status.carryFlag = (registerY >= byte);
-            status.zeroFlag = (registerY == byte);
-            status.negativeFlag = ((registerY - byte) & 0x80) > 0;
-            return 3;
-        }
-        int M6502::OpCPYAbsolute()
-        {
-            unsigned char byte = readAbsolute();
-            status.carryFlag = (registerY >= byte);
-            status.zeroFlag = (registerY == byte);
-            status.negativeFlag = ((registerY - byte) & 0x80) > 0;
-            return 4;
+            unsigned char byte = memory_->CpuRead(CallAddressMethod(addressMethod));
+            statusRegister_.carryFlag = (registerY_ >= byte);
+            statusRegister_.zeroFlag = (registerY_ == byte);
+            statusRegister_.negativeFlag = ((registerY_ - byte) & 0x80) > 0;
+            overflowTicks_ += 2;
         }
 
         // Increment and decrement operations
-        int M6502::OpINCZero()
+        void M6502::OpINC(AddressMethod addressMethod)
         {
-            unsigned short address = ZeroAddress();
-            unsigned char byte = memory->CpuRead(address);
+            unsigned short address = CallAddressMethod(addressMethod);
+            unsigned char byte = memory_->CpuRead(address);
             byte++;
-            memory->CpuWrite(address, byte);
-            status.zeroFlag = (byte == 0);
-            status.negativeFlag = (byte & 0x80) > 0;
-            return 5;
+            memory_->CpuWrite(address, byte);
+            statusRegister_.zeroFlag = (byte == 0);
+            statusRegister_.negativeFlag = (byte & 0x80) > 0;
+            overflowTicks_ += 5;
         }
-        int M6502::OpINCZeroX()
+        void M6502::OpINX(AddressMethod addressMethod)
         {
-            unsigned short address = ZeroXAddress();
-            unsigned char byte = memory->CpuRead(address);
-            byte++;
-            memory->CpuWrite(address, byte);
-            status.zeroFlag = (byte == 0);
-            status.negativeFlag = (byte & 0x80) > 0;
-            return 6;
+            registerX_++;
+            statusRegister_.zeroFlag = (registerX_ == 0);
+            statusRegister_.negativeFlag = (registerX_ & 0x80) > 0;
+            overflowTicks_ += 2;
         }
-        int M6502::OpINCAbsolute()
+        void M6502::OpINY(AddressMethod addressMethod)
         {
-            unsigned short address = AbsoluteAddress();
-            unsigned char byte = memory->CpuRead(address);
-            byte++;
-            memory->CpuWrite(address, byte);
-            status.zeroFlag = (byte == 0);
-            status.negativeFlag = (byte & 0x80) > 0;
-            return 6;
+            registerY_++;
+            statusRegister_.zeroFlag = (registerY_ == 0);
+            statusRegister_.negativeFlag = (registerY_ & 0x80) > 0;
+            overflowTicks_ += 2;
         }
-        int M6502::OpINCAbsoluteX()
+        void M6502::OpDEC(AddressMethod addressMethod) 
         {
-            unsigned short address = AbsoluteXAddress();
-            unsigned char byte = memory->CpuRead(address);
-            byte++;
-            memory->CpuWrite(address, byte);
-            status.zeroFlag = (byte == 0);
-            status.negativeFlag = (byte & 0x80) > 0;
-            return 7;
-        }
-        int M6502::OpINX()
-        {
-            registerX++;
-            status.zeroFlag = (registerX == 0);
-            status.negativeFlag = (registerX & 0x80) > 0;
-            return 2;
-        }
-        int M6502::OpINY()
-        {
-            registerY++;
-            status.zeroFlag = (registerY == 0);
-            status.negativeFlag = (registerY & 0x80) > 0;
-            return 2;
-        }
-        int M6502::OpDECZero() 
-        {
-            unsigned short address = ZeroAddress();
-            unsigned char byte = memory->CpuRead(address);
+            unsigned short address = CallAddressMethod(addressMethod);
+            unsigned char byte = memory_->CpuRead(address);
             byte--;
-            status.zeroFlag = (byte == 0);
-            status.negativeFlag = (byte & 0x80) > 0;
-            memory->CpuWrite(address, byte);
-            return 5;
+            statusRegister_.zeroFlag = (byte == 0);
+            statusRegister_.negativeFlag = (byte & 0x80) > 0;
+            memory_->CpuWrite(address, byte);
+            overflowTicks_ += 5;
         }
-        int M6502::OpDECZeroX() 
+        void M6502::OpDEX(AddressMethod addressMethod)
         {
-            unsigned short address = ZeroXAddress();
-            unsigned char byte = memory->CpuRead(address);
-            byte--;
-            status.zeroFlag = (byte == 0);
-            status.negativeFlag = (byte & 0x80) > 0;
-            memory->CpuWrite(address, byte);
-            return 6;
+            registerX_--;
+            statusRegister_.zeroFlag = (registerX_ == 0);
+            statusRegister_.negativeFlag = (registerX_ & 0x80) > 0;
+            overflowTicks_ += 2;
         }
-        int M6502::OpDECAbsolute()
+        void M6502::OpDEY(AddressMethod addressMethod) 
         {
-            unsigned short address = AbsoluteAddress();
-            unsigned char byte = memory->CpuRead(address);
-            byte--;
-            status.zeroFlag = (byte == 0);
-            status.negativeFlag = (byte & 0x80) > 0;
-            memory->CpuWrite(address, byte);
-            return 6;
-        }
-        int M6502::OpDECAbsoluteX()
-        {
-            unsigned short address = AbsoluteXAddress();
-            unsigned char byte = memory->CpuRead(address);
-            byte--;
-            status.zeroFlag = (byte == 0);
-            status.negativeFlag = (byte & 0x80) > 0;
-            memory->CpuWrite(address, byte);
-            return 7;
-        }
-        int M6502::OpDEX()
-        {
-            registerX--;
-            status.zeroFlag = (registerX == 0);
-            status.negativeFlag = (registerX & 0x80) > 0;
-            return 2;
-        }
-        int M6502::OpDEY() 
-        {
-            registerY--;
-            status.zeroFlag = (registerY == 0);
-            status.negativeFlag = (registerY & 0x80) > 0;
-            return 2;
+            registerY_--;
+            statusRegister_.zeroFlag = (registerY_ == 0);
+            statusRegister_.negativeFlag = (registerY_ & 0x80) > 0;
+            overflowTicks_ += 2;
         }
 
         // Shift operations
-        int M6502::OpASLAccumlator()
+        void M6502::OpASLAccumlator(AddressMethod addressMethod)
         {
-            status.carryFlag = (accumulator & 0x80) > 0;
-            accumulator = accumulator << 1;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 2;
+            statusRegister_.carryFlag = (accumulator_ & 0x80) > 0;
+            accumulator_ = accumulator_ << 1;
+            statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
+            statusRegister_.zeroFlag = (accumulator_ == 0);
+            overflowTicks_ += 2;
         }
-        int M6502::OpASLZero()
+        void M6502::OpASL(AddressMethod addressMethod)
         {
-            unsigned char address = ZeroAddress();
-            unsigned char byte = memory->CpuRead(address);
-            status.carryFlag = (byte & 0x80) > 0;
+            unsigned char address = CallAddressMethod(addressMethod);
+            unsigned char byte = memory_->CpuRead(address);
+            statusRegister_.carryFlag = (byte & 0x80) > 0;
             byte = byte << 1;
-            status.negativeFlag = (byte & 0x80) > 0;
-            status.zeroFlag = (byte == 0);
-            memory->CpuWrite(address, byte);
-            return 5;
+            statusRegister_.negativeFlag = (byte & 0x80) > 0;
+            statusRegister_.zeroFlag = (byte == 0);
+            memory_->CpuWrite(address, byte);
+            overflowTicks_ += 5;
         }    
-        int M6502::OpASLZeroX()
-        {
-            unsigned char address = ZeroXAddress();
-            unsigned char byte = memory->CpuRead(address);
-            status.carryFlag = (byte & 0x80) > 0;
-            byte = byte << 1;
-            status.negativeFlag = (byte & 0x80) > 0;
-            status.zeroFlag = (byte == 0);
-            memory->CpuWrite(address, byte);
-            return 6;
-        }    
-        int M6502::OpASLAbsolute()
-        {
-            unsigned char address = AbsoluteAddress();
-            unsigned char byte = memory->CpuRead(address);
-            status.carryFlag = (byte & 0x80) > 0;
-            byte = byte << 1;
-            status.negativeFlag = (byte & 0x80) > 0;
-            status.zeroFlag = (byte == 0);
-            memory->CpuWrite(address, byte);
-            return 6;
-        }
-        int M6502::OpASLAbsoluteX()
-        {
-            unsigned char address = AbsoluteXAddress();
-            unsigned char byte = memory->CpuRead(address);
-            status.carryFlag = (byte & 0x80) > 0;
-            byte = byte << 1;
-            status.negativeFlag = (byte & 0x80) > 0;
-            status.zeroFlag = (byte == 0);
-            memory->CpuWrite(address, byte);
-            return 7;
-        }    
-            
-        int M6502::OpLSRAccululator()
-        {
-            status.carryFlag = (accumulator & 0x01) > 0;
-            accumulator = accumulator >> 1;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            return 2;    
-        }
-        int M6502::OpLSRZero()
-        {
-            unsigned short address = ZeroAddress();
-            unsigned char byte = memory->CpuRead(address);
-            status.carryFlag = (byte & 0x01) > 0;
-            byte = byte >> 1;
-            status.negativeFlag = (byte & 0x80) > 0;
-            status.zeroFlag = (byte == 0);
-            memory->CpuWrite(address, byte);
-            return 5;    
-        }
-        int M6502::OpLSRZeroX()
-        {
-            unsigned short address = ZeroXAddress();
-            unsigned char byte = memory->CpuRead(address);
-            status.carryFlag = (byte & 0x01) > 0;
-            byte = byte >> 1;
-            status.negativeFlag = (byte & 0x80) > 0;
-            status.zeroFlag = (byte == 0);
-            memory->CpuWrite(address, byte);
-            return 6;    
-        }
-        int M6502::OpLSRAbsolute()
-        {
-            unsigned short address = AbsoluteAddress();
-            unsigned char byte = memory->CpuRead(address);
-            status.carryFlag = (byte & 0x01) > 0;
-            byte = byte >> 1;
-            status.negativeFlag = (byte & 0x80) > 0;
-            status.zeroFlag = (byte == 0);
-            memory->CpuWrite(address, byte);
-            return 6;    
-        }
-        int M6502::OpLSRAbsoluteX()
-        {
-            unsigned short address = AbsoluteXAddress();
-            unsigned char byte = memory->CpuRead(address);
-            status.carryFlag = (byte & 0x01) > 0;
-            byte = byte >> 1;
-            status.negativeFlag = (byte & 0x80) > 0;
-            status.zeroFlag = (byte == 0);
-            memory->CpuWrite(address, byte);
-            return 7;    
-        }
 
-        int M6502::OpROLAccululator()
+        void M6502::OpLSR(AddressMethod addressMethod)
         {
-            unsigned char newCarry = accumulator & 0x80;
-            accumulator = (accumulator << 1) + status.carryFlag;
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            status.carryFlag = newCarry > 0;
-            return 2;
+            unsigned short address = CallAddressMethod(addressMethod);
+            unsigned char byte = memory_->CpuRead(address);
+            statusRegister_.carryFlag = (byte & 0x01) > 0;
+            byte = byte >> 1;
+            statusRegister_.negativeFlag = (byte & 0x80) > 0;
+            statusRegister_.zeroFlag = (byte == 0);
+            memory_->CpuWrite(address, byte);
+            overflowTicks_ += 5;    
         }
-        int M6502::OpROLZero()
+        void M6502::OpLSRAccululator(AddressMethod addressMethod)
         {
-            unsigned short address = ZeroAddress();
-            unsigned char byte = memory->CpuRead(address);
-            unsigned char newCarry = byte & 0x80;
-            byte = (byte << 1) + status.carryFlag;
-            status.negativeFlag = (byte & 0x80) > 0;
-            status.zeroFlag = (byte == 0);
-            status.carryFlag = newCarry > 0;
-            memory->CpuWrite(address, byte);
-            return 5;
+            statusRegister_.carryFlag = (accumulator_ & 0x01) > 0;
+            accumulator_ = accumulator_ >> 1;
+            statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
+            statusRegister_.zeroFlag = (accumulator_ == 0);
+            overflowTicks_ += 2;    
         }
-        int M6502::OpROLZeroX()
+        void M6502::OpROLAccululator(AddressMethod addressMethod)
         {
-            unsigned short address = ZeroXAddress();
-            unsigned char byte = memory->CpuRead(address);
-            unsigned char newCarry = byte & 0x80;
-            byte = (byte << 1) + status.carryFlag;
-            status.negativeFlag = (byte & 0x80) > 0;
-            status.zeroFlag = (byte == 0);
-            status.carryFlag = newCarry > 0;
-            memory->CpuWrite(address, byte);
-            return 6;
+            unsigned char newCarry = accumulator_ & 0x80;
+            accumulator_ = (accumulator_ << 1) + statusRegister_.carryFlag;
+            statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
+            statusRegister_.zeroFlag = (accumulator_ == 0);
+            statusRegister_.carryFlag = newCarry > 0;
+            overflowTicks_ += 2;
         }
-        int M6502::OpROLAbsolute()
+        void M6502::OpROL(AddressMethod addressMethod)
         {
-            unsigned short address = AbsoluteAddress();
-            unsigned char byte = memory->CpuRead(address);
+            unsigned short address = CallAddressMethod(addressMethod);
+            unsigned char byte = memory_->CpuRead(address);
             unsigned char newCarry = byte & 0x80;
-            byte = (byte << 1) + status.carryFlag;
-            status.negativeFlag = (byte & 0x80) > 0;
-            status.zeroFlag = (byte == 0);
-            status.carryFlag = newCarry > 0;
-            memory->CpuWrite(address, byte);
-            return 6;
-        }
-        int M6502::OpROLAbsoluteX()
-        {
-            unsigned short address = AbsoluteXAddress();
-            unsigned char byte = memory->CpuRead(address);
-            unsigned char newCarry = byte & 0x80;
-            byte = (byte << 1) + status.carryFlag;
-            status.negativeFlag = (byte & 0x80) > 0;
-            status.zeroFlag = (byte == 0);
-            status.carryFlag = newCarry > 0;
-            memory->CpuWrite(address, byte);
-            return 7;
+            byte = (byte << 1) + statusRegister_.carryFlag;
+            statusRegister_.negativeFlag = (byte & 0x80) > 0;
+            statusRegister_.zeroFlag = (byte == 0);
+            statusRegister_.carryFlag = newCarry > 0;
+            memory_->CpuWrite(address, byte);
+            overflowTicks_ += 5;
         }
             
-        int M6502::OpRORAccululator()
+        void M6502::OpROR(AddressMethod addressMethod)
         {
-            unsigned char newCarry = accumulator & 0x01;
-            accumulator = (accumulator >> 1) + (status.carryFlag << 7);
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            status.zeroFlag = (accumulator == 0);
-            status.carryFlag = newCarry > 0;
-            return 2;
-        }
-        int M6502::OpRORZero()
-        {
-            unsigned short address = ZeroAddress();
-            unsigned char byte = memory->CpuRead(address);
+            unsigned short address = CallAddressMethod(addressMethod);
+            unsigned char byte = memory_->CpuRead(address);
             unsigned char newCarry = byte & 0x01;
-            byte = (byte >> 1) + (status.carryFlag << 7);
-            status.negativeFlag = (byte & 0x80) > 0;
-            status.zeroFlag = (byte == 0);
-            status.carryFlag = newCarry > 0;
-            memory->CpuWrite(address, byte);
-            return 5;
+            byte = (byte >> 1) + (statusRegister_.carryFlag << 7);
+            statusRegister_.negativeFlag = (byte & 0x80) > 0;
+            statusRegister_.zeroFlag = (byte == 0);
+            statusRegister_.carryFlag = newCarry > 0;
+            memory_->CpuWrite(address, byte);
+            overflowTicks_ += 5;
         }
-        int M6502::OpRORZeroX()
+        void M6502::OpRORAccumulator(AddressMethod addressMethod)
         {
-            unsigned short address = ZeroXAddress();
-            unsigned char byte = memory->CpuRead(address);
-            unsigned char newCarry = byte & 0x01;
-            byte = (byte >> 1) + (status.carryFlag << 7);
-            status.negativeFlag = (byte & 0x80) > 0;
-            status.zeroFlag = (byte == 0);
-            status.carryFlag = newCarry > 0;
-            memory->CpuWrite(address, byte);
-            return 6;
-        }
-        int M6502::OpRORAbsolute()
-        {
-            unsigned short address = AbsoluteAddress();
-            unsigned char byte = memory->CpuRead(address);
-            unsigned char newCarry = byte & 0x01;
-            byte = (byte >> 1) + (status.carryFlag << 7);
-            status.negativeFlag = (byte & 0x80) > 0;
-            status.zeroFlag = (byte == 0);
-            status.carryFlag = newCarry > 0;
-            memory->CpuWrite(address, byte);
-            return 6;
-        }
-        int M6502::OpRORAbsoluteX()
-        {
-            unsigned short address = AbsoluteXAddress();
-            unsigned char byte = memory->CpuRead(address);
-            unsigned char newCarry = byte & 0x01;
-            byte = (byte >> 1) + (status.carryFlag << 7);
-            status.negativeFlag = (byte & 0x80) > 0;
-            status.zeroFlag = (byte == 0);
-            status.carryFlag = newCarry > 0;
-            memory->CpuWrite(address, byte);
-            return 7;
+            unsigned char newCarry = accumulator_ & 0x01;
+            accumulator_ = (accumulator_ >> 1) + (statusRegister_.carryFlag << 7);
+            statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
+            statusRegister_.zeroFlag = (accumulator_ == 0);
+            statusRegister_.carryFlag = newCarry > 0;
+            overflowTicks_ += 2;
         }
 
         // Jumps and Call operaions
-        int M6502::OpJMPAbsolute()
+        void M6502::OpJMP(AddressMethod addressMethod)
         {
-            unsigned short address = AbsoluteAddress();
-            programCounter = address-1;
-            return 3;
+            unsigned short address = CallAddressMethod(addressMethod);
+            programCounter_ = address-1;
+            overflowTicks_ += 3;
         }
-        int M6502::OpJMPIndirect()
+        void M6502::OpJSR(AddressMethod addressMethod) 
         {
-            unsigned short address = IndirectAddress();
-            programCounter = address-1;
-            return 5;
+            unsigned short jumpAddress = CallAddressMethod(addressMethod);
+            PushStack((programCounter_ & 0xff00) >> 8);
+            PushStack(programCounter_ & 0xff);
+            programCounter_ = jumpAddress - 1;
+            overflowTicks_ += 6;
         }
-
-        int M6502::OpJSR() 
+        void M6502::OpRTS(AddressMethod addressMethod) 
         {
-            unsigned short jumpAddress = AbsoluteAddress();
-            pushStack((programCounter & 0xff00) >> 8);
-            pushStack(programCounter & 0xff);
-            programCounter = jumpAddress - 1;
-            return 6;
-        }
-        int M6502::OpRTS() 
-        {
-            unsigned char loadl = popStack();
-            unsigned char loadh = popStack();
+            unsigned char loadl = PopStack();
+            unsigned char loadh = PopStack();
             unsigned short load = (loadh << 8) + loadl;
-            programCounter = load;
-            return 6;
+            programCounter_ = load;
+            overflowTicks_ += 6;
         }
 
         // branch operations
-        int M6502::OpBCC() 
+        void M6502::OpBCC(AddressMethod addressMethod) 
         {
-            char relativeAddress = readRelative();
-            if (status.carryFlag == false)
+            char relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
+            if (statusRegister_.carryFlag == false)
             {
-                programCounter += relativeAddress;
-                return 3;
+                programCounter_ += relativeAddress;
+                overflowTicks_ += 3;
             }
-            return 2;
+            overflowTicks_ += 2;
         }
-        int M6502::OpBCS() 
+        void M6502::OpBCS(AddressMethod addressMethod) 
         {
-            char relativeAddress = readRelative();
-            if (status.carryFlag == true)
+            char relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
+            if (statusRegister_.carryFlag == true)
             {
-                programCounter += relativeAddress;
-                return 3;
+                programCounter_ += relativeAddress;
+                overflowTicks_ += 3;
             }
-            return 2;
+            overflowTicks_ += 2;
         }
-        int M6502::OpBEQ() 
+        void M6502::OpBEQ(AddressMethod addressMethod) 
         {
-            char relativeAddress = readRelative();
-            if (status.zeroFlag == true)
+            char relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
+            if (statusRegister_.zeroFlag == true)
             {
-                programCounter += relativeAddress;
-                return 3;
+                programCounter_ += relativeAddress;
+                overflowTicks_ += 3;
             }
-            return 2;
+            overflowTicks_ += 2;
         }
-        int M6502::OpBMI() 
+        void M6502::OpBMI(AddressMethod addressMethod) 
         {
-            char relativeAddress = readRelative();
-            if (status.negativeFlag == true)
+            char relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
+            if (statusRegister_.negativeFlag == true)
             {
-                programCounter += relativeAddress;
-                return 3;
+                programCounter_ += relativeAddress;
+                overflowTicks_ += 3;
             }
-            return 2;
+            overflowTicks_ += 2;
         }    
-        int M6502::OpBNE() 
+        void M6502::OpBNE(AddressMethod addressMethod) 
         { 
-            char relativeAddress = readRelative();
-            if (status.zeroFlag == false)
+            char relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
+            if (statusRegister_.zeroFlag == false)
             {
-                programCounter += relativeAddress;
-                return 3;
+                programCounter_ += relativeAddress;
+                overflowTicks_ += 3;
             }
-            return 2;
+            overflowTicks_ += 2;
         }
-        int M6502::OpBPL() 
+        void M6502::OpBPL(AddressMethod addressMethod) 
         {
-            char relativeAddress = readRelative();
-            if (status.negativeFlag == false)
+            char relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
+            if (statusRegister_.negativeFlag == false)
             {
-                programCounter += relativeAddress;
-                return 3;
+                programCounter_ += relativeAddress;
+                overflowTicks_ += 3;
             }
-            return 2;
+            overflowTicks_ += 2;
         }
-        int M6502::OpBVC() 
+        void M6502::OpBVC(AddressMethod addressMethod) 
         {
-            char relativeAddress = readRelative();
-            if (status.overflowFlag == false)
+            char relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
+            if (statusRegister_.overflowFlag == false)
             {
-                programCounter += relativeAddress;
-                return 3;
+                programCounter_ += relativeAddress;
+                overflowTicks_ += 3;
             }
-            return 2;
+            overflowTicks_ += 2;
         }
-        int M6502::OpBVS() 
+        void M6502::OpBVS(AddressMethod addressMethod) 
         {
-            char relativeAddress = readRelative();
-            if (status.overflowFlag == true)
+            char relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
+            if (statusRegister_.overflowFlag == true)
             {
-                programCounter += relativeAddress;
-                return 3;
+                programCounter_ += relativeAddress;
+                overflowTicks_ += 3;
             }
-            return 2;
+            overflowTicks_ += 2;
         }
 
         // Status Flag operations
-        int M6502::OpCLC() 
+        void M6502::OpCLC(AddressMethod addressMethod) 
         {
-            status.carryFlag = 0;
-            return 2;
+            statusRegister_.carryFlag = 0;
+            overflowTicks_ += 2;
         }
-        int M6502::OpCLD() 
+        void M6502::OpCLD(AddressMethod addressMethod) 
         {
-            status.decimalMode = 0;
-            return 2;
+            statusRegister_.decimalMode = 0;
+            overflowTicks_ += 2;
         }
-        int M6502::OpCLI() 
+        void M6502::OpCLI(AddressMethod addressMethod) 
         {
-            status.interruptDisable = 0;
-            return 2;
+            statusRegister_.interruptDisable = 0;
+            overflowTicks_ += 2;
         }
-        int M6502::OpCLV() 
+        void M6502::OpCLV(AddressMethod addressMethod) 
         {
-            status.overflowFlag = 0;
-            return 2;
+            statusRegister_.overflowFlag = 0;
+            overflowTicks_ += 2;
         }
-        int M6502::OpSEC() 
+        void M6502::OpSEC(AddressMethod addressMethod) 
         {
-            status.carryFlag = 1;
-            return 2;
+            statusRegister_.carryFlag = 1;
+            overflowTicks_ += 2;
         }
-        int M6502::OpSED() 
+        void M6502::OpSED(AddressMethod addressMethod) 
         {
-            status.decimalMode = 1;
-            return 2;
+            statusRegister_.decimalMode = 1;
+            overflowTicks_ += 2;
         }
-        int M6502::OpSEI() 
+        void M6502::OpSEI(AddressMethod addressMethod) 
         {
-            status.interruptDisable = 1;
-            return 2;    
+            statusRegister_.interruptDisable = 1;
+            overflowTicks_ += 2;    
         }
 
         // System operations
-        int M6502::OpBRK() { throw "Not implemented"; }
-
-        int M6502::OpNOP() 
+        void M6502::OpBRK(AddressMethod addressMethod) { throw "Not implemented"; }
+        void M6502::OpNOP(AddressMethod addressMethod) 
         {
-            return 2;
+            overflowTicks_ += 2;
         }
-
-        int M6502::OpRTI()
+        void M6502::OpRTI(AddressMethod addressMethod)
         {
-            OpPLP();
-            unsigned char loadl = popStack();
-            unsigned char loadh = popStack();
-            programCounter = (loadh << 8) + loadl;
-            return 6;
-        }
-
-        int M6502::OpISCZero()
-        {
-            unsigned short address = ZeroAddress();
-            unsigned char byte = memory->CpuRead(address);
-            byte++;
-            memory->CpuWrite(address, byte);
-            accumulator -= byte;
-            status.zeroFlag = (accumulator == 0);
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            return 5;
-        }
-        int M6502::OpISCZeroX()
-        {
-            unsigned short address = ZeroXAddress();
-            unsigned char byte = memory->CpuRead(address);
-            byte++;
-            memory->CpuWrite(address, byte);
-            accumulator -= byte;
-            status.zeroFlag = (accumulator == 0);
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            return 6;
-        }
-        int M6502::OpISCAbsolute()
-        {
-            unsigned short address = AbsoluteAddress();
-            unsigned char byte = memory->CpuRead(address);
-            byte++;
-            memory->CpuWrite(address, byte);
-            accumulator -= byte;
-            status.zeroFlag = (accumulator == 0);
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            return 6;
-        }
-        int M6502::OpISCAbsoluteX()
-        {
-            unsigned short address = AbsoluteXAddress();
-            unsigned char byte = memory->CpuRead(address);
-            byte++;
-            memory->CpuWrite(address, byte);
-            accumulator -= byte;
-            status.zeroFlag = (accumulator == 0);
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            return 7;
-        }
-        int M6502::OpISCAbsoluteY()
-        {
-            unsigned short address = AbsoluteYAddress();
-            unsigned char byte = memory->CpuRead(address);
-            byte++;
-            memory->CpuWrite(address, byte);
-            accumulator -= byte;
-            status.zeroFlag = (accumulator == 0);
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            return 7;
-        }
-        int M6502::OpISCIndirectX()
-        {
-            unsigned short address = IndirectXAddress();
-            unsigned char byte = memory->CpuRead(address);
-            byte++;
-            memory->CpuWrite(address, byte);
-            accumulator -= byte;
-            status.zeroFlag = (accumulator == 0);
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            return 8;
-        }
-        int M6502::OpISCIndirectY()
-        {
-            unsigned short address = IndirectYAddress();
-            unsigned char byte = memory->CpuRead(address);
-            byte++;
-            memory->CpuWrite(address, byte);
-            accumulator -= byte;
-            status.zeroFlag = (accumulator == 0);
-            status.negativeFlag = (accumulator & 0x80) > 0;
-            return 4;
+            OpPLP(addressMethod);
+            unsigned char loadl = PopStack();
+            unsigned char loadh = PopStack();
+            programCounter_ = (loadh << 8) + loadl;
+            overflowTicks_ += 6;
         }
         
     }

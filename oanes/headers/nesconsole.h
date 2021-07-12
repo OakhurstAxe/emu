@@ -32,7 +32,7 @@ namespace oa
             NesMainWindow* nesMainWindow_;
             NesMemory nesMemory_;
             QTimer cpuTimer_;
-            R2A03 cpu_;
+            R2A03 *cpu_;
             Ppu ppu_;
             Apu apu_;
             const static int SIZE = 16384 + 8192;

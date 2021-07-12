@@ -1,6 +1,6 @@
 TEMPLATE = lib
 
-CONFIG += debug
+CONFIG += debug c++17
 
 HEADERS += headers/basecpu.h headers/m6502.h
 SOURCES += basecpu.cc m6502.cc

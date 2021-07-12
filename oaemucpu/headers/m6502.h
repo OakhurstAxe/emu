@@ -1,290 +1,160 @@
-#ifndef M6502_H
-#define M6502_H
+#ifndef OA_EMU_M6502_H
+#define OA_EMU_M6502_H
 
 #include "basecpu.h"
 
 #include "../oaemumemory/headers/memorymapper.h"
 
+#define CallAddressMethod(methodName) std::__invoke(methodName, this)
+#define CallOpMethod(methodNane, addressMethod) std::__invoke(methodNane, this, addressMethod);
+
 namespace oa
 {
     namespace emu
     {
-        
-        class M6502 : BaseCpu
+
+        class M6502 : public BaseCpu
         {
 
         public:
-            MemoryMapper *memory;
-            virtual int executeTicks(int count);
-            virtual void reset();
-            
-            int nmiSet = 0;
-            
+            M6502(MemoryMapper *memory);
+            typedef uint16_t (M6502::*AddressMethod)();
+            typedef void (M6502::*OperationMethod)(AddressMethod addressMethod);
+
+            struct OperationStruct
+            {
+                OperationMethod operation_;
+                AddressMethod addressMethod_;
+            };
+
+            virtual void ExecuteTick();
+            virtual void Reset();
         protected:
-            void pushStack(unsigned char byte);
-            unsigned char popStack(void);
+            OperationStruct opCodeLookup_[0x100];
             
-            int prevInstruction = 0;
-            unsigned short programCounter;
-            unsigned short stackPointer;
-            unsigned char accumulator;
-            unsigned char registerX;
-            unsigned char registerY;
+            virtual void SetOpCodes();
+            void PushStack(uint8_t byte);
+            uint8_t PopStack(void);
+            
+            MemoryMapper *memory_;
+            int prevInstruction_ = 0;
+            uint16_t programCounter_;
+            uint16_t stackPointer_;
+            uint8_t accumulator_;
+            uint8_t registerX_;
+            uint8_t registerY_;
             
             union
             {
                 struct
                 {
-                    unsigned char carryFlag: 1;
-                    unsigned char zeroFlag: 1;
-                    unsigned char interruptDisable: 1;
-                    unsigned char decimalMode: 1;
-                    unsigned char breakCommand: 1;
-                    unsigned char ignored: 1;
-                    unsigned char overflowFlag: 1;
-                    unsigned char negativeFlag: 1;
+                    uint8_t carryFlag: 1;
+                    uint8_t zeroFlag: 1;
+                    uint8_t interruptDisable: 1;
+                    uint8_t decimalMode: 1;
+                    uint8_t breakCommand: 1;
+                    uint8_t ignored: 1;
+                    uint8_t overflowFlag: 1;
+                    uint8_t negativeFlag: 1;
                 };
-                unsigned char reg;
+                uint8_t register_;
             }
-            status;
+            statusRegister_;
             
             // addressing modes
-            unsigned short ZeroAddress();
-            unsigned short ZeroXAddress();
-            unsigned short ZeroYAddress();
-            unsigned short AbsoluteAddress();
-            unsigned short AbsoluteXAddress();
-            unsigned short AbsoluteYAddress();
-            unsigned short IndirectAddress();
-            unsigned short IndirectXAddress();
-            unsigned short IndirectYAddress();
-            unsigned char readRelative();
-            unsigned char readImmediate();
-            unsigned char readZero();
-            unsigned char readZeroX();
-            unsigned char readZeroY();
-            unsigned char readAbsolute();
-            unsigned char readAbsoluteX();
-            unsigned char readAbsoluteY();
-            unsigned char readIndirectX();
-            unsigned char readIndirectY();
-            void writeZero(unsigned char byte);
-            void writeZeroX(unsigned char byte);
-            void writeZeroY(unsigned char byte);
-            void writeAbsolute(unsigned char byte);
-            void writeAbsoluteX(unsigned char byte);
-            void writeAbsoluteY(unsigned char byte);
-            void writeIndirectX(unsigned char byte);
-            void writeIndirectY(unsigned char byte);
+            uint16_t NullAddress();
+            uint16_t ImmediateAddress();
+            uint16_t ZeroAddress();
+            uint16_t ZeroXAddress();
+            uint16_t ZeroYAddress();
+            uint16_t AbsoluteAddress();
+            uint16_t AbsoluteXAddress();
+            uint16_t AbsoluteYAddress();
+            uint16_t IndirectAddress();
+            uint16_t IndirectXAddress();
+            uint16_t IndirectYAddress();
             
             // Load Store operations
-            virtual int OpLDAImmediate();
-            virtual int OpLDAZero();
-            virtual int OpLDAZeroX();
-            virtual int OpLDAAbsolute();
-            virtual int OpLDAAbsoluteX();
-            virtual int OpLDAAbsoluteY();
-            virtual int OpLDAIndirectX();
-            virtual int OpLDAIndirectY();
-            
-            virtual int OpLDXImmediate();
-            virtual int OpLDXZero();
-            virtual int OpLDXZeroY();
-            virtual int OpLDXAbsolute();
-            virtual int OpLDXAbsoluteY();
-            
-            virtual int OpLDYImmediate();
-            virtual int OpLDYZero();
-            virtual int OpLDYZeroX();
-            virtual int OpLDYAbsolute();
-            virtual int OpLDYAbsoluteX();
-            
-            virtual int OpSTAZero();
-            virtual int OpSTAZeroX();
-            virtual int OpSTAAbsolute();
-            virtual int OpSTAAbsoluteX();
-            virtual int OpSTAAbsoluteY();
-            virtual int OpSTAIndirectX();
-            virtual int OpSTAIndirectY();
-
-            virtual int OpSTXZero();
-            virtual int OpSTXZeroY();
-            virtual int OpSTXAbsolute();
-            
-            virtual int OpSTYZero();
-            virtual int OpSTYZeroX();
-            virtual int OpSTYAbsolute();
-            
+            virtual void OpLDA(AddressMethod addressMethod);
+            virtual void OpLDX(AddressMethod addressMethod);
+            virtual void OpLDY(AddressMethod addressMethod);
+            virtual void OpSTA(AddressMethod addressMethod);
+            virtual void OpSTX(AddressMethod addressMethod);
+            virtual void OpSTY(AddressMethod addressMethod);
             
             // Register transfers
-            virtual int OpTAX();
-            virtual int OpTAY();
-            virtual int OpTXA();
-            virtual int OpTYA();
-            
+            virtual void OpTAX(AddressMethod addressMethod);
+            virtual void OpTAY(AddressMethod addressMethod);
+            virtual void OpTXA(AddressMethod addressMethod);
+            virtual void OpTYA(AddressMethod addressMethod);
             
             // Stack operaions
-            virtual int OpTSX();
-            virtual int OpTXS();
-            virtual int OpPHA();
-            virtual int OpPHP();
-            virtual int OpPLA();
-            virtual int OpPLP();
-
+            virtual void OpTSX(AddressMethod addressMethod);
+            virtual void OpTXS(AddressMethod addressMethod);
+            virtual void OpPHA(AddressMethod addressMethod);
+            virtual void OpPHP(AddressMethod addressMethod);
+            virtual void OpPLA(AddressMethod addressMethod);
+            virtual void OpPLP(AddressMethod addressMethod);
             
             // Logical operations
-            virtual int OpANDImmediate();
-            virtual int OpANDZero();
-            virtual int OpANDZeroX();
-            virtual int OpANDAbsolute();
-            virtual int OpANDAbsoluteX();
-            virtual int OpANDAbsoluteY();
-            virtual int OpANDIndirectX();
-            virtual int OpANDIndirectY();
-
-            virtual int OpEORImmediate();
-            virtual int OpEORZero();
-            virtual int OpEORZeroX();
-            virtual int OpEORAbsolute();
-            virtual int OpEORAbsoluteX();
-            virtual int OpEORAbsoluteY();
-            virtual int OpEORIndirectX();
-            virtual int OpEORIndirectY();
-            
-            virtual int OpORAImmediate();
-            virtual int OpORAZero();
-            virtual int OpORAZeroX();
-            virtual int OpORAAbsolute();
-            virtual int OpORAAbsoluteX();
-            virtual int OpORAAbsoluteY();
-            virtual int OpORAIndirectX();
-            virtual int OpORAIndirectY();
-            
-            virtual int OpBITZero();
-            virtual int OpBITAbsolute();
-            
+            virtual void OpAND(AddressMethod addressMethod);
+            virtual void OpEOR(AddressMethod addressMethod);
+            virtual void OpORA(AddressMethod addressMethod);
+            virtual void OpBIT(AddressMethod addressMethod);
             
             // Arithmetic operations
-            virtual int OpADCImmediate();
-            virtual int OpADCZero();
-            virtual int OpADCZeroX();
-            virtual int OpADCAbsolute();
-            virtual int OpADCAbsoluteX();
-            virtual int OpADCAbsoluteY();
-            virtual int OpADCIndirectX();
-            virtual int OpADCIndirectY();
-            
-            virtual int OpSBCImmediate();
-            virtual int OpSBCZero();
-            virtual int OpSBCZeroX();
-            virtual int OpSBCAbsolute();
-            virtual int OpSBCAbsoluteX();
-            virtual int OpSBCAbsoluteY();
-            virtual int OpSBCIndirectX();
-            virtual int OpSBCIndirectY();
-            
-            virtual int OpCMPImmediate();
-            virtual int OpCMPZero();
-            virtual int OpCMPZeroX();
-            virtual int OpCMPAbsolute();
-            virtual int OpCMPAbsoluteX();
-            virtual int OpCMPAbsoluteY();
-            virtual int OpCMPIndirectX();
-            virtual int OpCMPIndirectY();
-            
-            virtual int OpCPXImmediate();
-            virtual int OpCPXZero();
-            virtual int OpCPXAbsolute();
-
-            virtual int OpCPYImmediate();
-            virtual int OpCPYZero();
-            virtual int OpCPYAbsolute();
-
+            virtual void OpADC(AddressMethod addressMethod);
+            virtual void OpSBC(AddressMethod addressMethod);
+            virtual void OpCMP(AddressMethod addressMethod);
+            virtual void OpCPX(AddressMethod addressMethod);
+            virtual void OpCPY(AddressMethod addressMethod);
             
             // Increment and decrement operations
-            virtual int OpINCZero();
-            virtual int OpINCZeroX();
-            virtual int OpINCAbsolute();
-            virtual int OpINCAbsoluteX();
-            virtual int OpINX();
-            virtual int OpINY();
-            
-            virtual int OpDECZero();
-            virtual int OpDECZeroX();
-            virtual int OpDECAbsolute();
-            virtual int OpDECAbsoluteX();
-            
-            virtual int OpDEX();
-            virtual int OpDEY();
-            
+            virtual void OpINC(AddressMethod addressMethod);
+            virtual void OpINX(AddressMethod addressMethod);
+            virtual void OpINY(AddressMethod addressMethod);
+            virtual void OpDEC(AddressMethod addressMethod);
+            virtual void OpDEX(AddressMethod addressMethod);
+            virtual void OpDEY(AddressMethod addressMethod);
             
             // Shift operations
-            virtual int OpASLAccumlator();
-            virtual int OpASLZero();
-            virtual int OpASLZeroX();
-            virtual int OpASLAbsolute();
-            virtual int OpASLAbsoluteX();
-            
-            virtual int OpLSRAccululator();
-            virtual int OpLSRZero();
-            virtual int OpLSRZeroX();
-            virtual int OpLSRAbsolute();
-            virtual int OpLSRAbsoluteX();
-            
-            virtual int OpROLAccululator();
-            virtual int OpROLZero();
-            virtual int OpROLZeroX();
-            virtual int OpROLAbsolute();
-            virtual int OpROLAbsoluteX();
-            
-            virtual int OpRORAccululator();
-            virtual int OpRORZero();
-            virtual int OpRORZeroX();
-            virtual int OpRORAbsolute();
-            virtual int OpRORAbsoluteX();
+            virtual void OpASL(AddressMethod addressMethod);
+            virtual void OpASLAccumlator(AddressMethod addressMethod);
+            virtual void OpLSR(AddressMethod addressMethod);
+            virtual void OpLSRAccululator(AddressMethod addressMethod);
+            virtual void OpROL(AddressMethod addressMethod);
+            virtual void OpROLAccululator(AddressMethod addressMethod);
+            virtual void OpROR(AddressMethod addressMethod);
+            virtual void OpRORAccumulator(AddressMethod addressMethod);
             
             // Jumps and Call operaions
-            virtual int OpJMPAbsolute();
-            virtual int OpJMPIndirect();
-            virtual int OpJSR();
-            virtual int OpRTS();
-
+            virtual void OpJMP(AddressMethod addressMethod);
+            virtual void OpJSR(AddressMethod addressMethod);
+            virtual void OpRTS(AddressMethod addressMethod);
             
             // branch operations
-            virtual int OpBCC();
-            virtual int OpBCS();
-            virtual int OpBEQ();
-            virtual int OpBMI();
-            virtual int OpBNE();
-            virtual int OpBPL();
-            virtual int OpBVC();
-            virtual int OpBVS();
-            
+            virtual void OpBCC(AddressMethod addressMethod);
+            virtual void OpBCS(AddressMethod addressMethod);
+            virtual void OpBEQ(AddressMethod addressMethod);
+            virtual void OpBMI(AddressMethod addressMethod);
+            virtual void OpBNE(AddressMethod addressMethod);
+            virtual void OpBPL(AddressMethod addressMethod);
+            virtual void OpBVC(AddressMethod addressMethod);
+            virtual void OpBVS(AddressMethod addressMethod);
             
             // Status Flag operations
-            virtual int OpCLC();
-            virtual int OpCLD();
-            virtual int OpCLI();
-            virtual int OpCLV();
-            virtual int OpSEC();
-            virtual int OpSED();
-            virtual int OpSEI();
-            
+            virtual void OpCLC(AddressMethod addressMethod);
+            virtual void OpCLD(AddressMethod addressMethod);
+            virtual void OpCLI(AddressMethod addressMethod);
+            virtual void OpCLV(AddressMethod addressMethod);
+            virtual void OpSEC(AddressMethod addressMethod);
+            virtual void OpSED(AddressMethod addressMethod);
+            virtual void OpSEI(AddressMethod addressMethod);
             
             // System operations
-            virtual int OpBRK();
-            virtual int OpNOP();
-            virtual int OpRTI();
-            
-            
-            // ISC (Discouraged opcodes)
-            virtual int OpISCZero();
-            virtual int OpISCZeroX();
-            virtual int OpISCAbsolute();
-            virtual int OpISCAbsoluteX();
-            virtual int OpISCAbsoluteY();
-            virtual int OpISCIndirectX();
-            virtual int OpISCIndirectY();
+            virtual void OpBRK(AddressMethod addressMethod);
+            virtual void OpNOP(AddressMethod addressMethod);
+            virtual void OpRTI(AddressMethod addressMethod);
         };
 
     }

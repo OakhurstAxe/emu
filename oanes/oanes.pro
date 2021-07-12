@@ -3,7 +3,7 @@ TEMPLATE = lib
 
 QT += widgets core gui testlib gamepad multimedia
 
-CONFIG += debug
+CONFIG += debug c++17
 
 FORMS += nesmainwindow.ui
 HEADERS += headers/nesmemory.h headers/apu.h headers/nesapuchannel.h headers/oaemuaudiooutput.h headers/ppu.h headers/nesmainwindow.h

@@ -90,8 +90,8 @@ namespace oa
         }
         
         void NesPalette::SetColor(uint8_t red, uint8_t green, uint8_t blue, uint8_t position, Palette palette)
-        {
-            palette_[static_cast<int>(palette)][position].setRgb(red*32,green*32,blue*32);
+        {            
+            palette_[static_cast<int>(palette)][position] = QColor(red*32,green*32,blue*32).rgb();
         }
 
     }

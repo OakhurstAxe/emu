@@ -4,7 +4,7 @@
 #include "../oaemucpu/headers/basecpu.h"
 
 #include "../oanes/headers/nesmemory.h"
-#include "../oaemucpu/headers/m6502.h"
+#include "r2a03.h"
 
 namespace oa
 {
@@ -18,7 +18,7 @@ namespace oa
             int executeTicks(int count);
             void ExecuteTick();
             void reset();
-            emu::M6502 *cpu;
+            R2A03 *cpu;
             uint8_t screen[61440];
             
             char renderSprites[8];

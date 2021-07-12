@@ -2,6 +2,7 @@
 #define _OA_NES_R2A02
 
 #include "../oaemucpu/headers/m6502.h"
+#include "../oaemumemory/headers/memorymapper.h"
 
 namespace oa
 {
@@ -11,10 +12,17 @@ namespace oa
         class R2A03: public emu::M6502
         {
         public:
-            R2A03();
-            void ExecuteTick();
+            R2A03(emu::MemoryMapper *memory);
+            virtual ~R2A03();
+            void ExecuteTick() override;
+            void Reset() override;
+            void SetNmi();
+        protected:
+            // ISC (Discouraged opcodes)
+            virtual void OpISC(AddressMethod addressMethod);
+            void SetOpCodes() override;
         private:
-            int overflowTicks_;
+            bool isNmiSet_;
         };
         
     }

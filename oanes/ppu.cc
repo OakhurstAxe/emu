@@ -170,7 +170,7 @@ namespace oa
                     control.reg = memory->CpuRead(0x2000);
                     if (control.enableNmi)
                     {
-                        cpu->nmiSet = 1;
+                        cpu->SetNmi();
                     }
                 }
                 if (scanLine == 260 && cycle == 1)

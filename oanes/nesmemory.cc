@@ -109,8 +109,6 @@ namespace oa
 
         void NesMemory::CpuWrite(uint16_t location, uint8_t byte)
         {
-            uint16_t origLocation = location;
-            
             // Working RAM
             if (location < 0x2000)
             {
@@ -225,10 +223,6 @@ namespace oa
         
         uint8_t NesMemory::PpuRead(uint16_t location)
         {
-            uint16_t origLocation = location;
-
-            //location = location & 0x3FFF;
-            
             if (location < 0x2000)
             {
                 return ppuCharRom_->Read(location);        
@@ -255,9 +249,6 @@ namespace oa
 
         void NesMemory::PpuWrite(uint16_t location, uint8_t byte)
         {
-            uint16_t origLocation = location;
-            //location = location % 0x4000;
-            
             if (location < 0x2000)
             {
                 ppuCharRom_->Write(location, byte); 
