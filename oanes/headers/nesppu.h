@@ -11,30 +11,33 @@ namespace oa
     namespace nes
     {
         
-        class Ppu : emu::BaseCpu
+        class NesPpu : emu::BaseCpu
         {
         public:
-            oa::nes::NesMemory *memory;
-            int executeTicks(int count);
+            NesPpu(NesMemory *memory);
+            virtual ~NesPpu();
             void ExecuteTick();
-            void reset();
-            R2A03 *cpu;
-            uint8_t screen[61440];
-            
-            char renderSprites[8];
+            bool IsNmiSet();
+            void ResetNmi();
+            void Reset();
+            uint8_t* GetScreen();
         private:
-            int overflowTicks_ = 0;
-            uint8_t reverseBits(uint8_t n);
+            uint8_t GetBackgroundPixel(uint16_t screenRow, uint16_t screenColumn);
+            uint8_t ReverseBits(uint8_t n);
+            uint8_t screen_[61440];
+            char renderSprites_[8];
+            bool nmiSet_ = false;
+            NesMemory *memory_;
 
-            uint16_t nametableAddress;
-            uint16_t patternEntryAddress;
-            uint8_t attributeByte;
-            uint8_t charTableEntryLsb;
-            uint8_t charTableEntryMsb;
+            uint16_t nametableAddress_;
+            uint16_t patternEntryAddress_;
+            uint8_t attributeByte_;
+            uint8_t charTableEntryLsb_;
+            uint8_t charTableEntryMsb_;
 
-            void renderPixel();
-            int scanLine;
-            int cycle;
+            void RenderPixel();
+            int scanLine_;
+            int cycle_;
             
             union
             {
@@ -47,7 +50,7 @@ namespace oa
                 };
                 uint8_t reg;
             }
-            status;
+            statusRegister_;
             
             union
             {
@@ -64,7 +67,7 @@ namespace oa
                 };
                 uint8_t reg;
             }
-            mask;
+            maskRegister_;
             
             union
             {
@@ -81,7 +84,20 @@ namespace oa
                 };
                 uint8_t reg;        
             }
-            control;
+            controlRegister_;
+            
+            union SpriteAttributeRegister
+            {
+                struct 
+                {
+                    uint8_t spritePalette: 2;
+                    uint8_t unimplemented: 3;
+                    uint8_t priority: 1;
+                    uint8_t flipHorizontally: 1;
+                    uint8_t flipVertically: 1;
+                };
+                uint8_t reg;        
+            };
         };
 
     }

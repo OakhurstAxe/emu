@@ -300,7 +300,7 @@ namespace oa
 
             OperationStruct operation_;
                         
-            unsigned char instruction = memory_->CpuRead(programCounter_);
+            uint8_t instruction = memory_->CpuRead(programCounter_);
             operation_.operation_ = &M6502::OpBRK;
             operation_.addressMethod_ = &M6502::NullAddress;
             
@@ -313,7 +313,7 @@ namespace oa
             overflowTicks_--;
         }
 
-        void M6502::PushStack(unsigned char byte)
+        void M6502::PushStack(uint8_t byte)
         {
             if (stackPointer_ <= 255)
             {
@@ -323,7 +323,7 @@ namespace oa
             stackPointer_--;
         }
 
-        unsigned char M6502::PopStack(void)
+        uint8_t M6502::PopStack(void)
         {
             if (stackPointer_ >= 512)
             {
@@ -336,8 +336,8 @@ namespace oa
         void M6502::Reset()
         {
             stackPointer_ = 0x01ff;
-            unsigned char pcl = memory_->CpuRead(0xfffc);
-            unsigned char pch = memory_->CpuRead(0xfffd);
+            uint8_t pcl = memory_->CpuRead(0xfffc);
+            uint8_t pch = memory_->CpuRead(0xfffd);
             programCounter_ = (pch << 8) + pcl;
             accumulator_ = 0;
             registerX_ = 0;
@@ -349,87 +349,104 @@ namespace oa
         {
             return 0;
         }
-        unsigned short M6502::ImmediateAddress()
+        uint16_t M6502::ImmediateAddress()
         {
             programCounter_++;
             return programCounter_;
         }
-        unsigned short M6502::ZeroAddress()
+        uint16_t M6502::ZeroAddress()
         {
+            overflowTicks_ += 1;
             programCounter_++;
             return memory_->CpuRead(programCounter_) % 0xFF;
         }
 
-        unsigned short M6502::ZeroXAddress()
+        uint16_t M6502::ZeroXAddress()
         {
-            overflowTicks_ += 1;
+            overflowTicks_ += 2;
             programCounter_++;
             return (memory_->CpuRead(programCounter_) + registerX_) % 0xFF;
         }
-        unsigned short M6502::ZeroYAddress()
+        uint16_t M6502::ZeroYAddress()
         {
+            overflowTicks_ += 2;
             programCounter_++;
             return (memory_->CpuRead(programCounter_) + registerY_) % 0xFF;
         }
-        unsigned short M6502::AbsoluteAddress()
+        uint16_t M6502::AbsoluteAddress()
         {
-            overflowTicks_ += 1;
+            overflowTicks_ += 2;
             programCounter_++;
-            unsigned char loadl = memory_->CpuRead(programCounter_);
+            uint8_t loadl = memory_->CpuRead(programCounter_);
             programCounter_++;
-            unsigned char loadh = memory_->CpuRead(programCounter_);
+            uint8_t loadh = memory_->CpuRead(programCounter_);
             return (loadh << 8) + loadl;
         }
-        unsigned short M6502::AbsoluteXAddress()
+        uint16_t M6502::AbsoluteXAddress()
         {
             overflowTicks_ += 2;
             programCounter_++;
-            unsigned char loadl = memory_->CpuRead(programCounter_);
+            uint8_t loadl = memory_->CpuRead(programCounter_);
             programCounter_++;
-            unsigned char loadh = memory_->CpuRead(programCounter_);
-            return (loadh << 8) + loadl + registerX_;
+            uint8_t loadh = memory_->CpuRead(programCounter_);
+            uint16_t address = (loadh << 8) + loadl + registerX_;
+            if ((address & 0xff00) != (programCounter_ & 0xff00))
+            {
+                overflowTicks_ += 1;
+            }
+            return address;
         }
-        unsigned short M6502::AbsoluteYAddress()
+        uint16_t M6502::AbsoluteYAddress()
         {
             overflowTicks_ += 2;
             programCounter_++;
-            unsigned char loadl = memory_->CpuRead(programCounter_);
+            uint8_t loadl = memory_->CpuRead(programCounter_);
             programCounter_++;
-            unsigned char loadh = memory_->CpuRead(programCounter_);
-            return (loadh << 8) + loadl + registerY_;
+            uint8_t loadh = memory_->CpuRead(programCounter_);
+            uint16_t address = (loadh << 8) + loadl + registerY_;
+            if ((address & 0xff00) != (programCounter_ & 0xff00))
+            {
+                overflowTicks_ += 1;
+            }
+            return address;
         }
-        unsigned short M6502::IndirectAddress()
+        uint16_t M6502::IndirectAddress()
         {
+            overflowTicks_ += 2;
             programCounter_++;
-            unsigned char loadl = memory_->CpuRead(programCounter_);
+            uint8_t loadl = memory_->CpuRead(programCounter_);
             programCounter_++;
-            unsigned char loadh = memory_->CpuRead(programCounter_);
-            unsigned char load = (loadh << 8) + loadl;
+            uint8_t loadh = memory_->CpuRead(programCounter_);
+            uint8_t load = (loadh << 8) + loadl;
             loadl = memory_->CpuRead(load);
             load++;
             loadh = memory_->CpuRead(load);
             return (loadh << 8) + loadl;
         }
-        unsigned short M6502::IndirectXAddress()
+        uint16_t M6502::IndirectXAddress()
         {
-            overflowTicks_ += 3;
+            overflowTicks_ += 4;
             programCounter_++;
-            unsigned char indirect = (memory_->CpuRead(programCounter_) + registerX_) % 0xff;
-            unsigned char loadl = memory_->CpuRead(indirect);
+            uint8_t indirect = (memory_->CpuRead(programCounter_) + registerX_) % 0xff;
+            uint8_t loadl = memory_->CpuRead(indirect);
             indirect++;
-            unsigned char loadh = memory_->CpuRead(indirect);
+            uint8_t loadh = memory_->CpuRead(indirect);
             return (loadh << 8) + loadl;
         }
-        unsigned short M6502::IndirectYAddress()
+        uint16_t M6502::IndirectYAddress()
         {
             overflowTicks_ += 3;
             programCounter_++;
-            unsigned char indirect = memory_->CpuRead(programCounter_) % 0xff;
-            unsigned char loadl = memory_->CpuRead(indirect);
+            uint8_t indirect = memory_->CpuRead(programCounter_) % 0xff;
+            uint8_t loadl = memory_->CpuRead(indirect);
             indirect++;
-            unsigned char loadh = memory_->CpuRead(indirect);
-            unsigned short address = (loadh << 8) + loadl;
+            uint8_t loadh = memory_->CpuRead(indirect);
+            uint16_t address = (loadh << 8) + loadl;
             address += registerY_;
+            if ((address & 0xff00) != (programCounter_ & 0xff00))
+            {
+                overflowTicks_ += 1;
+            }
             return address;
         }
 
@@ -541,7 +558,7 @@ namespace oa
         // Logical operations
         void M6502::OpAND(AddressMethod addressMethod)
         {
-            unsigned char byte = memory_->CpuRead(CallAddressMethod(addressMethod));
+            uint8_t byte = memory_->CpuRead(CallAddressMethod(addressMethod));
             accumulator_ &= byte;
             statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
             statusRegister_.zeroFlag = (accumulator_ == 0);
@@ -549,7 +566,7 @@ namespace oa
         }
         void M6502::OpEOR(AddressMethod addressMethod)
         {
-            unsigned char byte = memory_->CpuRead(CallAddressMethod(addressMethod));
+            uint8_t byte = memory_->CpuRead(CallAddressMethod(addressMethod));
             accumulator_ ^= byte;
             statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
             statusRegister_.zeroFlag = (accumulator_ == 0);
@@ -557,7 +574,7 @@ namespace oa
         }
         void M6502::OpORA(AddressMethod addressMethod)
         {
-            unsigned char byte = memory_->CpuRead(CallAddressMethod(addressMethod));
+            uint8_t byte = memory_->CpuRead(CallAddressMethod(addressMethod));
             accumulator_ |= byte;
             statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
             statusRegister_.zeroFlag = (accumulator_ == 0);
@@ -565,7 +582,7 @@ namespace oa
         }
         void M6502::OpBIT(AddressMethod addressMethod)
         {
-            unsigned char byte = memory_->CpuRead(CallAddressMethod(addressMethod));
+            uint8_t byte = memory_->CpuRead(CallAddressMethod(addressMethod));
             statusRegister_.zeroFlag = (((byte & accumulator_) & 0xff) > 0);
             statusRegister_.negativeFlag = (byte & 0x80) > 0;
             statusRegister_.overflowFlag = (byte & 0x40);
@@ -575,19 +592,19 @@ namespace oa
         // Arithmetic operations
         void M6502::OpADC(AddressMethod addressMethod)
         {
-            unsigned short byte = memory_->CpuRead(CallAddressMethod(addressMethod));
-            unsigned short value = accumulator_ + byte + statusRegister_.carryFlag;
+            uint16_t byte = memory_->CpuRead(CallAddressMethod(addressMethod));
+            uint16_t value = accumulator_ + byte + statusRegister_.carryFlag;
             statusRegister_.negativeFlag = (value & 0x80) > 0;
             statusRegister_.overflowFlag = ~((accumulator_^byte)&(accumulator_^value) & 0x80);
             statusRegister_.carryFlag = (value > 255);
             statusRegister_.zeroFlag = ((value & 0x00ff) == 0);
             accumulator_ = (value & 0xff);
-            overflowTicks_ += 3;
+            overflowTicks_ += 2;
         }    
         void M6502::OpSBC(AddressMethod addressMethod)
         {
-            unsigned short byte = memory_->CpuRead(CallAddressMethod(addressMethod)) ^ 0x00ff;
-            unsigned short value = accumulator_ + byte + statusRegister_.carryFlag;
+            uint16_t byte = memory_->CpuRead(CallAddressMethod(addressMethod)) ^ 0x00ff;
+            uint16_t value = accumulator_ + byte + statusRegister_.carryFlag;
             statusRegister_.negativeFlag = (value & 0x80) > 0;
             statusRegister_.overflowFlag = ~((accumulator_^byte)&(accumulator_^value) & 0x80);
             statusRegister_.carryFlag = (value > 255);
@@ -597,7 +614,7 @@ namespace oa
         }
         void M6502::OpCMP(AddressMethod addressMethod)
         {
-            unsigned char byte = memory_->CpuRead(CallAddressMethod(addressMethod));
+            uint8_t byte = memory_->CpuRead(CallAddressMethod(addressMethod));
             statusRegister_.carryFlag = (accumulator_ >= byte);
             statusRegister_.zeroFlag = (accumulator_ == byte);
             statusRegister_.negativeFlag = ((accumulator_ - byte) & 0x80) > 0;
@@ -605,7 +622,7 @@ namespace oa
         }
         void M6502::OpCPX(AddressMethod addressMethod)
         {
-            unsigned char byte = memory_->CpuRead(CallAddressMethod(addressMethod));
+            uint8_t byte = memory_->CpuRead(CallAddressMethod(addressMethod));
             statusRegister_.carryFlag = (registerX_ >= byte);
             statusRegister_.zeroFlag = (registerX_ == byte);
             statusRegister_.negativeFlag = ((registerX_ - byte) & 0x80) > 0;
@@ -613,7 +630,7 @@ namespace oa
         }
         void M6502::OpCPY(AddressMethod addressMethod)
         {
-            unsigned char byte = memory_->CpuRead(CallAddressMethod(addressMethod));
+            uint8_t byte = memory_->CpuRead(CallAddressMethod(addressMethod));
             statusRegister_.carryFlag = (registerY_ >= byte);
             statusRegister_.zeroFlag = (registerY_ == byte);
             statusRegister_.negativeFlag = ((registerY_ - byte) & 0x80) > 0;
@@ -623,13 +640,13 @@ namespace oa
         // Increment and decrement operations
         void M6502::OpINC(AddressMethod addressMethod)
         {
-            unsigned short address = CallAddressMethod(addressMethod);
-            unsigned char byte = memory_->CpuRead(address);
+            uint16_t address = CallAddressMethod(addressMethod);
+            uint8_t byte = memory_->CpuRead(address);
             byte++;
             memory_->CpuWrite(address, byte);
             statusRegister_.zeroFlag = (byte == 0);
             statusRegister_.negativeFlag = (byte & 0x80) > 0;
-            overflowTicks_ += 5;
+            overflowTicks_ += 4;
         }
         void M6502::OpINX(AddressMethod addressMethod)
         {
@@ -647,13 +664,13 @@ namespace oa
         }
         void M6502::OpDEC(AddressMethod addressMethod) 
         {
-            unsigned short address = CallAddressMethod(addressMethod);
-            unsigned char byte = memory_->CpuRead(address);
+            uint16_t address = CallAddressMethod(addressMethod);
+            uint8_t byte = memory_->CpuRead(address);
             byte--;
             statusRegister_.zeroFlag = (byte == 0);
             statusRegister_.negativeFlag = (byte & 0x80) > 0;
             memory_->CpuWrite(address, byte);
-            overflowTicks_ += 5;
+            overflowTicks_ += 4;
         }
         void M6502::OpDEX(AddressMethod addressMethod)
         {
@@ -681,26 +698,26 @@ namespace oa
         }
         void M6502::OpASL(AddressMethod addressMethod)
         {
-            unsigned char address = CallAddressMethod(addressMethod);
-            unsigned char byte = memory_->CpuRead(address);
+            uint8_t address = CallAddressMethod(addressMethod);
+            uint8_t byte = memory_->CpuRead(address);
             statusRegister_.carryFlag = (byte & 0x80) > 0;
             byte = byte << 1;
             statusRegister_.negativeFlag = (byte & 0x80) > 0;
             statusRegister_.zeroFlag = (byte == 0);
             memory_->CpuWrite(address, byte);
-            overflowTicks_ += 5;
+            overflowTicks_ += 4;
         }    
 
         void M6502::OpLSR(AddressMethod addressMethod)
         {
-            unsigned short address = CallAddressMethod(addressMethod);
-            unsigned char byte = memory_->CpuRead(address);
+            uint16_t address = CallAddressMethod(addressMethod);
+            uint8_t byte = memory_->CpuRead(address);
             statusRegister_.carryFlag = (byte & 0x01) > 0;
             byte = byte >> 1;
             statusRegister_.negativeFlag = (byte & 0x80) > 0;
             statusRegister_.zeroFlag = (byte == 0);
             memory_->CpuWrite(address, byte);
-            overflowTicks_ += 5;    
+            overflowTicks_ += 4;    
         }
         void M6502::OpLSRAccululator(AddressMethod addressMethod)
         {
@@ -712,7 +729,7 @@ namespace oa
         }
         void M6502::OpROLAccululator(AddressMethod addressMethod)
         {
-            unsigned char newCarry = accumulator_ & 0x80;
+            uint8_t newCarry = accumulator_ & 0x80;
             accumulator_ = (accumulator_ << 1) + statusRegister_.carryFlag;
             statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
             statusRegister_.zeroFlag = (accumulator_ == 0);
@@ -721,32 +738,32 @@ namespace oa
         }
         void M6502::OpROL(AddressMethod addressMethod)
         {
-            unsigned short address = CallAddressMethod(addressMethod);
-            unsigned char byte = memory_->CpuRead(address);
-            unsigned char newCarry = byte & 0x80;
+            uint16_t address = CallAddressMethod(addressMethod);
+            uint8_t byte = memory_->CpuRead(address);
+            uint8_t newCarry = byte & 0x80;
             byte = (byte << 1) + statusRegister_.carryFlag;
             statusRegister_.negativeFlag = (byte & 0x80) > 0;
             statusRegister_.zeroFlag = (byte == 0);
             statusRegister_.carryFlag = newCarry > 0;
             memory_->CpuWrite(address, byte);
-            overflowTicks_ += 5;
+            overflowTicks_ += 4;
         }
             
         void M6502::OpROR(AddressMethod addressMethod)
         {
-            unsigned short address = CallAddressMethod(addressMethod);
-            unsigned char byte = memory_->CpuRead(address);
-            unsigned char newCarry = byte & 0x01;
+            uint16_t address = CallAddressMethod(addressMethod);
+            uint8_t byte = memory_->CpuRead(address);
+            uint8_t newCarry = byte & 0x01;
             byte = (byte >> 1) + (statusRegister_.carryFlag << 7);
             statusRegister_.negativeFlag = (byte & 0x80) > 0;
             statusRegister_.zeroFlag = (byte == 0);
             statusRegister_.carryFlag = newCarry > 0;
             memory_->CpuWrite(address, byte);
-            overflowTicks_ += 5;
+            overflowTicks_ += 4;
         }
         void M6502::OpRORAccumulator(AddressMethod addressMethod)
         {
-            unsigned char newCarry = accumulator_ & 0x01;
+            uint8_t newCarry = accumulator_ & 0x01;
             accumulator_ = (accumulator_ >> 1) + (statusRegister_.carryFlag << 7);
             statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
             statusRegister_.zeroFlag = (accumulator_ == 0);
@@ -757,23 +774,23 @@ namespace oa
         // Jumps and Call operaions
         void M6502::OpJMP(AddressMethod addressMethod)
         {
-            unsigned short address = CallAddressMethod(addressMethod);
+            uint16_t address = CallAddressMethod(addressMethod);
             programCounter_ = address-1;
             overflowTicks_ += 3;
         }
         void M6502::OpJSR(AddressMethod addressMethod) 
         {
-            unsigned short jumpAddress = CallAddressMethod(addressMethod);
+            uint16_t jumpAddress = CallAddressMethod(addressMethod);
             PushStack((programCounter_ & 0xff00) >> 8);
             PushStack(programCounter_ & 0xff);
             programCounter_ = jumpAddress - 1;
-            overflowTicks_ += 6;
+            overflowTicks_ += 4;
         }
         void M6502::OpRTS(AddressMethod addressMethod) 
         {
-            unsigned char loadl = PopStack();
-            unsigned char loadh = PopStack();
-            unsigned short load = (loadh << 8) + loadl;
+            uint8_t loadl = PopStack();
+            uint8_t loadh = PopStack();
+            uint16_t load = (loadh << 8) + loadl;
             programCounter_ = load;
             overflowTicks_ += 6;
         }
@@ -906,8 +923,8 @@ namespace oa
         void M6502::OpRTI(AddressMethod addressMethod)
         {
             OpPLP(addressMethod);
-            unsigned char loadl = PopStack();
-            unsigned char loadh = PopStack();
+            uint8_t loadl = PopStack();
+            uint8_t loadh = PopStack();
             programCounter_ = (loadh << 8) + loadl;
             overflowTicks_ += 6;
         }

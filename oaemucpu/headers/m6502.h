@@ -15,9 +15,11 @@ namespace oa
 
         class M6502 : public BaseCpu
         {
-
         public:
             M6502(MemoryMapper *memory);
+            virtual void ExecuteTick();
+            virtual void Reset();
+        protected:
             typedef uint16_t (M6502::*AddressMethod)();
             typedef void (M6502::*OperationMethod)(AddressMethod addressMethod);
 
@@ -26,10 +28,6 @@ namespace oa
                 OperationMethod operation_;
                 AddressMethod addressMethod_;
             };
-
-            virtual void ExecuteTick();
-            virtual void Reset();
-        protected:
             OperationStruct opCodeLookup_[0x100];
             
             virtual void SetOpCodes();

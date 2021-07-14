@@ -8,7 +8,7 @@
 
 #include "../headers/nespalette.h"
 #include "../oanes/headers/r2a03.h"
-#include "../oanes/headers/ppu.h"
+#include "../oanes/headers/nesppu.h"
 #include "../oanes/headers/oaemuaudiooutput.h"
 #include "../oanes/headers/apu.h"
 

@@ -18,12 +18,6 @@ namespace oa
         
         void R2A03::ExecuteTick()
         {
-            if (overflowTicks_ > 0)
-            {
-                overflowTicks_--;
-                return;
-            }
-
             if (isNmiSet_)
             {
                 isNmiSet_ = false;
@@ -50,6 +44,11 @@ namespace oa
         void R2A03::SetNmi()
         {
             isNmiSet_ = true;
+        }
+        
+        void R2A03::DmaSuspend()
+        {
+            overflowTicks_ += 154;
         }
         
         void R2A03::SetOpCodes()

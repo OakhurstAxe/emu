@@ -13,8 +13,7 @@ namespace oa
         NesConsole::NesConsole(NesMainWindow* nesMainWindow)
         {
             cpu_ = new R2A03(&nesMemory_);
-            ppu_.memory = &nesMemory_;
-            ppu_.cpu = cpu_;
+            ppu_ = new NesPpu(&nesMemory_);
             apu_.memory = &nesMemory_;
             
             nesMainWindow_ = nesMainWindow;
@@ -22,6 +21,7 @@ namespace oa
         
         NesConsole::~NesConsole()
         {
+            delete ppu_;
             delete cpu_;
         }
         
@@ -78,12 +78,17 @@ namespace oa
                     {
                         cpu_->ExecuteTick();
                     }
-                    ppu_.ExecuteTick();
-                    apu_.ExecuteTick();
+                    ppu_->ExecuteTick();
+                    if (ppu_->IsNmiSet())
+                    {
+                        cpu_->SetNmi();
+                        ppu_->ResetNmi();
+                    }
+//                    apu_.ExecuteTick();
                     ReadGamepad();
                     ticks++;
                 }
-                nesMainWindow_->DrawFrame(ppu_.screen);
+                nesMainWindow_->DrawFrame(ppu_->GetScreen());
             }
             catch (std::exception &exception)
             {

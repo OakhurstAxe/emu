@@ -7,7 +7,7 @@
 #include "../oaemumemory/headers/memoryram.h"
 #include "../oaemumemory/headers/memoryrom.h"
 #include "headers/r2a03.h"
-#include "headers/ppu.h"
+#include "headers/nesppu.h"
 #include "headers/apu.h"
 #include "headers/nesmainwindow.h"
 
@@ -33,7 +33,7 @@ namespace oa
             NesMemory nesMemory_;
             QTimer cpuTimer_;
             R2A03 *cpu_;
-            Ppu ppu_;
+            NesPpu *ppu_;
             Apu apu_;
             const static int SIZE = 16384 + 8192;
             char dKongFile[SIZE];

@@ -17,6 +17,7 @@ namespace oa
             void ExecuteTick() override;
             void Reset() override;
             void SetNmi();
+            void DmaSuspend();
         protected:
             // ISC (Discouraged opcodes)
             virtual void OpISC(AddressMethod addressMethod);

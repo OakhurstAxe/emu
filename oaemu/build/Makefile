@@ -406,7 +406,7 @@ build/main.o: ../main.cc ../../oanes/headers/nesmainwindow.h \
 		../../oaemucpu/headers/m6502.h \
 		../../oaemucpu/headers/basecpu.h \
 		../../oaemumemory/headers/memorymapper.h \
-		../../oanes/headers/ppu.h \
+		../../oanes/headers/nesppu.h \
 		../../oanes/headers/nesmemory.h \
 		../../oaemumemory/headers/memoryram.h \
 		../../oaemumemory/headers/basememory.h \

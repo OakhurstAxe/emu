@@ -56,7 +56,7 @@ SOURCES       = ../nesmemory.cc \
 		../apu.cc \
 		../nesapuchannel.cc \
 		../oaemuaudiooutput.cpp \
-		../ppu.cc \
+		../nesppu.cc \
 		../nesmainwindow.cc \
 		../r2a03.cc \
 		../nesconsole.cc \
@@ -68,7 +68,7 @@ OBJECTS       = build/nesmemory.o \
 		build/apu.o \
 		build/nesapuchannel.o \
 		build/oaemuaudiooutput.o \
-		build/ppu.o \
+		build/nesppu.o \
 		build/nesmainwindow.o \
 		build/r2a03.o \
 		build/nesconsole.o \
@@ -170,7 +170,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		../headers/apu.h \
 		../headers/nesapuchannel.h \
 		../headers/oaemuaudiooutput.h \
-		../headers/ppu.h \
+		../headers/nesppu.h \
 		../headers/nesmainwindow.h \
 		../headers/r2a03.h \
 		../headers/nesconsole.h \
@@ -178,7 +178,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		../apu.cc \
 		../nesapuchannel.cc \
 		../oaemuaudiooutput.cpp \
-		../ppu.cc \
+		../nesppu.cc \
 		../nesmainwindow.cc \
 		../r2a03.cc \
 		../nesconsole.cc \
@@ -407,8 +407,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../headers/nesmemory.h ../headers/apu.h ../headers/nesapuchannel.h ../headers/oaemuaudiooutput.h ../headers/ppu.h ../headers/nesmainwindow.h ../headers/r2a03.h ../headers/nesconsole.h ../headers/nespalette.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../nesmemory.cc ../apu.cc ../nesapuchannel.cc ../oaemuaudiooutput.cpp ../ppu.cc ../nesmainwindow.cc ../r2a03.cc ../nesconsole.cc ../nespalette.cc $(DISTDIR)/
+	$(COPY_FILE) --parents ../headers/nesmemory.h ../headers/apu.h ../headers/nesapuchannel.h ../headers/oaemuaudiooutput.h ../headers/nesppu.h ../headers/nesmainwindow.h ../headers/r2a03.h ../headers/nesconsole.h ../headers/nespalette.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../nesmemory.cc ../apu.cc ../nesapuchannel.cc ../oaemuaudiooutput.cpp ../nesppu.cc ../nesmainwindow.cc ../r2a03.cc ../nesconsole.cc ../nespalette.cc $(DISTDIR)/
 	$(COPY_FILE) --parents ../nesmainwindow.ui $(DISTDIR)/
 
 
@@ -466,7 +466,7 @@ build/moc_nesmainwindow.cpp: ../headers/nesmainwindow.h \
 		../../oaemucpu/headers/m6502.h \
 		../../oaemucpu/headers/basecpu.h \
 		../../oaemumemory/headers/memorymapper.h \
-		../headers/ppu.h \
+		../headers/nesppu.h \
 		../headers/nesmemory.h \
 		../../oaemumemory/headers/memoryram.h \
 		../../oaemumemory/headers/basememory.h \
@@ -486,7 +486,7 @@ build/moc_nesconsole.cpp: ../headers/nesconsole.h \
 		../../oaemucpu/headers/m6502.h \
 		../../oaemucpu/headers/basecpu.h \
 		../../oaemumemory/headers/memorymapper.h \
-		../headers/ppu.h \
+		../headers/nesppu.h \
 		../headers/nesmemory.h \
 		../headers/apu.h \
 		../headers/nesapuchannel.h \
@@ -545,7 +545,7 @@ build/oaemuaudiooutput.o: ../oaemuaudiooutput.cpp ../headers/oaemuaudiooutput.h 
 		../../oaemumemory/headers/memorymapper.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/oaemuaudiooutput.o ../oaemuaudiooutput.cpp
 
-build/ppu.o: ../ppu.cc ../headers/ppu.h \
+build/nesppu.o: ../nesppu.cc ../headers/nesppu.h \
 		../../oaemucpu/headers/basecpu.h \
 		../headers/nesmemory.h \
 		../../oaemumemory/headers/memoryram.h \
@@ -554,7 +554,7 @@ build/ppu.o: ../ppu.cc ../headers/ppu.h \
 		../../oaemumemory/headers/memorymapper.h \
 		../headers/r2a03.h \
 		../../oaemucpu/headers/m6502.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/ppu.o ../ppu.cc
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nesppu.o ../nesppu.cc
 
 build/nesmainwindow.o: ../nesmainwindow.cc ../headers/nesmainwindow.h \
 		../headers/nespalette.h \
@@ -562,7 +562,7 @@ build/nesmainwindow.o: ../nesmainwindow.cc ../headers/nesmainwindow.h \
 		../../oaemucpu/headers/m6502.h \
 		../../oaemucpu/headers/basecpu.h \
 		../../oaemumemory/headers/memorymapper.h \
-		../headers/ppu.h \
+		../headers/nesppu.h \
 		../headers/nesmemory.h \
 		../../oaemumemory/headers/memoryram.h \
 		../../oaemumemory/headers/basememory.h \
@@ -587,7 +587,7 @@ build/nesconsole.o: ../nesconsole.cc ../headers/nesconsole.h \
 		../../oaemucpu/headers/m6502.h \
 		../../oaemucpu/headers/basecpu.h \
 		../../oaemumemory/headers/memorymapper.h \
-		../headers/ppu.h \
+		../headers/nesppu.h \
 		../headers/nesmemory.h \
 		../headers/apu.h \
 		../headers/nesapuchannel.h \
