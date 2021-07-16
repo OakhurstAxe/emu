@@ -6,8 +6,9 @@ namespace oa
     namespace nes
     {
         
-        Apu::Apu()
+        Apu::Apu(NesMemory *memory)
         {
+            memory_ = memory;
             channels[0] = new EmuApuChannel();
             channels[1] = new EmuApuChannel();    
         }
@@ -26,13 +27,13 @@ namespace oa
                 int timer = 0;
                 qreal volume = 0;
                 
-                uint8_t byte = memory->CpuRead(0x4000 + (i*4));
+                uint8_t byte = memory_->CpuRead(0x4000 + (i*4));
                 volume = ((qreal)(byte & 0x0f)) / 16;
                 channels[i]->setVolume(volume);
                 
-                byte = memory->CpuRead(0x4002 + (i*4));
+                byte = memory_->CpuRead(0x4002 + (i*4));
                 timer |= byte;
-                byte = (memory->CpuRead(0x4003 + (i * 4)) & 0x07);
+                byte = (memory_->CpuRead(0x4003 + (i * 4)) & 0x07);
                 timer |= byte << 8;
                 if (timer < 8)
                 {

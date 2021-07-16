@@ -60,7 +60,8 @@ SOURCES       = ../nesmemory.cc \
 		../nesmainwindow.cc \
 		../r2a03.cc \
 		../nesconsole.cc \
-		../nespalette.cc build/moc_nesapuchannel.cpp \
+		../nespalette.cc \
+		../inesfile.cc build/moc_nesapuchannel.cpp \
 		build/moc_oaemuaudiooutput.cpp \
 		build/moc_nesmainwindow.cpp \
 		build/moc_nesconsole.cpp
@@ -73,6 +74,7 @@ OBJECTS       = build/nesmemory.o \
 		build/r2a03.o \
 		build/nesconsole.o \
 		build/nespalette.o \
+		build/inesfile.o \
 		build/moc_nesapuchannel.o \
 		build/moc_oaemuaudiooutput.o \
 		build/moc_nesmainwindow.o \
@@ -174,7 +176,8 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		../headers/nesmainwindow.h \
 		../headers/r2a03.h \
 		../headers/nesconsole.h \
-		../headers/nespalette.h ../nesmemory.cc \
+		../headers/nespalette.h \
+		../headers/inesfile.h ../nesmemory.cc \
 		../apu.cc \
 		../nesapuchannel.cc \
 		../oaemuaudiooutput.cpp \
@@ -182,7 +185,8 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		../nesmainwindow.cc \
 		../r2a03.cc \
 		../nesconsole.cc \
-		../nespalette.cc
+		../nespalette.cc \
+		../inesfile.cc
 QMAKE_TARGET  = oanes
 DESTDIR       = 
 TARGET        = liboanes.so.1.0.0
@@ -407,8 +411,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../headers/nesmemory.h ../headers/apu.h ../headers/nesapuchannel.h ../headers/oaemuaudiooutput.h ../headers/nesppu.h ../headers/nesmainwindow.h ../headers/r2a03.h ../headers/nesconsole.h ../headers/nespalette.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../nesmemory.cc ../apu.cc ../nesapuchannel.cc ../oaemuaudiooutput.cpp ../nesppu.cc ../nesmainwindow.cc ../r2a03.cc ../nesconsole.cc ../nespalette.cc $(DISTDIR)/
+	$(COPY_FILE) --parents ../headers/nesmemory.h ../headers/apu.h ../headers/nesapuchannel.h ../headers/oaemuaudiooutput.h ../headers/nesppu.h ../headers/nesmainwindow.h ../headers/r2a03.h ../headers/nesconsole.h ../headers/nespalette.h ../headers/inesfile.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../nesmemory.cc ../apu.cc ../nesapuchannel.cc ../oaemuaudiooutput.cpp ../nesppu.cc ../nesmainwindow.cc ../r2a03.cc ../nesconsole.cc ../nespalette.cc ../inesfile.cc $(DISTDIR)/
 	$(COPY_FILE) --parents ../nesmainwindow.ui $(DISTDIR)/
 
 
@@ -598,6 +602,9 @@ build/nesconsole.o: ../nesconsole.cc ../headers/nesconsole.h \
 
 build/nespalette.o: ../nespalette.cc ../headers/nespalette.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nespalette.o ../nespalette.cc
+
+build/inesfile.o: ../inesfile.cc 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/inesfile.o ../inesfile.cc
 
 build/moc_nesapuchannel.o: build/moc_nesapuchannel.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/moc_nesapuchannel.o build/moc_nesapuchannel.cpp

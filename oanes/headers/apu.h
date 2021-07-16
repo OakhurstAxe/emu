@@ -12,11 +12,11 @@ namespace oa
         class Apu
         {
         public:
-            Apu();
+            Apu(NesMemory *memory);
             virtual ~Apu();
-            oa::nes::NesMemory *memory;
             void ExecuteTick();
         private:
+            oa::nes::NesMemory *memory_;
             int frequency[2];
             EmuApuChannel *channels[2];
         };

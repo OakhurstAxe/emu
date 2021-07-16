@@ -6,6 +6,8 @@
 #include <ostream>
 #include <QMessageBox>
 
+#include "headers/inesfile.h"
+
 namespace oa
 {
     namespace nes
@@ -14,19 +16,27 @@ namespace oa
         {
             cpu_ = new R2A03(&nesMemory_);
             ppu_ = new NesPpu(&nesMemory_);
-            apu_.memory = &nesMemory_;
+            apu_ = new Apu(&nesMemory_);
             
             nesMainWindow_ = nesMainWindow;
         }
         
         NesConsole::~NesConsole()
         {
+            delete apu_;
             delete ppu_;
             delete cpu_;
         }
         
         void NesConsole::StartUp()
         {
+            INesFile iNesFile;
+            
+            iNesFile.LoadFile("roms/Donkey_kong.nes");
+            nesMemory_.LoadProgRom(iNesFile.progRomData_,0x4000);
+            nesMemory_.LoadProgRom(iNesFile.charRomData_,0x2000);
+            
+            /*
             LoadDKong();
             unsigned char prgRom[0x4000];
             for (int i=0; i<0x4000; i++)
@@ -41,6 +51,7 @@ namespace oa
                 charRom[i] = dKongFile[i+16+0x4000];
             }
             nesMemory_.LoadCharRom(charRom,0x2000);
+            */
             cpu_->Reset();
 
             
@@ -98,10 +109,9 @@ namespace oa
         
         void NesConsole::ReadGamepad()
         {
-            if (nesMemory_.loadController_ == 1)
+            if (nesMemory_.IsLoadController())
             {
-                nesMemory_.loadController_ = 0;
-                nesMemory_.leftController_ = nesMainWindow_->leftController;
+                nesMemory_.SetLeftController(nesMainWindow_->leftController);
             }
         }
     }

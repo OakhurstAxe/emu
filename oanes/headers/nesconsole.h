@@ -29,12 +29,13 @@ namespace oa
         private:
             void ReadGamepad();
             void LoadDKong();
+            
             NesMainWindow* nesMainWindow_;
             NesMemory nesMemory_;
             QTimer cpuTimer_;
             R2A03 *cpu_;
             NesPpu *ppu_;
-            Apu apu_;
+            Apu *apu_;
             const static int SIZE = 16384 + 8192;
             char dKongFile[SIZE];
         };

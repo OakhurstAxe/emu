@@ -15,28 +15,32 @@ namespace oa
         public:
             NesMemory();
             ~NesMemory();
-            void LoadProgRom(uint8_t* data, uint16_t size);
+
             uint8_t CpuRead(unsigned short location) override;
             void CpuWrite(uint16_t location, uint8_t byte) override;
-            void CpuSetVblank(uint8_t value);
-            
-            void LoadCharRom(uint8_t* data, uint16_t size);
             uint8_t PpuRead(uint16_t location);
-            uint8_t PpuOamRead(uint16_t location);
             void PpuWrite(uint16_t location, uint8_t byte);
-            uint8_t leftController_ = 0;
-            uint8_t loadController_ = 0;
+            uint8_t PpuOamRead(uint16_t location);
+
+            void CpuSetVblank(uint8_t value);
+            bool IsLoadController();
+            void SetLeftController(uint8_t byte);
+
+            void LoadProgRom(uint8_t* data, uint16_t size);
+            void LoadCharRom(uint8_t* data, uint16_t size);
         private:
             emu::MemoryRam* cpuWorkRam_;
             emu::MemoryRam* cpuPpuRegisters_;
             emu::MemoryRam* cpuApuIoRegisters_;
             emu::MemoryRom* cpuPrgRom_;
-            emu::MemoryRom* cpuCartridgeRom_;
             
             emu::MemoryRom* ppuCharRom_;
             emu::MemoryRam* ppuNameTable_;
             emu::MemoryRam* ppuPalette_;
             emu::MemoryRam* ppuOam_;
+
+            uint8_t leftController_ = 0;
+            uint8_t loadController_ = 0;
             
             uint8_t ppuAddrH_;
             uint8_t ppuAddrL_;
