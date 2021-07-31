@@ -9,8 +9,8 @@ namespace oa
         Apu::Apu(NesMemory *memory)
         {
             memory_ = memory;
-            channels[0] = new EmuApuChannel();
-            channels[1] = new EmuApuChannel();    
+            channels[0] = new NesApuChannel();
+            channels[1] = new NesApuChannel();    
         }
 
         Apu::~Apu()
@@ -32,26 +32,19 @@ namespace oa
                 channels[i]->setVolume(volume);
                 
                 byte = memory_->CpuRead(0x4002 + (i*4));
-                timer |= byte;
+                timer += byte;
                 byte = (memory_->CpuRead(0x4003 + (i * 4)) & 0x07);
-                timer |= byte << 8;
+                timer += (byte << 8);
                 if (timer < 8)
                 {
-                    channels[i]->stop();
                     return;
                 }
                 int newFrequency = 1789773/(16 * (timer + 1));
                 if (newFrequency < 100)
                 {
-                    channels[i]->stop();
                     return;
                 }
-                if (frequency[i] != newFrequency)
-                {
-                    channels[i]->stop();
-                    frequency[i] = newFrequency;
-                    channels[i]->playSound(25000, frequency[i]);
-                }
+                channels[i]->playSound(newFrequency);
             }
         }
 

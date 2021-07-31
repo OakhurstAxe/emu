@@ -20,25 +20,25 @@
 QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
-struct qt_meta_stringdata_oa__nes__EmuApuChannel_t {
+struct qt_meta_stringdata_oa__nes__NesApuChannel_t {
     QByteArrayData data[1];
     char stringdata0[23];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_oa__nes__EmuApuChannel_t, stringdata0) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_oa__nes__NesApuChannel_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
-static const qt_meta_stringdata_oa__nes__EmuApuChannel_t qt_meta_stringdata_oa__nes__EmuApuChannel = {
+static const qt_meta_stringdata_oa__nes__NesApuChannel_t qt_meta_stringdata_oa__nes__NesApuChannel = {
     {
-QT_MOC_LITERAL(0, 0, 22) // "oa::nes::EmuApuChannel"
+QT_MOC_LITERAL(0, 0, 22) // "oa::nes::NesApuChannel"
 
     },
-    "oa::nes::EmuApuChannel"
+    "oa::nes::NesApuChannel"
 };
 #undef QT_MOC_LITERAL
 
-static const uint qt_meta_data_oa__nes__EmuApuChannel[] = {
+static const uint qt_meta_data_oa__nes__NesApuChannel[] = {
 
  // content:
        8,       // revision
@@ -54,7 +54,7 @@ static const uint qt_meta_data_oa__nes__EmuApuChannel[] = {
        0        // eod
 };
 
-void oa::nes::EmuApuChannel::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void oa::nes::NesApuChannel::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     Q_UNUSED(_o);
     Q_UNUSED(_id);
@@ -62,30 +62,30 @@ void oa::nes::EmuApuChannel::qt_static_metacall(QObject *_o, QMetaObject::Call _
     Q_UNUSED(_a);
 }
 
-QT_INIT_METAOBJECT const QMetaObject oa::nes::EmuApuChannel::staticMetaObject = { {
+QT_INIT_METAOBJECT const QMetaObject oa::nes::NesApuChannel::staticMetaObject = { {
     &QIODevice::staticMetaObject,
-    qt_meta_stringdata_oa__nes__EmuApuChannel.data,
-    qt_meta_data_oa__nes__EmuApuChannel,
+    qt_meta_stringdata_oa__nes__NesApuChannel.data,
+    qt_meta_data_oa__nes__NesApuChannel,
     qt_static_metacall,
     nullptr,
     nullptr
 } };
 
 
-const QMetaObject *oa::nes::EmuApuChannel::metaObject() const
+const QMetaObject *oa::nes::NesApuChannel::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *oa::nes::EmuApuChannel::qt_metacast(const char *_clname)
+void *oa::nes::NesApuChannel::qt_metacast(const char *_clname)
 {
     if (!_clname) return nullptr;
-    if (!strcmp(_clname, qt_meta_stringdata_oa__nes__EmuApuChannel.stringdata0))
+    if (!strcmp(_clname, qt_meta_stringdata_oa__nes__NesApuChannel.stringdata0))
         return static_cast<void*>(this);
     return QIODevice::qt_metacast(_clname);
 }
 
-int oa::nes::EmuApuChannel::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int oa::nes::NesApuChannel::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QIODevice::qt_metacall(_c, _id, _a);
     return _id;

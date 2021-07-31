@@ -11,23 +11,22 @@ namespace oa
     namespace nes
     {
         
-        class EmuApuChannel : public QIODevice
+        class NesApuChannel : public QIODevice
         {
             Q_OBJECT
 
         public:
-            EmuApuChannel();
-            virtual ~EmuApuChannel();
-
-            void start();
-            void stop();
+            NesApuChannel();
+            virtual ~NesApuChannel();
 
             qint64 readData(char *data, qint64 maxlen) override;
             qint64 writeData(const char *data, qint64 len) override;
             qint64 bytesAvailable() const override;
-            void playSound(qint64 durationUs, int sampleRate);
+            void playSound(int inFrequency);
             void setVolume(qreal volume);
         private:
+            int bufferSize = 0;
+            QIODevice *io = 0;
             int frequency = 0;
             void generateData(const QAudioFormat &format, qint64 durationUs, int frequency);
             QAudioFormat m_format;
@@ -36,7 +35,7 @@ namespace oa
             QAudioOutput *m_audioOutput;
             qint64 m_pos;
             int currentBuffer=0;
-            QByteArray m_buffer[2];
+            QByteArray *m_buffer;
         };
 
     }

@@ -1,5 +1,5 @@
 #ifndef _INESFILE_H
-#define _INDESFILE_H
+#define _INESFILE_H
 
 #include <stdint.h>
 #include <QString>
@@ -12,13 +12,17 @@ namespace oa
         {
         public:
             void LoadFile(QString fileName);
-            unsigned char *progRomData_;
-            unsigned char *charRomData_;
+            uint8_t *GetProgRomData();
+            uint8_t GetProgRomSize();
+            uint8_t *GetCharRomData();
+            uint8_t GetCharRomSize();
+            uint8_t *progRomData_;
+            uint8_t *charRomData_;
 
         private:
             char header_[4];
-            uint8_t programRomSize_;
-            uint8_t characterRomSize_;
+            uint16_t programRomSize_;
+            uint16_t characterRomSize_;
             union
             {
             struct
@@ -68,8 +72,9 @@ namespace oa
                 uint8_t reg;
             }
             tvSystemFlags_;
+            uint8_t unusedPadding_;
             
-            char trainer_[512];
+            uint8_t trainer_[512];
             
         };
         

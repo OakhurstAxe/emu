@@ -32,7 +32,7 @@ namespace oa
             
             NesMainWindow* nesMainWindow_;
             NesMemory nesMemory_;
-            QTimer cpuTimer_;
+            QTimer *cpuTimer_;
             R2A03 *cpu_;
             NesPpu *ppu_;
             Apu *apu_;

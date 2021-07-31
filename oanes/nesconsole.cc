@@ -8,12 +8,15 @@
 
 #include "headers/inesfile.h"
 
+#define TICKS_PER_FRAME 49917
+
 namespace oa
 {
     namespace nes
     {
         NesConsole::NesConsole(NesMainWindow* nesMainWindow)
         {
+            cpuTimer_ = new QTimer();
             cpu_ = new R2A03(&nesMemory_);
             ppu_ = new NesPpu(&nesMemory_);
             apu_ = new Apu(&nesMemory_);
@@ -23,6 +26,7 @@ namespace oa
         
         NesConsole::~NesConsole()
         {
+            delete cpuTimer_;
             delete apu_;
             delete ppu_;
             delete cpu_;
@@ -31,51 +35,20 @@ namespace oa
         void NesConsole::StartUp()
         {
             INesFile iNesFile;
-            
+           
             iNesFile.LoadFile("roms/Donkey_kong.nes");
-            nesMemory_.LoadProgRom(iNesFile.progRomData_,0x4000);
-            nesMemory_.LoadProgRom(iNesFile.charRomData_,0x2000);
-            
-            /*
-            LoadDKong();
-            unsigned char prgRom[0x4000];
-            for (int i=0; i<0x4000; i++)
-            {
-                prgRom[i] = dKongFile[i+16];
-            }
-            nesMemory_.LoadProgRom(prgRom,0x4000);
-            
-            unsigned char charRom[0x2000];
-            for (int i=0; i<0x2000; i++)
-            {
-                charRom[i] = dKongFile[i+16+0x4000];
-            }
-            nesMemory_.LoadCharRom(charRom,0x2000);
-            */
-            cpu_->Reset();
+            nesMemory_.LoadProgRom(iNesFile.progRomData_, 0x4000);
+            nesMemory_.LoadCharRom(iNesFile.charRomData_, 0x2000);
 
+            nesMemory_.LoadProgRom(iNesFile.GetProgRomData(), iNesFile.GetProgRomSize());
+            nesMemory_.LoadCharRom(iNesFile.GetCharRomData(), iNesFile.GetCharRomSize());
             
-            connect(&cpuTimer_, SIGNAL(timeout()), SLOT(StartNextFrame()));
-            cpuTimer_.setTimerType(Qt::PreciseTimer);
-            cpuTimer_.setInterval(16);
-            cpuTimer_.start();
-        }
-        
-        void NesConsole::LoadDKong()
-        {    
-            std::ifstream inFile;
-            inFile.open("roms/Donkey_kong.nes", std::ios::in | std::ios::binary | std::ios::ate);
+            cpu_->Reset();
             
-            if (inFile.is_open())
-            {
-                inFile.seekg(0, std::ios::beg);
-                inFile.read(dKongFile, SIZE);        
-                inFile.close();
-            }
-            else
-            {
-                std::cerr << "Can't find Donky Kong file" << std::endl;
-            }
+            connect(cpuTimer_, SIGNAL(timeout()), SLOT(StartNextFrame()));
+            cpuTimer_->setTimerType(Qt::PreciseTimer);
+            cpuTimer_->setInterval(16);
+            cpuTimer_->start();
         }
         
         void NesConsole::StartNextFrame()
@@ -83,7 +56,8 @@ namespace oa
             try 
             {
                 int ticks = 0;
-                while (ticks < 49917)
+                apu_->ExecuteTick();
+                while (ticks < TICKS_PER_FRAME)
                 {
                     if ((ticks % 3) == 0)
                     {
@@ -95,7 +69,6 @@ namespace oa
                         cpu_->SetNmi();
                         ppu_->ResetNmi();
                     }
-//                    apu_.ExecuteTick();
                     ReadGamepad();
                     ticks++;
                 }

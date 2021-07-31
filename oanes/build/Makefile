@@ -597,13 +597,14 @@ build/nesconsole.o: ../nesconsole.cc ../headers/nesconsole.h \
 		../headers/nesapuchannel.h \
 		../headers/nesmainwindow.h \
 		../headers/nespalette.h \
-		../headers/oaemuaudiooutput.h
+		../headers/oaemuaudiooutput.h \
+		../headers/inesfile.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nesconsole.o ../nesconsole.cc
 
 build/nespalette.o: ../nespalette.cc ../headers/nespalette.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nespalette.o ../nespalette.cc
 
-build/inesfile.o: ../inesfile.cc 
+build/inesfile.o: ../inesfile.cc ../headers/inesfile.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/inesfile.o ../inesfile.cc
 
 build/moc_nesapuchannel.o: build/moc_nesapuchannel.cpp 
