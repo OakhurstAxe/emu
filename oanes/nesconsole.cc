@@ -47,7 +47,7 @@ namespace oa
             
             connect(cpuTimer_, SIGNAL(timeout()), SLOT(StartNextFrame()));
             cpuTimer_->setTimerType(Qt::PreciseTimer);
-            cpuTimer_->setInterval(16);
+            cpuTimer_->setInterval(13);
             cpuTimer_->start();
         }
         

@@ -6,6 +6,11 @@
 #include <QAudioDeviceInfo>
 #include <QAudioOutput>
 
+const int DataSampleRateHz = 44100;
+const int BufferSize       = 66100;
+const int SamplesPerFrame  = (661*2);//1470;
+const int Period           = 3528;
+
 namespace oa
 {
     namespace nes
@@ -21,21 +26,18 @@ namespace oa
 
             qint64 readData(char *data, qint64 maxlen) override;
             qint64 writeData(const char *data, qint64 len) override;
-            qint64 bytesAvailable() const override;
-            void playSound(int inFrequency);
-            void setVolume(qreal volume);
-        private:
-            int bufferSize = 0;
-            QIODevice *io = 0;
-            int frequency = 0;
-            void generateData(const QAudioFormat &format, qint64 durationUs, int frequency);
+            virtual void PlaySound(uint8_t register1, uint8_t register2, uint8_t register3, uint8_t register4) = 0;
+            void SetVolume(qreal volume);
+        protected:
+            bool isrunning = false;
+            void WriteAudioOutput();
             QAudioFormat m_format;
             QAudioDeviceInfo m_device;
-            void createAudioOutput();
             QAudioOutput *m_audioOutput;
-            qint64 m_pos;
-            int currentBuffer=0;
+            int bufferSize = 0;
+            QIODevice *io = 0;
             QByteArray *m_buffer;
+            qreal lastValue = 0.0;
         };
 
     }

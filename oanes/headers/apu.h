@@ -17,7 +17,7 @@ namespace oa
             void ExecuteTick();
         private:
             oa::nes::NesMemory *memory_;
-            NesApuChannel *channels[2];
+            NesApuChannel *channels[4];
         };
 
     }

@@ -54,20 +54,25 @@ OBJECTS_DIR   = build/
 
 SOURCES       = ../nesmemory.cc \
 		../apu.cc \
-		../nesapuchannel.cc \
 		../oaemuaudiooutput.cpp \
 		../nesppu.cc \
 		../nesmainwindow.cc \
 		../r2a03.cc \
 		../nesconsole.cc \
 		../nespalette.cc \
-		../inesfile.cc build/moc_nesapuchannel.cpp \
+		../inesfile.cc \
+		../nesapuchannel.cc \
+		../nesapupulsechannel.cc \
+		../nesaputrianglechannel.cc \
+		../nesapunoisechannel.cc build/moc_nesapuchannel.cpp \
 		build/moc_oaemuaudiooutput.cpp \
 		build/moc_nesmainwindow.cpp \
-		build/moc_nesconsole.cpp
+		build/moc_nesconsole.cpp \
+		build/moc_nesapupulsechannel.cpp \
+		build/moc_nesaputrianglechannel.cpp \
+		build/moc_nesapunoisechannel.cpp
 OBJECTS       = build/nesmemory.o \
 		build/apu.o \
-		build/nesapuchannel.o \
 		build/oaemuaudiooutput.o \
 		build/nesppu.o \
 		build/nesmainwindow.o \
@@ -75,10 +80,17 @@ OBJECTS       = build/nesmemory.o \
 		build/nesconsole.o \
 		build/nespalette.o \
 		build/inesfile.o \
+		build/nesapuchannel.o \
+		build/nesapupulsechannel.o \
+		build/nesaputrianglechannel.o \
+		build/nesapunoisechannel.o \
 		build/moc_nesapuchannel.o \
 		build/moc_oaemuaudiooutput.o \
 		build/moc_nesmainwindow.o \
-		build/moc_nesconsole.o
+		build/moc_nesconsole.o \
+		build/moc_nesapupulsechannel.o \
+		build/moc_nesaputrianglechannel.o \
+		build/moc_nesapunoisechannel.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -177,16 +189,22 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		../headers/r2a03.h \
 		../headers/nesconsole.h \
 		../headers/nespalette.h \
-		../headers/inesfile.h ../nesmemory.cc \
+		../headers/inesfile.h \
+		../headers/nesapupulsechannel.h \
+		../headers/nesaputrianglechannel.h \
+		../headers/nesapunoisechannel.h ../nesmemory.cc \
 		../apu.cc \
-		../nesapuchannel.cc \
 		../oaemuaudiooutput.cpp \
 		../nesppu.cc \
 		../nesmainwindow.cc \
 		../r2a03.cc \
 		../nesconsole.cc \
 		../nespalette.cc \
-		../inesfile.cc
+		../inesfile.cc \
+		../nesapuchannel.cc \
+		../nesapupulsechannel.cc \
+		../nesaputrianglechannel.cc \
+		../nesapunoisechannel.cc
 QMAKE_TARGET  = oanes
 DESTDIR       = 
 TARGET        = liboanes.so.1.0.0
@@ -411,8 +429,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../headers/nesmemory.h ../headers/apu.h ../headers/nesapuchannel.h ../headers/oaemuaudiooutput.h ../headers/nesppu.h ../headers/nesmainwindow.h ../headers/r2a03.h ../headers/nesconsole.h ../headers/nespalette.h ../headers/inesfile.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../nesmemory.cc ../apu.cc ../nesapuchannel.cc ../oaemuaudiooutput.cpp ../nesppu.cc ../nesmainwindow.cc ../r2a03.cc ../nesconsole.cc ../nespalette.cc ../inesfile.cc $(DISTDIR)/
+	$(COPY_FILE) --parents ../headers/nesmemory.h ../headers/apu.h ../headers/nesapuchannel.h ../headers/oaemuaudiooutput.h ../headers/nesppu.h ../headers/nesmainwindow.h ../headers/r2a03.h ../headers/nesconsole.h ../headers/nespalette.h ../headers/inesfile.h ../headers/nesapupulsechannel.h ../headers/nesaputrianglechannel.h ../headers/nesapunoisechannel.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../nesmemory.cc ../apu.cc ../oaemuaudiooutput.cpp ../nesppu.cc ../nesmainwindow.cc ../r2a03.cc ../nesconsole.cc ../nespalette.cc ../inesfile.cc ../nesapuchannel.cc ../nesapupulsechannel.cc ../nesaputrianglechannel.cc ../nesapunoisechannel.cc $(DISTDIR)/
 	$(COPY_FILE) --parents ../nesmainwindow.ui $(DISTDIR)/
 
 
@@ -446,9 +464,9 @@ compiler_moc_predefs_clean:
 build/moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -g -std=gnu++1z -Wall -W -dM -E -o build/moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: build/moc_nesapuchannel.cpp build/moc_oaemuaudiooutput.cpp build/moc_nesmainwindow.cpp build/moc_nesconsole.cpp
+compiler_moc_header_make_all: build/moc_nesapuchannel.cpp build/moc_oaemuaudiooutput.cpp build/moc_nesmainwindow.cpp build/moc_nesconsole.cpp build/moc_nesapupulsechannel.cpp build/moc_nesaputrianglechannel.cpp build/moc_nesapunoisechannel.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) build/moc_nesapuchannel.cpp build/moc_oaemuaudiooutput.cpp build/moc_nesmainwindow.cpp build/moc_nesconsole.cpp
+	-$(DEL_FILE) build/moc_nesapuchannel.cpp build/moc_oaemuaudiooutput.cpp build/moc_nesmainwindow.cpp build/moc_nesconsole.cpp build/moc_nesapupulsechannel.cpp build/moc_nesaputrianglechannel.cpp build/moc_nesapunoisechannel.cpp
 build/moc_nesapuchannel.cpp: ../headers/nesapuchannel.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
@@ -501,6 +519,24 @@ build/moc_nesconsole.cpp: ../headers/nesconsole.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/dmax/projects/oaemu/oanes/build/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/dmax/projects/oaemu/oanes -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGamepad -I/usr/include/x86_64-linux-gnu/qt5/QtMultimedia -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../headers/nesconsole.h -o build/moc_nesconsole.cpp
 
+build/moc_nesapupulsechannel.cpp: ../headers/nesapupulsechannel.h \
+		../headers/nesapuchannel.h \
+		build/moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/dmax/projects/oaemu/oanes/build/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/dmax/projects/oaemu/oanes -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGamepad -I/usr/include/x86_64-linux-gnu/qt5/QtMultimedia -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../headers/nesapupulsechannel.h -o build/moc_nesapupulsechannel.cpp
+
+build/moc_nesaputrianglechannel.cpp: ../headers/nesaputrianglechannel.h \
+		../headers/nesapuchannel.h \
+		build/moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/dmax/projects/oaemu/oanes/build/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/dmax/projects/oaemu/oanes -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGamepad -I/usr/include/x86_64-linux-gnu/qt5/QtMultimedia -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../headers/nesaputrianglechannel.h -o build/moc_nesaputrianglechannel.cpp
+
+build/moc_nesapunoisechannel.cpp: ../headers/nesapunoisechannel.h \
+		../headers/nesapuchannel.h \
+		build/moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/dmax/projects/oaemu/oanes/build/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/dmax/projects/oaemu/oanes -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGamepad -I/usr/include/x86_64-linux-gnu/qt5/QtMultimedia -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../headers/nesapunoisechannel.h -o build/moc_nesapunoisechannel.cpp
+
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
 compiler_moc_source_make_all:
@@ -535,11 +571,11 @@ build/apu.o: ../apu.cc ../headers/apu.h \
 		../../oaemumemory/headers/memoryram.h \
 		../../oaemumemory/headers/basememory.h \
 		../../oaemumemory/headers/memoryrom.h \
-		../../oaemumemory/headers/memorymapper.h
+		../../oaemumemory/headers/memorymapper.h \
+		../headers/nesapupulsechannel.h \
+		../headers/nesaputrianglechannel.h \
+		../headers/nesapunoisechannel.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/apu.o ../apu.cc
-
-build/nesapuchannel.o: ../nesapuchannel.cc ../headers/nesapuchannel.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nesapuchannel.o ../nesapuchannel.cc
 
 build/oaemuaudiooutput.o: ../oaemuaudiooutput.cpp ../headers/oaemuaudiooutput.h \
 		../headers/nesmemory.h \
@@ -607,6 +643,21 @@ build/nespalette.o: ../nespalette.cc ../headers/nespalette.h
 build/inesfile.o: ../inesfile.cc ../headers/inesfile.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/inesfile.o ../inesfile.cc
 
+build/nesapuchannel.o: ../nesapuchannel.cc ../headers/nesapuchannel.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nesapuchannel.o ../nesapuchannel.cc
+
+build/nesapupulsechannel.o: ../nesapupulsechannel.cc ../headers/nesapupulsechannel.h \
+		../headers/nesapuchannel.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nesapupulsechannel.o ../nesapupulsechannel.cc
+
+build/nesaputrianglechannel.o: ../nesaputrianglechannel.cc ../headers/nesaputrianglechannel.h \
+		../headers/nesapuchannel.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nesaputrianglechannel.o ../nesaputrianglechannel.cc
+
+build/nesapunoisechannel.o: ../nesapunoisechannel.cc ../headers/nesapunoisechannel.h \
+		../headers/nesapuchannel.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nesapunoisechannel.o ../nesapunoisechannel.cc
+
 build/moc_nesapuchannel.o: build/moc_nesapuchannel.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/moc_nesapuchannel.o build/moc_nesapuchannel.cpp
 
@@ -618,6 +669,15 @@ build/moc_nesmainwindow.o: build/moc_nesmainwindow.cpp
 
 build/moc_nesconsole.o: build/moc_nesconsole.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/moc_nesconsole.o build/moc_nesconsole.cpp
+
+build/moc_nesapupulsechannel.o: build/moc_nesapupulsechannel.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/moc_nesapupulsechannel.o build/moc_nesapupulsechannel.cpp
+
+build/moc_nesaputrianglechannel.o: build/moc_nesaputrianglechannel.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/moc_nesaputrianglechannel.o build/moc_nesaputrianglechannel.cpp
+
+build/moc_nesapunoisechannel.o: build/moc_nesapunoisechannel.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/moc_nesapunoisechannel.o build/moc_nesapunoisechannel.cpp
 
 ####### Install
 

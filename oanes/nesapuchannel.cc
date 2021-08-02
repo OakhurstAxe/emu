@@ -1,14 +1,14 @@
 #include <QDebug>
 #include <qendian.h>
 
+#include <chrono>
+#include <iostream>
+#include <sys/time.h>
+#include <ctime>
+
+
 #include "headers/nesapuchannel.h"
 
-const int DurationSeconds  = 1;
-const int ToneSampleRateHz = 600;
-const int DataSampleRateHz = 44100;
-const int BufferSize       = 8192;
-const int SamplesPerFrame  = 1470;
-const int Period           = 3528;
 namespace oa
 {
     namespace nes
@@ -18,11 +18,13 @@ namespace oa
               m_device(QAudioDeviceInfo::defaultOutputDevice())
             , m_audioOutput(0)
         {
-            m_pos = 0;
+            m_buffer = new QByteArray();
+            m_buffer->resize(BufferSize);
         }
 
         NesApuChannel::~NesApuChannel()
         {
+            delete m_buffer;
         }
 
         qint64 NesApuChannel::readData(char *data, qint64 len)
@@ -41,76 +43,18 @@ namespace oa
             return 0;    
         }
 
-        qint64 NesApuChannel::bytesAvailable() const
+        void NesApuChannel::SetVolume(qreal volume)
         {
-            return m_buffer[currentBuffer].size() + QIODevice::bytesAvailable();
-        }
-
-        void NesApuChannel::playSound(int inFrequency)
-        {
-            qint64 durationUs = 25000;
-            m_format.setSampleRate(DataSampleRateHz);
-            m_format.setChannelCount(1);
-            m_format.setSampleSize(16);
-            m_format.setCodec("audio/pcm");
-            m_format.setByteOrder(QAudioFormat::LittleEndian);
-            m_format.setSampleType(QAudioFormat::SignedInt);
-            
-            //QAudioDeviceInfo info(m_device);
-            //if (!info.isFormatSupported(m_format)) {
-                //qWarning() << "Default format not supported - trying to use nearest";
-                //m_format = info.nearestFormat(m_format);
-            //}
-            
-            if (m_format.isValid())
+            if (m_audioOutput != 0)
             {
-                if (frequency != inFrequency)
-                    generateData(m_format, durationUs, inFrequency);
-                frequency = inFrequency;
-                createAudioOutput();
+                m_audioOutput->setVolume(volume);
             }
         }
-
-        void NesApuChannel::generateData(const QAudioFormat &format, qint64 durationUs, int frequency)
+        
+        void NesApuChannel::WriteAudioOutput()
         {
-            const int channelBytes = format.sampleSize() / 8;
-            const int sampleBytes = channelBytes;
-
-            Q_ASSERT(BufferSize % sampleBytes == 0);
-            Q_UNUSED(sampleBytes) // suppress warning in release builds
-
-            QByteArray *newBuffer = new QByteArray();
-            newBuffer->resize(BufferSize);
-            unsigned char *ptr = reinterpret_cast<unsigned char *>(newBuffer->data());
-            int sampleIndex = 0;
-            int length = BufferSize;
+            qDebug() << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
             
-            while (length) {
-                qreal x = 0;
-                if ((sampleIndex / (format.sampleRate() / frequency/2)) % 2 == 0)
-                {
-                    x = 1;
-                }
-                else 
-                {
-                    x = 0;
-                }           
-                qint16 value = static_cast<qint16>(x * 32767);
-                if (format.byteOrder() == QAudioFormat::LittleEndian)
-                    qToLittleEndian<qint16>(value, ptr);
-                else
-                    qToBigEndian<qint16>(value, ptr);
-
-                ptr += channelBytes;
-                length -= channelBytes;
-
-                ++sampleIndex;
-            } 
-            m_buffer = newBuffer;
-        }
-
-        void NesApuChannel::createAudioOutput()
-        {
             bufferSize -= SamplesPerFrame;
             if (bufferSize < 0)
                 bufferSize = 0;
@@ -124,29 +68,29 @@ namespace oa
             
             if (io == 0)
             {
+                m_audioOutput->setBufferSize(SamplesPerFrame);
                 io = m_audioOutput->start();
             }
             
             if (m_audioOutput->state() == QAudio::StoppedState)
                 return;
 
-            if (bufferSize > SamplesPerFrame)
+            if (bufferSize >= SamplesPerFrame)
                 return;
             
-            int period = m_audioOutput->periodSize();
+            auto format = m_audioOutput->format();
+            auto samples = format.sampleRate();
+            auto size = format.sampleSize();
+            auto bytes = format.bytesPerFrame();
+            auto duration = format.bytesForDuration(15000);
+            
+            //int period = m_audioOutput->periodSize();
+            int period = SamplesPerFrame;
             int free = m_audioOutput->bytesFree();
-            if (free > period)
+            if (free >= period)
             {
                 bufferSize += period;
-                io->write(m_buffer->data(), period);
-            }
-        }
-
-        void NesApuChannel::setVolume(qreal volume)
-        {
-            if (m_audioOutput != 0)
-            {
-                m_audioOutput->setVolume(volume);
+                auto written = io->write(m_buffer->data(), period);
             }
         }
 
