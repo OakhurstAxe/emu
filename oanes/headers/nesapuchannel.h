@@ -6,9 +6,11 @@
 #include <QAudioDeviceInfo>
 #include <QAudioOutput>
 
+#include "portaudio.h"
+
 const int DataSampleRateHz = 44100;
-const int BufferSize       = 66100;
-const int SamplesPerFrame  = (661*2);//1470;
+const int SamplesPerFrame  = (661);//1470;
+const int BufferSize       = SamplesPerFrame * sizeof(float);
 const int Period           = 3528;
 
 namespace oa
@@ -16,31 +18,27 @@ namespace oa
     namespace nes
     {
         
-        class NesApuChannel : public QIODevice
+        class NesApuChannel : public QObject
         {
             Q_OBJECT
-
+            
         public:
             NesApuChannel();
             virtual ~NesApuChannel();
 
-            qint64 readData(char *data, qint64 maxlen) override;
-            qint64 writeData(const char *data, qint64 len) override;
             virtual void PlaySound(uint8_t register1, uint8_t register2, uint8_t register3, uint8_t register4) = 0;
-            void SetVolume(qreal volume);
+            static int pa_callback_mapper(
+                const void* input, void* output,
+                unsigned long frameCount,
+                const PaStreamCallbackTimeInfo* timeInfo,
+                PaStreamCallbackFlags statusFlags,
+                void* userData);            
+            float m_buffer[BufferSize];
+            virtual void GenerateBufferData(int sampleCount);
         protected:
-            bool isrunning = false;
-            void WriteAudioOutput();
-            QAudioFormat m_format;
-            QAudioDeviceInfo m_device;
-            QAudioOutput *m_audioOutput;
-            int bufferSize = 0;
-            QIODevice *io = 0;
-            QByteArray *m_buffer;
-            qreal lastValue = 0.0;
+            PaStream *stream;
         };
 
     }
 }
 #endif
-

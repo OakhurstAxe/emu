@@ -40,7 +40,7 @@ DISTNAME      = oanes1.0.0
 DISTDIR = /home/dmax/projects/oaemu/oanes/build/build/oanes1.0.0
 LINK          = g++
 LFLAGS        = -shared -Wl,-soname,liboanes.so.1
-LIBS          = $(SUBLIBS) -L/home/dmax/projects/oaemu/oanes/../oaemumemory/build -loaemumemory -L/home/dmax/projects/oaemu/oanes/../oaemucpu/build -loaemucpu /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gamepad.so /usr/lib/x86_64-linux-gnu/libQt5Multimedia.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Test.so /usr/lib/x86_64-linux-gnu/libQt5Network.so /usr/lib/x86_64-linux-gnu/libQt5Core.so /usr/lib/x86_64-linux-gnu/libGL.so -lpthread   
+LIBS          = $(SUBLIBS) -L/home/dmax/projects/oaemu/oanes/../oaemumemory/build -loaemumemory -L/home/dmax/projects/oaemu/oanes/../oaemucpu/build -loaemucpu -lportaudio /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gamepad.so /usr/lib/x86_64-linux-gnu/libQt5Multimedia.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Test.so /usr/lib/x86_64-linux-gnu/libQt5Network.so /usr/lib/x86_64-linux-gnu/libQt5Core.so /usr/lib/x86_64-linux-gnu/libGL.so -lpthread   
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -643,7 +643,8 @@ build/nespalette.o: ../nespalette.cc ../headers/nespalette.h
 build/inesfile.o: ../inesfile.cc ../headers/inesfile.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/inesfile.o ../inesfile.cc
 
-build/nesapuchannel.o: ../nesapuchannel.cc ../headers/nesapuchannel.h
+build/nesapuchannel.o: ../nesapuchannel.cc ../headers/nesapuchannel.h \
+		../headers/nesapupulsechannel.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nesapuchannel.o ../nesapuchannel.cc
 
 build/nesapupulsechannel.o: ../nesapupulsechannel.cc ../headers/nesapupulsechannel.h \

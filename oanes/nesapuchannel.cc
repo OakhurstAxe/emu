@@ -6,93 +6,82 @@
 #include <sys/time.h>
 #include <ctime>
 
-
 #include "headers/nesapuchannel.h"
+#include "headers/nesapupulsechannel.h"
 
 namespace oa
 {
     namespace nes
     {
         
-        NesApuChannel::NesApuChannel() : 
-              m_device(QAudioDeviceInfo::defaultOutputDevice())
-            , m_audioOutput(0)
+        NesApuChannel::NesApuChannel()
         {
-            m_buffer = new QByteArray();
-            m_buffer->resize(BufferSize);
+            PaError err = Pa_Initialize();
+            if (err != paNoError)
+            {
+                qDebug() << "Error starting port audio";
+            }
+
+            err = Pa_OpenDefaultStream(&stream,
+                0,
+                1,
+                paFloat32,
+                DataSampleRateHz,
+                0,
+                &NesApuChannel::pa_callback_mapper,
+                this);                
+            if (err != paNoError)
+            {
+                qDebug() << "Error opening stream for port audio";
+            }
+            
+            err = Pa_StartStream(stream);
+            if (err != paNoError)
+            {
+                qDebug() << "Error starting stream for port audio";
+            }
+                
         }
 
         NesApuChannel::~NesApuChannel()
         {
-            delete m_buffer;
+            PaError err = Pa_StopStream(stream);
+            if (err != paNoError)
+            {
+                qDebug() << "Error stopping stream for port audio";
+            }
+
+            err = Pa_Terminate();
+            if (err != paNoError)
+            {
+                qDebug() << "Error starting port audio";
+            }
         }
 
-        qint64 NesApuChannel::readData(char *data, qint64 len)
+        void NesApuChannel::GenerateBufferData(int sampleCount)
         {
-            Q_UNUSED(data);
-            Q_UNUSED(len);
+            memset(m_buffer, 0, BufferSize);
+        }
 
+        int NesApuChannel::pa_callback_mapper(
+            const void* input, void* output,
+            unsigned long frameCount,
+            const PaStreamCallbackTimeInfo* timeInfo,
+            PaStreamCallbackFlags statusFlags,
+            void* userData)
+        {
+            if(auto self = reinterpret_cast<NesApuChannel*>(userData))
+            {
+                if (statusFlags == 4)
+                    qDebug() << "Audio underflow";
+                //qDebug() << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+                //qDebug() << "frameCount: " << frameCount;
+                self->GenerateBufferData(frameCount);
+                memcpy(output, self->m_buffer, frameCount * sizeof(float));
+                return 0;
+            }
             return 0;
         }
-            
-        qint64 NesApuChannel::writeData(const char *data, qint64 len)
-        {
-            Q_UNUSED(data);
-            Q_UNUSED(len);
-
-            return 0;    
-        }
-
-        void NesApuChannel::SetVolume(qreal volume)
-        {
-            if (m_audioOutput != 0)
-            {
-                m_audioOutput->setVolume(volume);
-            }
-        }
         
-        void NesApuChannel::WriteAudioOutput()
-        {
-            qDebug() << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-            
-            bufferSize -= SamplesPerFrame;
-            if (bufferSize < 0)
-                bufferSize = 0;
-
-            open(QIODevice::ReadWrite);
-            if (m_audioOutput == 0)
-            {
-                m_audioOutput = new QAudioOutput(m_device, m_format, this);
-                m_audioOutput->setVolume(qreal(0.5f));
-            }
-            
-            if (io == 0)
-            {
-                m_audioOutput->setBufferSize(SamplesPerFrame);
-                io = m_audioOutput->start();
-            }
-            
-            if (m_audioOutput->state() == QAudio::StoppedState)
-                return;
-
-            if (bufferSize >= SamplesPerFrame)
-                return;
-            
-            auto format = m_audioOutput->format();
-            auto samples = format.sampleRate();
-            auto size = format.sampleSize();
-            auto bytes = format.bytesPerFrame();
-            auto duration = format.bytesForDuration(15000);
-            
-            //int period = m_audioOutput->periodSize();
-            int period = SamplesPerFrame;
-            int free = m_audioOutput->bytesFree();
-            if (free >= period)
-            {
-                bufferSize += period;
-                auto written = io->write(m_buffer->data(), period);
-            }
-        }
-
     }
 }

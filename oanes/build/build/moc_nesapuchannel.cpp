@@ -63,7 +63,7 @@ void oa::nes::NesApuChannel::qt_static_metacall(QObject *_o, QMetaObject::Call _
 }
 
 QT_INIT_METAOBJECT const QMetaObject oa::nes::NesApuChannel::staticMetaObject = { {
-    &QIODevice::staticMetaObject,
+    &QObject::staticMetaObject,
     qt_meta_stringdata_oa__nes__NesApuChannel.data,
     qt_meta_data_oa__nes__NesApuChannel,
     qt_static_metacall,
@@ -82,12 +82,12 @@ void *oa::nes::NesApuChannel::qt_metacast(const char *_clname)
     if (!_clname) return nullptr;
     if (!strcmp(_clname, qt_meta_stringdata_oa__nes__NesApuChannel.stringdata0))
         return static_cast<void*>(this);
-    return QIODevice::qt_metacast(_clname);
+    return QObject::qt_metacast(_clname);
 }
 
 int oa::nes::NesApuChannel::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    _id = QIODevice::qt_metacall(_c, _id, _a);
+    _id = QObject::qt_metacall(_c, _id, _a);
     return _id;
 }
 QT_WARNING_POP

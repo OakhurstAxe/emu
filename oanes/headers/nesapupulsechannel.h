@@ -22,9 +22,12 @@ namespace oa
             virtual ~NesApuPulseChannel();
 
             void PlaySound(uint8_t register1, uint8_t register2, uint8_t register3, uint8_t register4) override;
+            void GenerateBufferData(int sampleCount) override;
         protected:
-            void GenerateBufferData(const QAudioFormat &format, int frequency, int duty);
-            int frequency = 0;
+            int totalSample = 0;
+            int frequency_ = 0;
+            int duty_ = 0;
+            qreal volume_ = 0;
         };
 
     }

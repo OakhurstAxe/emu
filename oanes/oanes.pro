@@ -12,7 +12,8 @@ HEADERS += headers/nesapupulsechannel.h headers/nesaputrianglechannel.h headers/
 SOURCES += nesmemory.cc apu.cc oaemuaudiooutput.cpp nesppu.cc nesmainwindow.cc
 SOURCES += r2a03.cc nesconsole.cc nespalette.cc inesfile.cc
 SOURCES += nesapuchannel.cc nesapupulsechannel.cc nesaputrianglechannel.cc nesapunoisechannel.cc
-LIBS += -L"$$_PRO_FILE_PWD_/../oaemumemory/build" -loaemumemory -L"$$_PRO_FILE_PWD_/../oaemucpu/build" -loaemucpu
+LIBS += -L"$$_PRO_FILE_PWD_/../oaemumemory/build" -loaemumemory -L"$$_PRO_FILE_PWD_/../oaemucpu/build" -loaemucpu 
+LIBS += -lportaudio
 
 MOC_DIR = build
 OBJECTS_DIR = build

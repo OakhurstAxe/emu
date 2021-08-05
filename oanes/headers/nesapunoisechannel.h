@@ -23,7 +23,7 @@ namespace oa
 
             void PlaySound(uint8_t register1, uint8_t register2, uint8_t register3, uint8_t register4) override;
         protected:
-            void GenerateBufferData(const QAudioFormat &format, int frequency);
+            void GenerateBufferData(int frequency);
             int frequency = 0;
         };
 

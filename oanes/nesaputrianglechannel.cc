@@ -18,74 +18,57 @@ namespace oa
 
         void NesApuTriangleChannel::PlaySound(uint8_t register1, uint8_t register2, uint8_t register3, uint8_t register4)
         {
-            m_format.setSampleRate(DataSampleRateHz);
-            m_format.setChannelCount(1);
-            m_format.setSampleSize(8);
-            m_format.setCodec("audio/pcm");
-            m_format.setByteOrder(QAudioFormat::LittleEndian);
-            m_format.setSampleType(QAudioFormat::UnSignedInt);
-            
-            qreal volume = 0.25;
-            SetVolume(volume);
-                
             int timer = register3;
             timer += ((register4 & 0x07) << 8);
             if (timer < 8)
             {
                 return;
             }
-            int newFrequency = (1789773/(16 * (timer + 1)) / 2);
+            int newFrequency = (1789773/(16 * (timer + 1)));
             if (newFrequency < 30)
             {
                 return;
             }
             
-            if (m_format.isValid())
-            {
-                if (frequency != newFrequency)
-                    GenerateBufferData(m_format, newFrequency);
-                frequency = newFrequency;
-                WriteAudioOutput();
-            }
+            frequency_ = newFrequency;
         }
 
-        void NesApuTriangleChannel::GenerateBufferData(const QAudioFormat &format, int frequency)
+        void NesApuTriangleChannel::GenerateBufferData(int sampleCount)
         {
-            const int channelBytes = format.sampleSize() / 8;
-            const int sampleBytes = channelBytes;
-
-            Q_ASSERT(BufferSize % sampleBytes == 0);
-            Q_UNUSED(sampleBytes) // suppress warning in release builds
-
-            qint8 *ptr = reinterpret_cast<qint8 *>(m_buffer->data());
+            float ptr[BufferSize];
             int sampleIndex = 0;
-            int length = BufferSize;
+            int length = SamplesPerFrame;
             
-            qreal waveLengthStep = (format.sampleRate() / frequency/2);
-            qreal counter = 0;
-            bool reverse = 0;
-            while (length) {
-                if (counter >= 1 || counter <= 0)
-                    reverse = ~reverse;
-                
-                qreal x = counter;
+            if (frequency_ == 0)
+                return;
+            
+            float waveLengthStep = (DataSampleRateHz / frequency_);
+            float step = 4/waveLengthStep;
+            while (sampleIndex < sampleCount) {
+                if (counter >= 1.0)
+                {
+                    counter = 1.0;
+                    reverse = false;
+                }
+                else if (counter <= -1.0)
+                {
+                    counter = -1.0;
+                    reverse = true;
+                }
+                    
+                ptr[sampleIndex] = counter;
                 
                 if (reverse)
-                    counter += 1.0/waveLengthStep;
+                    counter += step;
                 else
-                    counter -= 1.0/waveLengthStep;
+                    counter -= step;
                     
-                qint8 value = static_cast<qint8>(x * 500);
-                if (format.byteOrder() == QAudioFormat::LittleEndian)
-                    qToLittleEndian<qint8>(value, ptr);
-                else
-                    qToBigEndian<qint8>(value, ptr);
 
-                ptr += channelBytes;
-                length -= channelBytes;
-
+                length -= 1;
                 ++sampleIndex;
             } 
+            //qDebug() << "triangle frequency: " << frequency_;            
+            memcpy(m_buffer, ptr, BufferSize);
         }
 
     }
