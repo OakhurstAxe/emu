@@ -19,14 +19,18 @@ namespace oa
 
         public:
             NesApuTriangleChannel();
-            virtual ~NesApuTriangleChannel();
+            virtual ~NesApuTriangleChannel() override;
 
-            void PlaySound(uint8_t register1, uint8_t register2, uint8_t register3, uint8_t register4) override;
-            void GenerateBufferData(int sampleCount) override;
+            void SetChannelSettings(uint8_t register1, uint8_t register2, uint8_t register3, uint8_t register4) override;
+            float *GenerateBufferData(int sampleCount) override;
         protected:
             int frequency_ = 0;
-            float counter = 0;
-            bool reverse = false;
+            float counter_ = 0;
+            bool reverse_ = false;
+            int loadCounter_ = 0;
+            bool controlFlag_ = false;
+            int totalSamples_ = 0;
+            bool haltFlag_ = true;
         };
 
     }

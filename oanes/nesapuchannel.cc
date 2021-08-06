@@ -22,7 +22,7 @@ namespace oa
                 qDebug() << "Error starting port audio";
             }
 
-            err = Pa_OpenDefaultStream(&stream,
+            err = Pa_OpenDefaultStream(&stream_,
                 0,
                 1,
                 paFloat32,
@@ -35,7 +35,7 @@ namespace oa
                 qDebug() << "Error opening stream for port audio";
             }
             
-            err = Pa_StartStream(stream);
+            err = Pa_StartStream(stream_);
             if (err != paNoError)
             {
                 qDebug() << "Error starting stream for port audio";
@@ -45,7 +45,7 @@ namespace oa
 
         NesApuChannel::~NesApuChannel()
         {
-            PaError err = Pa_StopStream(stream);
+            PaError err = Pa_StopStream(stream_);
             if (err != paNoError)
             {
                 qDebug() << "Error stopping stream for port audio";
@@ -54,14 +54,15 @@ namespace oa
             err = Pa_Terminate();
             if (err != paNoError)
             {
-                qDebug() << "Error starting port audio";
+                qDebug() << "Error terminating port audio";
             }
         }
-
-        void NesApuChannel::GenerateBufferData(int sampleCount)
+        
+        float *NesApuChannel::GenerateBufferData(int sampleCount)
         {
-            memset(m_buffer, 0, BufferSize);
-        }
+            qDebug() << "Virtual GenerateBufferData called";
+            return m_buffer_;
+        }    
 
         int NesApuChannel::pa_callback_mapper(
             const void* input, void* output,
@@ -70,14 +71,17 @@ namespace oa
             PaStreamCallbackFlags statusFlags,
             void* userData)
         {
+            Q_UNUSED(input);
+            Q_UNUSED(timeInfo);
+            
             if(auto self = reinterpret_cast<NesApuChannel*>(userData))
             {
                 if (statusFlags == 4)
                     qDebug() << "Audio underflow";
                 //qDebug() << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
                 //qDebug() << "frameCount: " << frameCount;
-                self->GenerateBufferData(frameCount);
-                memcpy(output, self->m_buffer, frameCount * sizeof(float));
+                float *buffer = self->GenerateBufferData(frameCount);
+                memcpy(output, buffer, frameCount * sizeof(float));
                 return 0;
             }
             return 0;

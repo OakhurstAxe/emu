@@ -14,10 +14,24 @@ namespace oa
 
         NesApuTriangleChannel::~NesApuTriangleChannel()
         {
+            
         }
 
-        void NesApuTriangleChannel::PlaySound(uint8_t register1, uint8_t register2, uint8_t register3, uint8_t register4)
+        void NesApuTriangleChannel::SetChannelSettings(uint8_t register1, uint8_t register2, uint8_t register3, uint8_t register4)
         {
+            Q_UNUSED (register2);
+            
+            if (register2 > 0)
+            {
+                haltFlag_ = true;
+                loadCounter_ = (register1 & 0x7f);
+            }
+            controlFlag_ = (register1 & 0x80);
+            if (!controlFlag_)
+            {
+                haltFlag_ = false;
+            }
+            
             int timer = register3;
             timer += ((register4 & 0x07) << 8);
             if (timer < 8)
@@ -33,42 +47,51 @@ namespace oa
             frequency_ = newFrequency;
         }
 
-        void NesApuTriangleChannel::GenerateBufferData(int sampleCount)
+        float *NesApuTriangleChannel::GenerateBufferData(int sampleCount)
         {
-            float ptr[BufferSize];
             int sampleIndex = 0;
             int length = SamplesPerFrame;
             
             if (frequency_ == 0)
-                return;
+            {
+                memset(m_buffer_, 0, sizeof(m_buffer_));
+                return m_buffer_;
+            }
             
             float waveLengthStep = (DataSampleRateHz / frequency_);
             float step = 4/waveLengthStep;
             while (sampleIndex < sampleCount) {
-                if (counter >= 1.0)
+                if (counter_ >= 1.0)
                 {
-                    counter = 1.0;
-                    reverse = false;
+                    counter_ = 1.0;
+                    reverse_ = false;
                 }
-                else if (counter <= -1.0)
+                else if (counter_ <= -1.0)
                 {
-                    counter = -1.0;
-                    reverse = true;
+                    counter_ = -1.0;
+                    reverse_ = true;
                 }
-                    
-                ptr[sampleIndex] = counter;
-                
-                if (reverse)
-                    counter += step;
+                  
+                if ((loadCounter_ == 0 && !haltFlag_) || haltFlag_)
+                    m_buffer_[sampleIndex] = 0;
                 else
-                    counter -= step;
+                    m_buffer_[sampleIndex] = counter_ / 2;
+                
+                if (reverse_)
+                    counter_ += step;
+                else
+                    counter_ -= step;
                     
+                totalSamples_++;
+                if (totalSamples_ % 183 == 0 && loadCounter_ > 0)
+                {
+                    loadCounter_ --;
+                }
 
                 length -= 1;
                 ++sampleIndex;
             } 
-            //qDebug() << "triangle frequency: " << frequency_;            
-            memcpy(m_buffer, ptr, BufferSize);
+            return m_buffer_;
         }
 
     }

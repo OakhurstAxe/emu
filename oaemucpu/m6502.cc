@@ -491,6 +491,7 @@ namespace oa
         // Register transfers
         void M6502::OpTAX(AddressMethod addressMethod) 
         {
+            Q_UNUSED(addressMethod);
             registerX_ = accumulator_;
             statusRegister_.negativeFlag = (registerX_ & 0x80) > 0;
             statusRegister_.zeroFlag = (registerX_ == 0);
@@ -498,6 +499,7 @@ namespace oa
         }
         void M6502::OpTAY(AddressMethod addressMethod) 
         {
+            Q_UNUSED(addressMethod);
             registerY_ = accumulator_;
             statusRegister_.negativeFlag = (registerY_ & 0x80) > 0;
             statusRegister_.zeroFlag = (registerY_ == 0);
@@ -505,6 +507,7 @@ namespace oa
         }
         void M6502::OpTXA(AddressMethod addressMethod) 
         {
+            Q_UNUSED(addressMethod);
             accumulator_ = registerX_;
             statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
             statusRegister_.zeroFlag = (accumulator_ == 0);
@@ -512,6 +515,7 @@ namespace oa
         }
         void M6502::OpTYA(AddressMethod addressMethod)
         {
+            Q_UNUSED(addressMethod);
             accumulator_ = registerY_;
             statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
             statusRegister_.zeroFlag = (accumulator_ == 0);
@@ -521,6 +525,7 @@ namespace oa
         // Stack operaions
         void M6502::OpTSX(AddressMethod addressMethod) 
         {
+            Q_UNUSED(addressMethod);
             registerX_ = PopStack();
             statusRegister_.negativeFlag = (registerX_ & 0x80) > 0;
             statusRegister_.zeroFlag = (registerX_ == 0);
@@ -528,22 +533,26 @@ namespace oa
         }
         void M6502::OpTXS(AddressMethod addressMethod) 
         {
+            Q_UNUSED(addressMethod);
             PushStack(registerX_);
             overflowTicks_ += 2;
         }
         void M6502::OpPHA(AddressMethod addressMethod) 
         {
+            Q_UNUSED(addressMethod);
             PushStack(accumulator_);
             overflowTicks_ += 3;
         }
         void M6502::OpPHP(AddressMethod addressMethod)
         {
+            Q_UNUSED(addressMethod);
             PushStack(statusRegister_.register_);
             statusRegister_.register_ = 0;
             overflowTicks_ += 3;
         }
         void M6502::OpPLA(AddressMethod addressMethod)
         {
+            Q_UNUSED(addressMethod);
             accumulator_ = PopStack();
             statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
             statusRegister_.zeroFlag = (accumulator_ == 0);
@@ -551,6 +560,7 @@ namespace oa
         }
         void M6502::OpPLP(AddressMethod addressMethod)
         {
+            Q_UNUSED(addressMethod);
             statusRegister_.register_ = PopStack();
             overflowTicks_ += 4;
         }    
@@ -650,6 +660,7 @@ namespace oa
         }
         void M6502::OpINX(AddressMethod addressMethod)
         {
+            Q_UNUSED(addressMethod);
             registerX_++;
             statusRegister_.zeroFlag = (registerX_ == 0);
             statusRegister_.negativeFlag = (registerX_ & 0x80) > 0;
@@ -657,6 +668,7 @@ namespace oa
         }
         void M6502::OpINY(AddressMethod addressMethod)
         {
+            Q_UNUSED(addressMethod);
             registerY_++;
             statusRegister_.zeroFlag = (registerY_ == 0);
             statusRegister_.negativeFlag = (registerY_ & 0x80) > 0;
@@ -674,6 +686,7 @@ namespace oa
         }
         void M6502::OpDEX(AddressMethod addressMethod)
         {
+            Q_UNUSED(addressMethod);
             registerX_--;
             statusRegister_.zeroFlag = (registerX_ == 0);
             statusRegister_.negativeFlag = (registerX_ & 0x80) > 0;
@@ -681,6 +694,7 @@ namespace oa
         }
         void M6502::OpDEY(AddressMethod addressMethod) 
         {
+            Q_UNUSED(addressMethod);
             registerY_--;
             statusRegister_.zeroFlag = (registerY_ == 0);
             statusRegister_.negativeFlag = (registerY_ & 0x80) > 0;
@@ -690,6 +704,7 @@ namespace oa
         // Shift operations
         void M6502::OpASLAccumlator(AddressMethod addressMethod)
         {
+            Q_UNUSED(addressMethod);
             statusRegister_.carryFlag = (accumulator_ & 0x80) > 0;
             accumulator_ = accumulator_ << 1;
             statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
@@ -721,6 +736,7 @@ namespace oa
         }
         void M6502::OpLSRAccululator(AddressMethod addressMethod)
         {
+            Q_UNUSED(addressMethod);
             statusRegister_.carryFlag = (accumulator_ & 0x01) > 0;
             accumulator_ = accumulator_ >> 1;
             statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
@@ -729,6 +745,7 @@ namespace oa
         }
         void M6502::OpROLAccululator(AddressMethod addressMethod)
         {
+            Q_UNUSED(addressMethod);
             uint8_t newCarry = accumulator_ & 0x80;
             accumulator_ = (accumulator_ << 1) + statusRegister_.carryFlag;
             statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
@@ -763,6 +780,7 @@ namespace oa
         }
         void M6502::OpRORAccumulator(AddressMethod addressMethod)
         {
+            Q_UNUSED(addressMethod);
             uint8_t newCarry = accumulator_ & 0x01;
             accumulator_ = (accumulator_ >> 1) + (statusRegister_.carryFlag << 7);
             statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
@@ -788,6 +806,7 @@ namespace oa
         }
         void M6502::OpRTS(AddressMethod addressMethod) 
         {
+            Q_UNUSED(addressMethod);
             uint8_t loadl = PopStack();
             uint8_t loadh = PopStack();
             uint16_t load = (loadh << 8) + loadl;
@@ -880,44 +899,56 @@ namespace oa
         // Status Flag operations
         void M6502::OpCLC(AddressMethod addressMethod) 
         {
+            Q_UNUSED(addressMethod);
             statusRegister_.carryFlag = 0;
             overflowTicks_ += 2;
         }
         void M6502::OpCLD(AddressMethod addressMethod) 
         {
+            Q_UNUSED(addressMethod);
             statusRegister_.decimalMode = 0;
             overflowTicks_ += 2;
         }
         void M6502::OpCLI(AddressMethod addressMethod) 
         {
+            Q_UNUSED(addressMethod);
             statusRegister_.interruptDisable = 0;
             overflowTicks_ += 2;
         }
         void M6502::OpCLV(AddressMethod addressMethod) 
         {
+            Q_UNUSED(addressMethod);
             statusRegister_.overflowFlag = 0;
             overflowTicks_ += 2;
         }
         void M6502::OpSEC(AddressMethod addressMethod) 
         {
+            Q_UNUSED(addressMethod);
             statusRegister_.carryFlag = 1;
             overflowTicks_ += 2;
         }
         void M6502::OpSED(AddressMethod addressMethod) 
         {
+            Q_UNUSED(addressMethod);
             statusRegister_.decimalMode = 1;
             overflowTicks_ += 2;
         }
         void M6502::OpSEI(AddressMethod addressMethod) 
         {
+            Q_UNUSED(addressMethod);
             statusRegister_.interruptDisable = 1;
             overflowTicks_ += 2;    
         }
 
         // System operations
-        void M6502::OpBRK(AddressMethod addressMethod) { throw "Not implemented"; }
+        void M6502::OpBRK(AddressMethod addressMethod) 
+        {
+            Q_UNUSED(addressMethod);
+            throw "Not implemented";             
+        }
         void M6502::OpNOP(AddressMethod addressMethod) 
         {
+            Q_UNUSED(addressMethod);
             overflowTicks_ += 2;
         }
         void M6502::OpRTI(AddressMethod addressMethod)

@@ -62,6 +62,13 @@ namespace oa
             else if (location < 0x4020)
             {
                 location -= 0x4000;
+                if (location == 0x09)
+                {   
+                    uint8_t result = cpuApuIoRegisters_->Read(location);
+                    cpuApuIoRegisters_->Write(location, 0);
+                    return result;
+                }
+
                 if (location == 0x16)
                 {
                     uint8_t result = ((leftController_ & 0x01) > 0);
@@ -149,6 +156,11 @@ namespace oa
             // APU and IO Registers            
             else if (location < 0x4020)
             {
+                if (location == 0x4008)
+                {
+                    cpuApuIoRegisters_->Write(0x0009, 1);
+                }
+                    
                 if (location == 0x4014)
                 {
                     uint16_t cpuAddr = byte << 8;

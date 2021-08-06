@@ -19,7 +19,7 @@ namespace oa
             cpuTimer_ = new QTimer();
             cpu_ = new R2A03(&nesMemory_);
             ppu_ = new NesPpu(&nesMemory_);
-            apu_ = new Apu(&nesMemory_);
+            apu_ = new NesApu(&nesMemory_);
             
             nesMainWindow_ = nesMainWindow;
         }

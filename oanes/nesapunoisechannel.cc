@@ -16,8 +16,11 @@ namespace oa
         {
         }
 
-        void NesApuNoiseChannel::PlaySound(uint8_t register1, uint8_t register2, uint8_t register3, uint8_t register4)
+        void NesApuNoiseChannel::SetChannelSettings(uint8_t register1, uint8_t register2, uint8_t register3, uint8_t register4)
         {
+            Q_UNUSED (register1);
+            Q_UNUSED (register2);
+
             int timer = register3;
             timer += ((register4 & 0x07) << 8);
             if (timer < 8)
@@ -35,7 +38,7 @@ namespace oa
             frequency = newFrequency;
         }
 
-        void NesApuNoiseChannel::GenerateBufferData(int frequency)
+        float *NesApuNoiseChannel::GenerateBufferData(int frequency)
         {
             const int channelBytes = 1;
             const int sampleBytes = channelBytes;
@@ -43,7 +46,6 @@ namespace oa
             Q_ASSERT(BufferSize % sampleBytes == 0);
             Q_UNUSED(sampleBytes) // suppress warning in release builds
 
-            float ptr[SamplesPerFrame*sizeof(float)];
             int sampleIndex = 0;
             int length = BufferSize;
             
@@ -58,7 +60,7 @@ namespace oa
                     x = 0;
                 }
                 float value = static_cast<float>(x);
-                ptr[length] = value;
+                m_buffer_[length] = value;
                 //qToLittleEndian<qint16>(value, ptr);
 
                 //ptr += channelBytes;
@@ -66,7 +68,7 @@ namespace oa
 
                 ++sampleIndex;
             }
-            memcpy(m_buffer, ptr, SamplesPerFrame*sizeof(float));
+            return m_buffer_;
         }
 
     }

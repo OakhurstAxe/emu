@@ -17,8 +17,10 @@ namespace oa
         {
         }
 
-        void NesApuPulseChannel::PlaySound(uint8_t register1, uint8_t register2, uint8_t register3, uint8_t register4)
+        void NesApuPulseChannel::SetChannelSettings(uint8_t register1, uint8_t register2, uint8_t register3, uint8_t register4)
         {
+            Q_UNUSED(register2);
+            
             qreal volume = ((qreal)(register1 & 0x0f)) / 16;
                 
             int timer = register3;
@@ -38,10 +40,14 @@ namespace oa
             duty_ = duty;
         }
 
-        void NesApuPulseChannel::GenerateBufferData(int sampleCount)
+        float *NesApuPulseChannel::GenerateBufferData(int sampleCount)
         {
-            int sampleIndex = 0;
-            
+            if (frequency_ == 0 || volume_ == 0)
+            {
+                memset(m_buffer_, 0, sizeof(m_buffer_));
+                return m_buffer_;
+            }
+
             int dutyValue = 0;
             switch (duty_)
             {
@@ -58,14 +64,14 @@ namespace oa
                     dutyValue = 2;
                     break;
             }
-            if (frequency_ == 0)
-                return;
+            
             int wavelength = ((DataSampleRateHz / frequency_));
             int wavelengthEigth = wavelength / 8;
+            int sampleIndex = 0;
+            float x = 0.0;
             while (sampleIndex < sampleCount) {
-                float x = 0;
-                //x = sin(sampleIndex * wavelength * 3.141 / 180);
-                if ((totalSample % wavelength) < (wavelengthEigth * dutyValue))
+
+                if ((totalSample_ % wavelength) < (wavelengthEigth * dutyValue))
                 {
                     x = 1.0;
                 }
@@ -73,13 +79,13 @@ namespace oa
                 {
                     x = -1.0;
                 }
-                float value = (x * volume_);
                 
-                m_buffer[sampleIndex] = value;
-                ++sampleIndex;
-                totalSample++;
+                m_buffer_[sampleIndex] = (x * volume_);
+                sampleIndex++;
+                totalSample_++;
             }
             //qDebug() << "volume: " << volume_ << " frequency: " << frequency_;
+            return m_buffer_;
         }
 
     }

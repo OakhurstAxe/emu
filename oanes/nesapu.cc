@@ -1,6 +1,6 @@
 #include <QDebug>
 
-#include "headers/apu.h"
+#include "headers/nesapu.h"
 #include "headers/nesapupulsechannel.h"
 #include "headers/nesaputrianglechannel.h"
 #include "headers/nesapunoisechannel.h"
@@ -10,7 +10,7 @@ namespace oa
     namespace nes
     {
         
-        Apu::Apu(NesMemory *memory)
+        NesApu::NesApu(NesMemory *memory)
         {
             memory_ = memory;
             channels[0] = new NesApuPulseChannel();
@@ -20,7 +20,7 @@ namespace oa
             
         }
 
-        Apu::~Apu()
+        NesApu::~NesApu()
         {
             delete channels[0];
             delete channels[1];
@@ -28,7 +28,7 @@ namespace oa
             //delete channels[3];
         }
 
-        void Apu::ExecuteTick()
+        void NesApu::ExecuteTick()
         {
             for (int i=0; i<3; i++)
             {
@@ -37,7 +37,7 @@ namespace oa
                 uint8_t byte3 = memory_->CpuRead(0x4002 + (i*4));
                 uint8_t byte4 = memory_->CpuRead(0x4003 + (i*4));
 
-                channels[i]->PlaySound(byte, byte2, byte3, byte4);
+                channels[i]->SetChannelSettings(byte, byte2, byte3, byte4);
             }
         }
 

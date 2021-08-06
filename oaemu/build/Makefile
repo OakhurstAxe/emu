@@ -411,8 +411,7 @@ build/main.o: ../main.cc ../../oanes/headers/nesmainwindow.h \
 		../../oaemumemory/headers/memoryram.h \
 		../../oaemumemory/headers/basememory.h \
 		../../oaemumemory/headers/memoryrom.h \
-		../../oanes/headers/oaemuaudiooutput.h \
-		../../oanes/headers/apu.h \
+		../../oanes/headers/nesapu.h \
 		../../oanes/headers/nesapuchannel.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/main.o ../main.cc
 

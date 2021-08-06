@@ -9,11 +9,11 @@ namespace oa
     namespace nes
     {
         
-        class Apu
+        class NesApu
         {
         public:
-            Apu(NesMemory *memory);
-            virtual ~Apu();
+            NesApu(NesMemory *memory);
+            virtual ~NesApu();
             void ExecuteTick();
         private:
             oa::nes::NesMemory *memory_;

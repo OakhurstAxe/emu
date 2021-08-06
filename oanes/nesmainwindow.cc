@@ -121,6 +121,8 @@ namespace oa
 
         void NesMainWindow::paintEvent(QPaintEvent* event)
         {
+            Q_UNUSED(event);
+            
             QRect rect(0,0,1024,768);
             QPainter painter(this);
             

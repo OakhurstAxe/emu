@@ -19,11 +19,11 @@ namespace oa
 
         public:
             NesApuNoiseChannel();
-            virtual ~NesApuNoiseChannel();
+            virtual ~NesApuNoiseChannel() override;
 
-            void PlaySound(uint8_t register1, uint8_t register2, uint8_t register3, uint8_t register4) override;
+            void SetChannelSettings(uint8_t register1, uint8_t register2, uint8_t register3, uint8_t register4) override;
         protected:
-            void GenerateBufferData(int frequency);
+            float *GenerateBufferData(int frequency) override;
             int frequency = 0;
         };
 
