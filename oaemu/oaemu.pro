@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-QT += widgets core gui testlib gamepad multimedia
+QT += widgets core gui gamepad
 
 CONFIG += debug
 

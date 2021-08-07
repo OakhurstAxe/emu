@@ -54,10 +54,12 @@ OBJECTS_DIR   = build/
 
 SOURCES       = ../basememory.cc \
 		../memoryram.cc \
-		../memoryrom.cc 
+		../memoryrom.cc \
+		../memoryramflagged.cc 
 OBJECTS       = build/basememory.o \
 		build/memoryram.o \
-		build/memoryrom.o
+		build/memoryrom.o \
+		build/memoryramflagged.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -147,7 +149,8 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
 		../../oaemumemory.pro  ../basememory.cc \
 		../memoryram.cc \
-		../memoryrom.cc
+		../memoryrom.cc \
+		../memoryramflagged.cc
 QMAKE_TARGET  = oaemumemory
 DESTDIR       = 
 TARGET        = liboaemumemory.so.1.0.0
@@ -368,7 +371,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../basememory.cc ../memoryram.cc ../memoryrom.cc $(DISTDIR)/
+	$(COPY_FILE) --parents ../basememory.cc ../memoryram.cc ../memoryrom.cc ../memoryramflagged.cc $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -427,6 +430,11 @@ build/memoryram.o: ../memoryram.cc ../headers/memoryram.h \
 build/memoryrom.o: ../memoryrom.cc ../headers/memoryrom.h \
 		../headers/basememory.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/memoryrom.o ../memoryrom.cc
+
+build/memoryramflagged.o: ../memoryramflagged.cc ../headers/memoryramflagged.h \
+		../headers/memoryram.h \
+		../headers/basememory.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/memoryramflagged.o ../memoryramflagged.cc
 
 ####### Install
 

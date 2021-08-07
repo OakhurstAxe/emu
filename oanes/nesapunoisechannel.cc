@@ -1,5 +1,4 @@
 #include <QDebug>
-#include <qendian.h>
 
 #include "headers/nesapunoisechannel.h"
 
@@ -16,10 +15,17 @@ namespace oa
         {
         }
 
-        void NesApuNoiseChannel::SetChannelSettings(uint8_t register1, uint8_t register2, uint8_t register3, uint8_t register4)
+        void NesApuNoiseChannel::SetChannelSettings(uint8_t register1, bool register1flag,
+                                                    uint8_t register2, bool register2flag,
+                                                    uint8_t register3, bool register3flag,
+                                                    uint8_t register4, bool register4flag)
         {
             Q_UNUSED (register1);
             Q_UNUSED (register2);
+            Q_UNUSED(register1flag);
+            Q_UNUSED(register2flag);
+            Q_UNUSED(register3flag);
+            Q_UNUSED(register4flag);
 
             int timer = register3;
             timer += ((register4 & 0x07) << 8);

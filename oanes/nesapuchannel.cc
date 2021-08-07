@@ -1,13 +1,6 @@
 #include <QDebug>
-#include <qendian.h>
-
-#include <chrono>
-#include <iostream>
-#include <sys/time.h>
-#include <ctime>
 
 #include "headers/nesapuchannel.h"
-#include "headers/nesapupulsechannel.h"
 
 namespace oa
 {
@@ -60,6 +53,8 @@ namespace oa
         
         float *NesApuChannel::GenerateBufferData(int sampleCount)
         {
+            Q_UNUSED(sampleCount);
+            
             qDebug() << "Virtual GenerateBufferData called";
             return m_buffer_;
         }    
@@ -87,5 +82,14 @@ namespace oa
             return 0;
         }
         
+        uint16_t NesApuChannel::FrequencyFromTimer(uint16_t timer)
+        {
+            if (timer < 8)
+            {
+                return 0;
+            }
+            return 1789773/(16 * (timer + 1));
+        }
+
     }
 }

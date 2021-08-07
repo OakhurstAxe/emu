@@ -32,12 +32,19 @@ namespace oa
         {
             for (int i=0; i<3; i++)
             {
-                uint8_t byte = memory_->CpuRead(0x4000 + (i*4));
-                uint8_t byte2 = memory_->CpuRead(0x4001 + (i*4));
-                uint8_t byte3 = memory_->CpuRead(0x4002 + (i*4));
-                uint8_t byte4 = memory_->CpuRead(0x4003 + (i*4));
+                uint8_t register1 = memory_->CpuRead(0x4000 + (i*4));
+                bool register1flag = memory_->CpuWriteFlagged(0x4000 + (i*4));
+                uint8_t register2 = memory_->CpuRead(0x4001 + (i*4));
+                bool register2flag = memory_->CpuWriteFlagged(0x4000 + (i*4));
+                uint8_t register3 = memory_->CpuRead(0x4002 + (i*4));
+                bool register3flag = memory_->CpuWriteFlagged(0x4000 + (i*4));
+                uint8_t register4 = memory_->CpuRead(0x4003 + (i*4));
+                bool register4flag = memory_->CpuWriteFlagged(0x4000 + (i*4));
 
-                channels[i]->SetChannelSettings(byte, byte2, byte3, byte4);
+                channels[i]->SetChannelSettings(register1, register1flag,
+                                                register2, register2flag,
+                                                register3, register3flag,
+                                                register4, register4flag);
             }
         }
 

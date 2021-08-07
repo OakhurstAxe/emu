@@ -1,6 +1,4 @@
 #include <QDebug>
-#include <qendian.h>
-#include <math.h>
 
 #include "headers/nesapupulsechannel.h"
 
@@ -17,74 +15,100 @@ namespace oa
         {
         }
 
-        void NesApuPulseChannel::SetChannelSettings(uint8_t register1, uint8_t register2, uint8_t register3, uint8_t register4)
+        void NesApuPulseChannel::SetChannelSettings(uint8_t register1, bool register1flag,
+                                                    uint8_t register2, bool register2flag,
+                                                    uint8_t register3, bool register3flag,
+                                                    uint8_t register4, bool register4flag)
         {
-            Q_UNUSED(register2);
+            Q_UNUSED(register3flag);
+            Q_UNUSED(register4flag);
             
-            qreal volume = ((qreal)(register1 & 0x0f)) / 16;
-                
-            int timer = register3;
-            timer += ((register4 & 0x07) << 8);
-            if (timer < 8)
+            dutyRegister_.register_ = register1;
+            timerRegister_.register_ = register3;
+            loadCounterRegister_.register_ = register4;
+
+            volume_ = volumeSteps_[dutyRegister_.volume_];
+            dutyValue_ = GetDutyValue(dutyRegister_.dutyReading_);
+            haltFlag_ = dutyRegister_.haltFlag_;
+
+            if (register1flag)
             {
-                return;
+                loadCounter_ = loadCounterRegister_.loadCounter_;
+                if (loadCounter_ == 1)
+                {
+                    loadCounter_ = 255;
+                }
             }
-            int newFrequency = 1789773/(16 * (timer + 1));
-            if (newFrequency < 30)
+
+            if (register2flag)
             {
-                return;
+                sweepRegister_.register_ = register2;
             }
-            int duty = (register1 & 0xc0) >> 6;
-            frequency_ = newFrequency;
-            volume_ = volume;
-            duty_ = duty;
+
+            timer_ = (loadCounterRegister_.timerHigh_ << 8) + timerRegister_.timer_;
+            frequency_ = FrequencyFromTimer(timer_);
+        }
+
+        int NesApuPulseChannel::GetDutyValue(int dutyReading)
+        {
+            int dutyResult = 4;
+            switch (dutyReading)
+            {
+                case (0):
+                    dutyResult = 7;
+                    break;
+                case (1):
+                    dutyResult = 6;
+                    break;
+                case (2):
+                    dutyResult = 4;
+                    break;
+                case (4):
+                    dutyResult = 2;
+                    break;
+            }
+            return dutyResult;
         }
 
         float *NesApuPulseChannel::GenerateBufferData(int sampleCount)
         {
-            if (frequency_ == 0 || volume_ == 0)
+            if (frequency_ == 0)
             {
-                memset(m_buffer_, 0, sizeof(m_buffer_));
+                memset(m_buffer_, 0, sampleCount);
                 return m_buffer_;
             }
-
-            int dutyValue = 0;
-            switch (duty_)
-            {
-                case (0):
-                    dutyValue = 7;
-                    break;
-                case (1):
-                    dutyValue = 6;
-                    break;
-                case (2):
-                    dutyValue = 4;
-                    break;
-                case (4):
-                    dutyValue = 2;
-                    break;
-            }
             
-            int wavelength = ((DataSampleRateHz / frequency_));
-            int wavelengthEigth = wavelength / 8;
-            int sampleIndex = 0;
-            float x = 0.0;
-            while (sampleIndex < sampleCount) {
+            uint wavelength = ((DataSampleRateHz / frequency_));
+            uint wavelengthEigth = wavelength / 8;
+            uint sampleIndex = 0;
 
-                if ((totalSample_ % wavelength) < (wavelengthEigth * dutyValue))
+            while (sampleIndex < sampleCount) 
+            {
+
+                int x = 32;
+                if (loadCounter_ == 0 && haltFlag_ == false)
                 {
-                    x = 1.0;
+                    m_buffer_[sampleIndex] = 0.0;
+                }
+                else if ((totalSample_ % wavelength) < (wavelengthEigth * dutyValue_))
+                {
+                    m_buffer_[sampleIndex] = volume_;
                 }
                 else 
                 {
-                    x = -1.0;
+                    m_buffer_[sampleIndex] = -volume_;
                 }
                 
-                m_buffer_[sampleIndex] = (x * volume_);
+                if (totalSample_ % SamplesPerHalfFrame == 0) // 120 Hz timer
+                {
+                    if (loadCounter_ > 0 && haltFlag_ == false)
+                    {
+                        loadCounter_ --;
+                    }
+                }
                 sampleIndex++;
                 totalSample_++;
             }
-            //qDebug() << "volume: " << volume_ << " frequency: " << frequency_;
             return m_buffer_;
         }
 

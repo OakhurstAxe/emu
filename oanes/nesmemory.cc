@@ -11,7 +11,7 @@ namespace oa
             cpuWorkRam_ = new emu::MemoryRam(0x0800, "CPU Work RAM");
             cpuPpuRegisters_ = new emu::MemoryRam(0x0008, "PPU Registers");
             cpuPrgRom_ = new emu::MemoryRom(0x4000, "CPU Program ROM");
-            cpuApuIoRegisters_ = new emu::MemoryRam(0x001f, "APU IO Registers");
+            cpuApuIoRegisters_ = new emu::MemoryRamFlagged(0x001f, "APU IO Registers");
             
             ppuCharRom_ = new emu::MemoryRom(0x2000, "PPU Character ROM");
             ppuNameTable_ = new emu::MemoryRam(0x1f00, "PPU Name Table RAM");
@@ -62,13 +62,6 @@ namespace oa
             else if (location < 0x4020)
             {
                 location -= 0x4000;
-                if (location == 0x09)
-                {   
-                    uint8_t result = cpuApuIoRegisters_->Read(location);
-                    cpuApuIoRegisters_->Write(location, 0);
-                    return result;
-                }
-
                 if (location == 0x16)
                 {
                     uint8_t result = ((leftController_ & 0x01) > 0);
@@ -156,11 +149,6 @@ namespace oa
             // APU and IO Registers            
             else if (location < 0x4020)
             {
-                if (location == 0x4008)
-                {
-                    cpuApuIoRegisters_->Write(0x0009, 1);
-                }
-                    
                 if (location == 0x4014)
                 {
                     uint16_t cpuAddr = byte << 8;
@@ -169,12 +157,6 @@ namespace oa
                         uint8_t spriteData = CpuRead(cpuAddr + i);
                         ppuOam_->Write(i, spriteData);
                     }
-                    return;
-                }
-                
-                if (location == 0x4016)
-                {
-                    loadController_ = 1;
                     return;
                 }
                 
@@ -198,6 +180,34 @@ namespace oa
             }
 
             throw std::out_of_range(QString("Invalid NES memory location for write %1").arg(originalLocation).toLocal8Bit().data());
+        }
+
+        bool NesMemory::CpuReadFlagged(uint16_t location)
+        {
+            if (location < 0x4000)
+            {
+                throw std::out_of_range(QString("Bad location address [%1] for read flag").arg(location).toLocal8Bit().data());
+            }            
+            else if (location < 0x4020)
+            {
+                location -= 0x4000;
+                return cpuApuIoRegisters_->IsReadFlagSet(location);
+            }
+            throw std::out_of_range(QString("Bad location address [%1] for read flag").arg(location).toLocal8Bit().data());
+        }
+
+        bool NesMemory::CpuWriteFlagged(uint16_t location)
+        {
+            if (location < 0x4000)
+            {
+                throw std::out_of_range(QString("Bad location address [%1] for write flag").arg(location).toLocal8Bit().data());
+            }            
+            else if (location < 0x4020)
+            {
+                location -= 0x4000;
+                return cpuApuIoRegisters_->IsWriteFlagSet(location);
+            }
+            throw std::out_of_range(QString("Bad location address [%1] for write flag").arg(location).toLocal8Bit().data());
         }
 
         uint8_t NesMemory::PpuRead(uint16_t location)
@@ -278,13 +288,6 @@ namespace oa
                 byte &= 0x7f;
             }
             cpuPpuRegisters_->Write(2, byte);
-        }
-        
-        bool NesMemory::IsLoadController()
-        {
-            bool result = loadController_;
-            loadController_ = false;
-            return result;
         }
         
         void NesMemory::SetLeftController(uint8_t byte)

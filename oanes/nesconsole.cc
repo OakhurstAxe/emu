@@ -82,7 +82,7 @@ namespace oa
         
         void NesConsole::ReadGamepad()
         {
-            if (nesMemory_.IsLoadController())
+            if (nesMemory_.CpuWriteFlagged(0x4016))
             {
                 nesMemory_.SetLeftController(nesMainWindow_->leftController);
             }

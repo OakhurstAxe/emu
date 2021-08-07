@@ -1,9 +1,9 @@
 
 TEMPLATE = lib
 
-QT += widgets core gui testlib gamepad multimedia
+QT += widgets core gui gamepad
 
-CONFIG += debug c++17
+CONFIG += debug
 
 FORMS += nesmainwindow.ui
 
