@@ -713,7 +713,7 @@ namespace oa
         }
         void M6502::OpASL(AddressMethod addressMethod)
         {
-            uint8_t address = CallAddressMethod(addressMethod);
+            uint16_t address = CallAddressMethod(addressMethod);
             uint8_t byte = memory_->CpuRead(address);
             statusRegister_.carryFlag = (byte & 0x80) > 0;
             byte = byte << 1;
@@ -732,7 +732,7 @@ namespace oa
             statusRegister_.negativeFlag = (byte & 0x80) > 0;
             statusRegister_.zeroFlag = (byte == 0);
             memory_->CpuWrite(address, byte);
-            overflowTicks_ += 4;    
+            overflowTicks_ += 4;
         }
         void M6502::OpLSRAccululator(AddressMethod addressMethod)
         {
@@ -944,7 +944,10 @@ namespace oa
         void M6502::OpBRK(AddressMethod addressMethod) 
         {
             Q_UNUSED(addressMethod);
-            throw "Not implemented";             
+            PushStack(programCounter_ + 2);
+            statusRegister_.breakCommand = true;
+            PushStack(statusRegister_.register_);
+            overflowTicks_ += 7;
         }
         void M6502::OpNOP(AddressMethod addressMethod) 
         {

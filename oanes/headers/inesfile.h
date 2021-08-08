@@ -13,9 +13,9 @@ namespace oa
         public:
             void LoadFile(QString fileName);
             uint8_t *GetProgRomData();
-            uint8_t GetProgRomSize();
+            uint16_t GetProgRomSize();
             uint8_t *GetCharRomData();
-            uint8_t GetCharRomSize();
+            uint16_t GetCharRomSize();
             uint8_t *progRomData_;
             uint8_t *charRomData_;
 

@@ -19,13 +19,15 @@ namespace oa
                                     uint8_t register3, bool register3flag,
                                     uint8_t register4, bool register4flag);
             float *GenerateBufferData(int sampleCount) override;
-            int GetDutyValue(int dutyReading);
         protected:
+            int GetDutyValue(int dutyReading);
             uint64_t totalSample_ = 0;
 
             uint8_t  dutyValue_ = 0;
             bool     haltFlag_ = false;
+            uint8_t  volumeCounter_ = 0;
             qreal    volume_ = 0;
+            bool     constantVolume_ = false;
             uint8_t  loadCounter_ = 0;
             uint16_t frequency_ = 0;
             uint16_t timer_ = 0;

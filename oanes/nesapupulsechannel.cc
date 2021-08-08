@@ -20,18 +20,28 @@ namespace oa
                                                     uint8_t register3, bool register3flag,
                                                     uint8_t register4, bool register4flag)
         {
-            Q_UNUSED(register3flag);
+            Q_UNUSED(register1flag);
             Q_UNUSED(register4flag);
             
             dutyRegister_.register_ = register1;
             timerRegister_.register_ = register3;
             loadCounterRegister_.register_ = register4;
 
-            volume_ = volumeSteps_[dutyRegister_.volume_];
+            constantVolume_ = dutyRegister_.constantVolume_;
             dutyValue_ = GetDutyValue(dutyRegister_.dutyReading_);
             haltFlag_ = dutyRegister_.haltFlag_;
 
+            if (constantVolume_ == false)
+            {
+                volume_ = volumeSteps_[dutyRegister_.volume_];
+            }
+            
             if (register1flag)
+            {
+                volumeCounter_ = dutyRegister_.volume_;
+            }
+            
+            if (register3flag)
             {
                 loadCounter_ = loadCounterRegister_.loadCounter_;
                 if (loadCounter_ == 1)
@@ -82,6 +92,7 @@ namespace oa
             uint wavelengthEigth = wavelength / 8;
             uint sampleIndex = 0;
 
+            //qDebug() << "Pulse frequency: " << frequency_ << " volume: " << volume_ << " constantVolume_: " << constantVolume_;
             while (sampleIndex < sampleCount) 
             {
 
@@ -101,6 +112,18 @@ namespace oa
                 
                 if (totalSample_ % SamplesPerHalfFrame == 0) // 120 Hz timer
                 {
+                    /*
+                    if (constantVolume_)
+                    {
+                        if (volumeCounter_ > 0)
+                        {
+                            volumeCounter_--;
+                        }
+                        else
+                        {
+                            volume_ = volumeSteps_[volumeCounter_];
+                        }
+                    }*/
                     if (loadCounter_ > 0 && haltFlag_ == false)
                     {
                         loadCounter_ --;

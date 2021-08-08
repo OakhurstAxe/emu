@@ -31,8 +31,8 @@ namespace oa
             NesMainWindow();
             ~NesMainWindow();
             void DrawFrame(uint8_t *screen);
-            unsigned char leftController = 0;
-            unsigned char rightController = 0;
+            uint8_t leftController = 0;
+            uint8_t rightController = 0;
         public slots:
             void leftControllerLeftRight(double value);
             void leftControllerUpDown(double value);

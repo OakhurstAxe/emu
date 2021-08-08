@@ -10,29 +10,28 @@ namespace oa
 {
     namespace nes
     {
-        unsigned char *INesFile::GetProgRomData()
+        uint8_t *INesFile::GetProgRomData()
         {
             return progRomData_;
         }
         
-        uint8_t INesFile::GetProgRomSize()
+        uint16_t INesFile::GetProgRomSize()
         {
             return programRomSize_;
         }
         
-        unsigned char *INesFile::GetCharRomData()
+        uint8_t *INesFile::GetCharRomData()
         {
             return charRomData_;
         }
             
-        uint8_t INesFile::GetCharRomSize()
+        uint16_t INesFile::GetCharRomSize()
         {
             return characterRomSize_;
         }
         
         void INesFile::LoadFile(QString fileName)
-        {
-            
+        {            
             std::ifstream inFile;
             inFile.open(fileName.toLocal8Bit(), std::ios::in | std::ios::binary | std::ios::ate);
             
@@ -50,8 +49,7 @@ namespace oa
                 // error
                 throw std::runtime_error("Error reading iNES file: ");
             }
-            inFile.close();
-            
+            inFile.close();            
 
             int position = 0;
             memcpy(header_, &fileData[position], 4);

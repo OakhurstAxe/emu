@@ -46,15 +46,18 @@ namespace oa
                 int spriteCount = 0;
                 for (int i=0; i<64; i++)
                 {
+                    if (spriteCount == 8)
+                    {
+                        // sprite overflow
+                        memory_->SetPpuSpriteOvervlow();
+                        break;
+                    }
+                    
                     uint8_t yPos = memory_->PpuOamRead(i*4);
                     if (screenScanLine - yPos >= 0 && screenScanLine - yPos < 8)
                     {
                         renderSprites_[spriteCount] = i;
                         spriteCount++;
-                        if (spriteCount == 8)
-                        {
-                            break;
-                        }
                     }            
                 }
             }
@@ -183,6 +186,10 @@ namespace oa
                 }
             }
             
+            memory_->SetPpuScanLineStatus(scanLine_);
+            //uint8_t byte = (memory_->PpuStatusRead() & 0xE0) + scanLine_;
+            //memory_->CpuWrite(PPU_STATUS_ADDR, byte);
+
             if (scanLine_ > 0 && scanLine_ < 240 && cycle_ > 0 && cycle_ < 256)
             {
                 RenderPixel();
@@ -190,6 +197,7 @@ namespace oa
             
             if (scanLine_ == 240 && cycle_ == 1)
             {
+                
                 memory_->CpuSetVblank(1);
                 controlRegister_.reg = memory_->CpuRead(PPU_CONTROL_ADDR);
                 if (controlRegister_.enableNmi)

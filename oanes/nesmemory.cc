@@ -10,10 +10,10 @@ namespace oa
         {
             cpuWorkRam_ = new emu::MemoryRam(0x0800, "CPU Work RAM");
             cpuPpuRegisters_ = new emu::MemoryRam(0x0008, "PPU Registers");
-            cpuPrgRom_ = new emu::MemoryRom(0x4000, "CPU Program ROM");
+            cpuPrgRom_ = new emu::MemoryRom(0x8000, "CPU Program ROM");
             cpuApuIoRegisters_ = new emu::MemoryRamFlagged(0x001f, "APU IO Registers");
             
-            ppuCharRom_ = new emu::MemoryRom(0x2000, "PPU Character ROM");
+            ppuCharRom_ = new emu::MemoryRom(0x4000, "PPU Character ROM");
             ppuNameTable_ = new emu::MemoryRam(0x1f00, "PPU Name Table RAM");
             ppuPalette_ = new emu::MemoryRam(0x0100, "PPU Palette RAM");
             ppuOam_ = new emu::MemoryRam(0x0100, "PPU OAM RAM");
@@ -30,6 +30,24 @@ namespace oa
             delete ppuNameTable_;
             delete ppuPalette_;
             delete ppuOam_;
+        }
+
+        void NesMemory::SetPpuScanLineStatus(uint16_t scanLine)
+        {
+            uint8_t byte = (cpuPpuRegisters_->Read(2) & 0xe0) + (scanLine & 0x7f);
+            cpuPpuRegisters_->Write(2, byte);
+        }
+        
+        void NesMemory::SetPpuSpriteOvervlow()
+        {
+            uint8_t byte = cpuPpuRegisters_->Read(2) | 0x20;
+            cpuPpuRegisters_->Write(2, byte);
+        }
+
+        void NesMemory::SetPpuSpriteZeroHit()
+        {
+            uint8_t byte = cpuPpuRegisters_->Read(2) | 0x40;
+            cpuPpuRegisters_->Write(2, byte);
         }
 
         uint8_t NesMemory::CpuRead(uint16_t location)
@@ -68,19 +86,25 @@ namespace oa
                     leftController_ >>= 1;
                     return result;
                 }
+                if (location == 0x17)
+                {
+                    uint8_t result = ((rightController_ & 0x01) > 0);
+                    rightController_ >>= 1;
+                    return result;
+                }
                 return cpuApuIoRegisters_->Read(location);
             }
             
             else if (location < 0x8000)
             {
-                throw std::out_of_range(QString("CPU Read in battery backup area %1").arg(originalLocation).toLocal8Bit().data());
+                throw std::out_of_range(QString("CPU Read in unknown area %1").arg(originalLocation).toLocal8Bit().data());
             }
             
             // ROM
             else
             {
                 // ROM mirroring, and bring to zero
-                location = location % 0x4000;
+                location = location % cpuPrgRomSize_;
                 return cpuPrgRom_->Read(location);
             }
             
@@ -167,7 +191,7 @@ namespace oa
             
             else if (location < 0x8000)
             {
-                throw std::out_of_range(QString("CPU Read in battery backup area %1").arg(originalLocation).toLocal8Bit().data());
+                throw std::out_of_range(QString("CPU Write in unknown area %1").arg(originalLocation).toLocal8Bit().data());
             }
             
             // ROM
@@ -295,8 +319,14 @@ namespace oa
             leftController_ = byte;
         }
 
+        void NesMemory::SetRightController(uint8_t byte)
+        {
+            rightController_ = byte;
+        }
+
         void NesMemory::LoadProgRom(uint8_t* data, uint16_t size)
         {
+            cpuPrgRomSize_ = size;
             cpuPrgRom_->LoadData(data, size);
         }
 

@@ -5,6 +5,7 @@
 #include <fstream>
 #include <ostream>
 #include <QMessageBox>
+#include <QDebug>
 
 #include "headers/inesfile.h"
 
@@ -36,23 +37,22 @@ namespace oa
         {
             INesFile iNesFile;
            
-            iNesFile.LoadFile("roms/Donkey_kong.nes");
-            nesMemory_.LoadProgRom(iNesFile.progRomData_, 0x4000);
-            nesMemory_.LoadCharRom(iNesFile.charRomData_, 0x2000);
+            //iNesFile.LoadFile("roms/Donkey_kong.nes");
+            iNesFile.LoadFile("roms/Excitebike (E).nes");
+            nesMemory_.LoadProgRom(iNesFile.progRomData_, iNesFile.GetProgRomSize());
+            nesMemory_.LoadCharRom(iNesFile.charRomData_, iNesFile.GetCharRomSize());
 
-            nesMemory_.LoadProgRom(iNesFile.GetProgRomData(), iNesFile.GetProgRomSize());
-            nesMemory_.LoadCharRom(iNesFile.GetCharRomData(), iNesFile.GetCharRomSize());
-            
             cpu_->Reset();
             
             connect(cpuTimer_, SIGNAL(timeout()), SLOT(StartNextFrame()));
             cpuTimer_->setTimerType(Qt::PreciseTimer);
-            cpuTimer_->setInterval(13);
+            cpuTimer_->setInterval(16);
             cpuTimer_->start();
         }
         
         void NesConsole::StartNextFrame()
         {
+            //qDebug() << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
             try 
             {
                 int ticks = 0;
@@ -76,7 +76,8 @@ namespace oa
             }
             catch (std::exception &exception)
             {
-                QMessageBox::information(0, QString("Error in frame"), QString(exception.what()), QMessageBox::Ok);
+                qDebug() << "Error in frame" << exception.what();
+                throw std::out_of_range(QString("Error in frame [%1]").arg(exception.what()).toLocal8Bit().data());
             }  
         }
         
@@ -85,6 +86,10 @@ namespace oa
             if (nesMemory_.CpuWriteFlagged(0x4016))
             {
                 nesMemory_.SetLeftController(nesMainWindow_->leftController);
+            }
+            if (nesMemory_.CpuWriteFlagged(0x4017))
+            {
+                nesMemory_.SetRightController(0);
             }
         }
     }

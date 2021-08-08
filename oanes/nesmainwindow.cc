@@ -32,10 +32,6 @@ namespace oa
             connect(m_gamepad, SIGNAL(buttonYChanged(bool)), this, SLOT(leftControllerStart(bool)));
             connect(m_gamepad, SIGNAL(axisLeftXChanged(double)), this, SLOT(leftControllerLeftRight(double)));
             connect(m_gamepad, SIGNAL(axisLeftYChanged(double)), this, SLOT(leftControllerUpDown(double)));
-            
-            connect(m_gamepad, &QGamepad::buttonSelectChanged, this, [](bool pressed){
-            qDebug() << "Button Select" << pressed;
-            });
         }
 
         NesMainWindow::~NesMainWindow()
@@ -53,7 +49,7 @@ namespace oa
         
         void NesMainWindow::leftControllerA(bool value)
         {
-            qDebug() << "A" << value;
+            //qDebug() << "A" << value;
             leftController &= 0xfe;
             if (value != 0)
             {
@@ -63,7 +59,7 @@ namespace oa
 
         void NesMainWindow::leftControllerB(bool value)
         {
-            qDebug() << "B" << value;
+            //qDebug() << "B" << value;
             leftController &= 0xfd;
             if (value != 0)
             {
@@ -73,7 +69,7 @@ namespace oa
 
         void NesMainWindow::leftControllerSelect(bool value)
         {
-            qDebug() << "Button Select" << value;
+            //qDebug() << "Button Select" << value;
             leftController &= 0xfb;
             if (value)
             {
@@ -83,7 +79,7 @@ namespace oa
 
         void NesMainWindow::leftControllerStart(bool value)
         {
-            qDebug() << "Button Start" << value;
+            //qDebug() << "Button Start" << value;
             leftController &= 0xf7;
             if (value)
             {
@@ -93,7 +89,7 @@ namespace oa
 
         void NesMainWindow::leftControllerUpDown(double value)
         {
-            qDebug() << "Button Up" << value;
+            //qDebug() << "Button Up" << value;
             leftController &= 0xcf;
             if (value < 0)
             {
@@ -107,7 +103,7 @@ namespace oa
             
         void NesMainWindow::leftControllerLeftRight(double value)
         {
-            qDebug() << "Left X" << value;
+            //qDebug() << "Left X" << value;
             leftController &= 0x3f;
             if (value < 0)
             {
