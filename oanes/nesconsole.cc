@@ -39,6 +39,8 @@ namespace oa
            
             //iNesFile.LoadFile("roms/Donkey_kong.nes");
             iNesFile.LoadFile("roms/Excitebike (E).nes");
+            //iNesFile.LoadFile("roms/cpu.nes");
+            
             nesMemory_.LoadProgRom(iNesFile.progRomData_, iNesFile.GetProgRomSize());
             nesMemory_.LoadCharRom(iNesFile.charRomData_, iNesFile.GetCharRomSize());
 
@@ -53,7 +55,7 @@ namespace oa
         void NesConsole::StartNextFrame()
         {
             //qDebug() << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-            try 
+            //try 
             {
                 int ticks = 0;
                 apu_->ExecuteTick();
@@ -74,11 +76,11 @@ namespace oa
                 }
                 nesMainWindow_->DrawFrame(ppu_->GetScreen());
             }
-            catch (std::exception &exception)
-            {
-                qDebug() << "Error in frame" << exception.what();
-                throw std::out_of_range(QString("Error in frame [%1]").arg(exception.what()).toLocal8Bit().data());
-            }  
+            //catch (std::exception &exception)
+            //{
+            //    qDebug() << "Error in frame" << exception.what();
+            //    throw std::out_of_range(QString("Error in frame [%1]").arg(exception.what()).toLocal8Bit().data());
+            //}  
         }
         
         void NesConsole::ReadGamepad()

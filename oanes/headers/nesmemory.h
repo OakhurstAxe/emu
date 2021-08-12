@@ -33,19 +33,29 @@ namespace oa
             void SetLeftController(uint8_t byte);
             void SetRightController(uint8_t byte);
 
-            void LoadProgRom(uint8_t* data, uint16_t size);
-            void LoadCharRom(uint8_t* data, uint16_t size);
+            void LoadProgRom(uint8_t* data, uint8_t size);
+            void LoadCharRom(uint8_t* data, uint8_t size);
+
+            bool ppuXScrollWrite_ = true;
+            bool ppuXScrollRead_ = true;
+            uint8_t ppuXScroll_ = 0;
+            uint8_t ppuYScroll_ = 0;
         private:
             emu::MemoryRam* cpuWorkRam_;
             emu::MemoryRam* cpuPpuRegisters_;
             emu::MemoryRamFlagged* cpuApuIoRegisters_;
-            emu::MemoryRom* cpuPrgRom_;
-            uint16_t cpuPrgRomSize_;
-            
+            emu::MemoryRom* cpuPrgRom_[16];
+
             emu::MemoryRom* ppuCharRom_;
             emu::MemoryRam* ppuNameTable_;
             emu::MemoryRam* ppuPalette_;
             emu::MemoryRam* ppuOam_;
+
+            uint16_t cpuProgRomBlockCount_;
+            uint8_t cpuProgRomBufferCounter_;
+            uint8_t cpuProgRomBufferRegister_;
+            uint8_t cpuProgRomLowerBlock_ = 0;
+            uint8_t cpuProgRomUpperBlock_ = 0;
 
             uint8_t leftController_ = 0;
             uint8_t rightController_ = 0;

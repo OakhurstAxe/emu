@@ -1,4 +1,6 @@
 
+#include <QDebug>
+
 #include "headers/nesppu.h"
 
 #define PPU_CONTROL_ADDR    0x2000
@@ -38,7 +40,7 @@ namespace oa
         void NesPpu::RenderPixel()
         {
             int screenScanLine = scanLine_ - 1;
-            int screenCycle = cycle_ - 1;
+            int screenCycle = cycle_;
 
             if (screenCycle == 0)
             {
@@ -54,8 +56,12 @@ namespace oa
                     }
                     
                     uint8_t yPos = memory_->PpuOamRead(i*4);
-                    if (screenScanLine - yPos >= 0 && screenScanLine - yPos < 8)
+                    if (screenScanLine - yPos > 0 && screenScanLine - yPos <= 8)
                     {
+                        if (i == 0)
+                        {
+                            //memory_->SetPpuSpriteZeroHit();
+                        }                        
                         renderSprites_[spriteCount] = i;
                         spriteCount++;
                     }            
@@ -73,7 +79,7 @@ namespace oa
                     {
                         continue;
                     }
-                    int yPos = memory_->PpuOamRead(spritePos * PPU_SPRITE_SIZE);
+                    int yPos = memory_->PpuOamRead(spritePos * PPU_SPRITE_SIZE) + 1;
                     uint16_t patternAddress = memory_->PpuOamRead(spritePos * PPU_SPRITE_SIZE + 1) << 4;
                     spriteAttribute.reg = memory_->PpuOamRead(spritePos * PPU_SPRITE_SIZE + 2);
                     int xPos = memory_->PpuOamRead(spritePos * PPU_SPRITE_SIZE + 3);
@@ -109,47 +115,77 @@ namespace oa
                 }
             }
             
-            screen_[screenScanLine * 256 + screenCycle] = GetBackgroundPixel(screenScanLine, screenCycle);
+            if (cycle_ >= 0  && cycle_ < 256)
+            {
+                screen_[screenScanLine * 256 + screenCycle] = GetBackgroundPixel(screenScanLine, screenCycle);
+            }
         }
 
-        uint8_t NesPpu::GetBackgroundPixel(uint16_t screenRow, uint16_t screenColumn)
+        uint8_t NesPpu::GetBackgroundPixel(uint16_t screenRow, int16_t screenColumn)
         {
             uint8_t attributeValue = 0;
             uint8_t attributeShift = 0;
             controlRegister_.reg = memory_->CpuRead(PPU_CONTROL_ADDR);
-
-            // Get attribute value
-            if ((screenColumn % 32) == 0)
+            uint8_t xScroll = memory_->ppuXScroll_;
+            uint8_t yScroll = memory_->ppuYScroll_;
+            bool isSwapped = false;
+            
+            // Donky Kong hammer barrel stop
+            if (screenRow == 10 && screenColumn == 1)
             {
-                uint16_t attributeAddress = ((screenRow / 32) * 8 + (screenColumn / 32)) + PPU_ATTRIBUTE_ADDR + 
-                        (PPU_ATTRIBUTE_SIZE * (controlRegister_.nametableX | controlRegister_.nametableY));
+                //qDebug() << "xScroll: " << xScroll << " NametableX: " << controlRegister_.nametableX;
+                int x = 10;
+            }
+            uint8_t nametableX = controlRegister_.nametableX;
+            uint8_t nametableY = controlRegister_.nametableY;
+            screenColumn += xScroll;
+            
+            if (screenColumn >= 256)
+            {
+                screenColumn -= 256;
+                if (nametableX == 0)
+                {
+                    nametableX = 1;
+                }
+                else
+                {
+                    nametableX = 0;
+                }
+            }
+            if (screenColumn % 32 == 0)
+            {
+                // Get attribute value
+                // Should be one of: $23C0, $27C0, $2BC0, or $2FC0
+                uint16_t attributeTableAddress = PPU_ATTRIBUTE_ADDR + (nametableX * 0x400) + (nametableY * 0x800);
+                uint16_t attributeAddress = ((screenRow / 32) * 8 + (screenColumn / 32)) + attributeTableAddress;
                 attributeByte_ = memory_->PpuRead(attributeAddress);
             }
-            if (((screenRow % 32) < 16) && ((screenColumn % 32) < 16))
+            if ((screenRow % 32) < 16)
             {
                 attributeShift = 0;
             }
-            else if (((screenRow % 32) < 16) && ((screenColumn % 32) >= 16))
+            else if ((screenRow % 32) < 16)
             {
                 attributeShift = 2;
             }
-            else if (((screenRow % 32) >= 16) && ((screenColumn % 32) < 16))
+            else if ((screenRow % 32) >= 16)
             {
                 attributeShift = 4;
             }
-            else if (((screenRow % 32) >= 16) && ((screenColumn % 32) >= 16))
+            else if ((screenRow % 32) >= 16)
             {
                 attributeShift = 6;
             }
             attributeValue = ((attributeByte_  >> attributeShift) & 0x03);
 
-            if ((screenColumn & 0x07) == 0)
+            if ((screenColumn % 8) == 0)
             {
                 uint16_t tileRow = screenRow / 8;
-                uint16_t tileColumn = screenColumn / 8;
-                nametableAddress_ = (((tileRow) * 32) + (tileColumn)) + PPU_NAMETABLE_ADDR + 
-                        (PPU_NAMETABLE_SIZE * (controlRegister_.nametableX + controlRegister_.nametableY));
-                patternEntryAddress_ = ((memory_->PpuRead(nametableAddress_) << 4)  + (screenRow & 0x07)) + 
+                uint16_t tileColumn = (screenColumn / 8);
+                // Should be one of: $2000, $2400, $2800, or $2C00
+                uint16_t nametableTableAddress = PPU_NAMETABLE_ADDR + (nametableX * 0x400) + (nametableY * 0x800);
+                nametableAddress_ = (((tileRow) * 32) + (tileColumn)) + nametableTableAddress;
+                patternEntryAddress_ = ((memory_->PpuRead(nametableAddress_) << 4)  + (screenRow % 8)) + 
                     PPU_PATTERN_SIZE * controlRegister_.patternBackground;
                 charTableEntryLsb_ = memory_->PpuRead(patternEntryAddress_);
                 charTableEntryMsb_ = memory_->PpuRead(patternEntryAddress_ + 0x08);
@@ -178,7 +214,12 @@ namespace oa
             cycle_++;
             if (cycle_ >= 341)
             {
-                cycle_ = 0;
+                cycle_ = -32;
+                while (cycle_ < 0)
+                {
+                    RenderPixel();
+                    cycle_++;
+                }
                 scanLine_++;
                 if (scanLine_ >= 261)
                 {
@@ -190,19 +231,20 @@ namespace oa
             //uint8_t byte = (memory_->PpuStatusRead() & 0xE0) + scanLine_;
             //memory_->CpuWrite(PPU_STATUS_ADDR, byte);
 
-            if (scanLine_ > 0 && scanLine_ < 240 && cycle_ > 0 && cycle_ < 256)
+            if (scanLine_ > 0 && scanLine_ <= 240 && cycle_ >= 0  && cycle_ <= 256)
             {
                 RenderPixel();
             }
             
             if (scanLine_ == 240 && cycle_ == 1)
-            {
-                
+            {                
                 memory_->CpuSetVblank(1);
                 controlRegister_.reg = memory_->CpuRead(PPU_CONTROL_ADDR);
                 if (controlRegister_.enableNmi)
                 {
                     nmiSet_ = true;
+                    memory_->ppuXScrollRead_ = true;
+                    memory_->ppuXScrollWrite_ = true;
                 }
             }
             if (scanLine_ == 260 && cycle_ == 1)

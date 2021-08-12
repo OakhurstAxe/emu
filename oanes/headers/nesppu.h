@@ -22,10 +22,11 @@ namespace oa
             void Reset();
             uint8_t* GetScreen();
         private:
-            uint8_t GetBackgroundPixel(uint16_t screenRow, uint16_t screenColumn);
+            uint8_t GetBackgroundPixel(uint16_t screenRow, int16_t screenColumn);
             uint8_t ReverseBits(uint8_t n);
             uint8_t screen_[61440];
             char renderSprites_[8];
+            char spriteZero_;
             bool nmiSet_ = false;
             NesMemory *memory_;
 
@@ -34,7 +35,7 @@ namespace oa
             uint8_t attributeByte_;
             uint8_t charTableEntryLsb_;
             uint8_t charTableEntryMsb_;
-
+            
             void RenderPixel();
             int scanLine_;
             int cycle_;

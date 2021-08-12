@@ -15,7 +15,7 @@ namespace oa
             return progRomData_;
         }
         
-        uint16_t INesFile::GetProgRomSize()
+        uint8_t INesFile::GetProgRomSize()
         {
             return programRomSize_;
         }
@@ -25,7 +25,7 @@ namespace oa
             return charRomData_;
         }
             
-        uint16_t INesFile::GetCharRomSize()
+        uint8_t INesFile::GetCharRomSize()
         {
             return characterRomSize_;
         }
@@ -64,25 +64,24 @@ namespace oa
             position += 1;
             memcpy(&programRamSize_, &fileData[position], 1);
             position += 1;
-            memcpy(&unusedFlags_.reg, &fileData[position], 1);
+            memcpy(&romSize_.reg, &fileData[position], 1);
             position += 1;
             memcpy(&tvSystemFlags_.reg, &fileData[position], 1);
             position += 1;
             position += 5;
+            
+            memoryMapper_ = (playChoiceFlags_.msbMapper << 8) + cartridgeFlags_.lsbMapper;
             
             if (cartridgeFlags_.hasTrainer)
             {
                 memcpy(&trainer_, &fileData[position], 512);
                 position += 512;
             }
-            
-            programRomSize_ = 0x4000 * programRomSize_;
-            progRomData_ = new uint8_t[programRomSize_];
-            memcpy(progRomData_, &fileData[position], programRomSize_);
-            position += programRomSize_;
-            characterRomSize_ = 0x2000 * characterRomSize_;
-            charRomData_ = new uint8_t[characterRomSize_];
-            memcpy(charRomData_, &fileData[position], characterRomSize_);
+            progRomData_ = new uint8_t[0x4000 * programRomSize_];
+            memcpy(progRomData_, &fileData[position], 0x4000 * programRomSize_);
+            position += 0x4000 * programRomSize_;
+            charRomData_ = new uint8_t[0x2000 * characterRomSize_];
+            memcpy(charRomData_, &fileData[position], 0x2000 * characterRomSize_);
             
             delete []fileData;
             // Skip play choice for now

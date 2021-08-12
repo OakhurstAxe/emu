@@ -13,16 +13,17 @@ namespace oa
         public:
             void LoadFile(QString fileName);
             uint8_t *GetProgRomData();
-            uint16_t GetProgRomSize();
+            uint8_t GetProgRomSize();
             uint8_t *GetCharRomData();
-            uint16_t GetCharRomSize();
+            uint8_t GetCharRomSize();
             uint8_t *progRomData_;
             uint8_t *charRomData_;
 
         private:
+            uint8_t memoryMapper_ = 0;
             char header_[4];
-            uint16_t programRomSize_;
-            uint16_t characterRomSize_;
+            uint8_t programRomSize_;
+            uint8_t characterRomSize_;
             union
             {
             struct
@@ -53,12 +54,12 @@ namespace oa
             {
                 struct
                 {
-                    uint8_t tvSystem: 1;
-                    uint8_t unused: 7;
+                    uint8_t prgRomSizeMsb_: 4;
+                    uint8_t chrRomSizeMsb_: 4;
                 };
                 uint8_t reg;
             }
-            unusedFlags_;
+            romSize_;
             union
             {
                 struct

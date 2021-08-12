@@ -2,7 +2,7 @@
 
 #include <functional>
 #include <QString>
-
+#include <QDebug>
            
 namespace oa
 {
@@ -305,9 +305,19 @@ namespace oa
             operation_.addressMethod_ = &M6502::NullAddress;
             
             operation_ = opCodeLookup_[instruction];
+            //qDebug() << "Instruction:" << instruction;
+            
             CallOpMethod(operation_.operation_, operation_.addressMethod_);
             
-            prevInstruction_ = instruction;
+            prevInstruction9_ = prevInstruction8_;
+            prevInstruction8_ = prevInstruction7_;
+            prevInstruction7_ = prevInstruction6_;
+            prevInstruction6_ = prevInstruction5_;
+            prevInstruction5_ = prevInstruction4_;
+            prevInstruction4_ = prevInstruction3_;
+            prevInstruction3_ = prevInstruction2_;
+            prevInstruction2_ = prevInstruction1_;
+            prevInstruction1_ = instruction;
             programCounter_++;
 
             overflowTicks_--;
@@ -317,7 +327,7 @@ namespace oa
         {
             if (stackPointer_ <= 255)
             {
-                throw "Stack overflow";
+                throw std::out_of_range(QString("Stack overflow").toLocal8Bit().data());
             }
             memory_->CpuWrite(stackPointer_, byte);
             stackPointer_--;
@@ -325,9 +335,9 @@ namespace oa
 
         uint8_t M6502::PopStack(void)
         {
-            if (stackPointer_ >= 512)
+            if (stackPointer_ >= 511)
             {
-                throw "Stack underflow";
+                throw std::out_of_range(QString("Stack underflow").toLocal8Bit().data());
             }
             stackPointer_++;
             return memory_->CpuRead(stackPointer_);
@@ -335,7 +345,7 @@ namespace oa
 
         void M6502::Reset()
         {
-            stackPointer_ = 0x01ff;
+            stackPointer_ = 0x001ff;
             uint8_t pcl = memory_->CpuRead(0xfffc);
             uint8_t pch = memory_->CpuRead(0xfffd);
             programCounter_ = (pch << 8) + pcl;
@@ -614,7 +624,7 @@ namespace oa
         void M6502::OpSBC(AddressMethod addressMethod)
         {
             uint16_t byte = memory_->CpuRead(CallAddressMethod(addressMethod)) ^ 0x00ff;
-            uint16_t value = accumulator_ + byte + statusRegister_.carryFlag;
+            uint16_t value = (uint16_t)accumulator_ + byte + (uint16_t)statusRegister_.carryFlag;
             statusRegister_.negativeFlag = (value & 0x80) > 0;
             statusRegister_.overflowFlag = ~((accumulator_^byte)&(accumulator_^value) & 0x80);
             statusRegister_.carryFlag = (value > 255);
@@ -799,7 +809,7 @@ namespace oa
         void M6502::OpJSR(AddressMethod addressMethod) 
         {
             uint16_t jumpAddress = CallAddressMethod(addressMethod);
-            PushStack((programCounter_ & 0xff00) >> 8);
+            PushStack(programCounter_ >> 8);
             PushStack(programCounter_ & 0xff);
             programCounter_ = jumpAddress - 1;
             overflowTicks_ += 4;
@@ -944,9 +954,15 @@ namespace oa
         void M6502::OpBRK(AddressMethod addressMethod) 
         {
             Q_UNUSED(addressMethod);
-            PushStack(programCounter_ + 2);
+            statusRegister_.interruptDisable = 1;
+            PushStack(programCounter_ >> 8);
+            PushStack(programCounter_ & 0x00ff);
             statusRegister_.breakCommand = true;
             PushStack(statusRegister_.register_);
+            statusRegister_.breakCommand = false;
+            uint8_t pcl = memory_->CpuRead(0xfffe);
+            uint8_t pch = memory_->CpuRead(0xffff);
+            programCounter_ = (pch << 8) + pcl;
             overflowTicks_ += 7;
         }
         void M6502::OpNOP(AddressMethod addressMethod) 

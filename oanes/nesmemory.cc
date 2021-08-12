@@ -10,7 +10,10 @@ namespace oa
         {
             cpuWorkRam_ = new emu::MemoryRam(0x0800, "CPU Work RAM");
             cpuPpuRegisters_ = new emu::MemoryRam(0x0008, "PPU Registers");
-            cpuPrgRom_ = new emu::MemoryRom(0x8000, "CPU Program ROM");
+            for (int index=0; index<16; index++)
+            {
+                cpuPrgRom_[index] = new emu::MemoryRom(0x4000, "CPU Program ROM");
+            }
             cpuApuIoRegisters_ = new emu::MemoryRamFlagged(0x001f, "APU IO Registers");
             
             ppuCharRom_ = new emu::MemoryRom(0x4000, "PPU Character ROM");
@@ -23,7 +26,10 @@ namespace oa
         {
             delete cpuWorkRam_;
             delete cpuPpuRegisters_;
-            delete cpuPrgRom_;
+            for (int index=0; index<16; index++)
+            {
+                delete cpuPrgRom_[index];
+            }
             delete cpuApuIoRegisters_;
             
             delete ppuCharRom_;
@@ -73,6 +79,19 @@ namespace oa
                     cpuPpuRegisters_->Write(2,  byte);
                     ppuAddrCount_ = 0;
                 }
+                if (location == 5)
+                {
+                    if (ppuXScrollRead_)
+                    {
+                        ppuXScrollRead_ = false;
+                        return ppuXScroll_;
+                    }
+                    else
+                    {
+                        ppuXScroll_ = true;
+                        return ppuYScroll_;
+                    }
+                }
                 return cpuPpuRegisters_->Read(location);
             }    
 
@@ -103,9 +122,16 @@ namespace oa
             // ROM
             else
             {
-                // ROM mirroring, and bring to zero
-                location = location % cpuPrgRomSize_;
-                return cpuPrgRom_->Read(location);
+                location -= 0x8000;
+                if (location < 0x4000)
+                {
+                    return cpuPrgRom_[cpuProgRomLowerBlock_]->Read(location);
+                }
+                else
+                {
+                    location -= 0x4000;
+                    return cpuPrgRom_[cpuProgRomUpperBlock_]->Read(location);
+                }
             }
             
             throw std::out_of_range(QString("Invalid NES memory location for read %1").arg(originalLocation).toLocal8Bit().data());
@@ -118,6 +144,10 @@ namespace oa
             // Working RAM
             if (location < 0x2000)
             {
+                if (location == 583)
+                {
+                    int x = 10;
+                }
                 location = location % 0x800;  // mirroring
                 cpuWorkRam_->Write(location, byte);
                 return;
@@ -138,6 +168,19 @@ namespace oa
                 {
                     ppuOam_->Write(ppuOamAddr_, byte);
                     ppuOamAddr_++;
+                }
+                if (location == 0x5)
+                {
+                    if (ppuXScrollWrite_)
+                    {
+                        ppuXScroll_ = byte;
+                        ppuXScrollWrite_ = false;
+                    }
+                    else
+                    {
+                        ppuYScroll_ = byte;
+                        ppuXScrollWrite_ = true;
+                    }
                 }
                 if (location == 0x6)
                 {
@@ -197,9 +240,29 @@ namespace oa
             // ROM
             else
             {
-                // ROM mirroring, and bring to zero
-                location = location % 0x4000;
-                cpuPrgRom_->Write(location, byte);
+                if ((byte & 0x80) > 0)
+                {
+                    cpuProgRomBufferRegister_ = 0;
+                    cpuProgRomBufferCounter_ = 0;
+                }
+                else
+                {
+                    cpuProgRomBufferCounter_++;
+                    if (cpuProgRomBufferCounter_ <= 4)
+                    {
+                        cpuProgRomBufferRegister_ = cpuProgRomBufferRegister_ >> 1;
+                        if (byte & 0x01)
+                        {
+                            cpuProgRomBufferRegister_ = cpuProgRomBufferRegister_ | 0x08;
+                        }
+                    }
+                    if (cpuProgRomBufferCounter_ == 5)
+                    {
+                        cpuProgRomBufferRegister_ = cpuProgRomBufferRegister_ >> 1;
+                        cpuProgRomBufferCounter_ = 0;
+                        cpuProgRomLowerBlock_ = 0;// cpuProgRomBufferRegister_;
+                    }
+                }
                 return;
             }
 
@@ -324,15 +387,20 @@ namespace oa
             rightController_ = byte;
         }
 
-        void NesMemory::LoadProgRom(uint8_t* data, uint16_t size)
+        void NesMemory::LoadProgRom(uint8_t* data, uint8_t size)
         {
-            cpuPrgRomSize_ = size;
-            cpuPrgRom_->LoadData(data, size);
+            cpuProgRomBlockCount_ = size;
+            for (int index=0; index<size; index++)
+            {
+                cpuPrgRom_[index]->LoadData(&data[index*0x4000], 0x4000);
+            }
+            cpuProgRomLowerBlock_ = 0;
+            cpuProgRomUpperBlock_ = cpuProgRomBlockCount_ - 1;
         }
 
-        void NesMemory::LoadCharRom(uint8_t* data, uint16_t size)
+        void NesMemory::LoadCharRom(uint8_t* data, uint8_t size)
         {
-            ppuCharRom_->LoadData(data, size);
+            ppuCharRom_->LoadData(data, size * 0x2000);
         }
 
     }

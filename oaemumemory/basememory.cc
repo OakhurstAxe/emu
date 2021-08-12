@@ -37,7 +37,7 @@ namespace oa
         
         void BaseMemory::CheckLocation(uint16_t location)
         {
-            if (location >= memorySize_)
+            if (location > memorySize_)
             {
                 throw std::out_of_range(QString("Bad location address [%1] in memory module %2").arg(location).arg(name_).toLocal8Bit().data());
             }
