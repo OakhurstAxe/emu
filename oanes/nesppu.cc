@@ -51,7 +51,7 @@ namespace oa
                     if (spriteCount == 8)
                     {
                         // sprite overflow
-                        memory_->SetPpuSpriteOvervlow();
+                        memory_->SetPpuSpriteOvervlow(1);
                         break;
                     }
                     
@@ -71,7 +71,7 @@ namespace oa
             if (screenCycle == 254)
             {
                 uint8_t background = memory_->PpuRead(PPU_PALETTE_ADDR);
-                for (int i=0; i<8; i++)
+                for (int i=7; i>=0; i--)
                 {
                     SpriteAttributeRegister spriteAttribute;
                     int spritePos = renderSprites_[i];
@@ -106,7 +106,14 @@ namespace oa
                             uint8_t color = memory_->PpuRead(PPU_PALETTE_ADDR + palette + pixel);
                             if (background != color)
                             {
-                                screen_[screenScanLine * 256 + j] = color;
+                                if (spritePos == 0 && screen_[screenScanLine * 256 + j] != background)
+                                {
+                                    memory_->SetPpuSpriteZeroHit(1);
+                                }
+                                if (spriteAttribute.priority == 0 || screen_[screenScanLine * 256 + j] == background)
+                                {
+                                    screen_[screenScanLine * 256 + j] = color;
+                                }
                             }
                         }
                         spriteLsb = spriteLsb << 1;
@@ -115,9 +122,10 @@ namespace oa
                 }
             }
             
+            uint backgroudPixel = GetBackgroundPixel(screenScanLine, screenCycle);
             if (cycle_ >= 0  && cycle_ < 256)
             {
-                screen_[screenScanLine * 256 + screenCycle] = GetBackgroundPixel(screenScanLine, screenCycle);
+                screen_[screenScanLine * 256 + screenCycle] = backgroudPixel;
             }
         }
 
@@ -128,10 +136,13 @@ namespace oa
             controlRegister_.reg = memory_->CpuRead(PPU_CONTROL_ADDR);
             uint8_t xScroll = memory_->ppuXScroll_;
             uint8_t yScroll = memory_->ppuYScroll_;
-            bool isSwapped = false;
-            
+
+            if (xScroll > 0 && screenRow == 10 && screenColumn == -1)
+            {
+                int x = 10;
+            }
             // Donky Kong hammer barrel stop
-            if (screenRow == 10 && screenColumn == 1)
+            if (screenRow == 175 && screenColumn == 1)
             {
                 //qDebug() << "xScroll: " << xScroll << " NametableX: " << controlRegister_.nametableX;
                 int x = 10;
@@ -152,50 +163,44 @@ namespace oa
                     nametableX = 0;
                 }
             }
-            if (screenColumn % 32 == 0)
-            {
-                // Get attribute value
-                // Should be one of: $23C0, $27C0, $2BC0, or $2FC0
-                uint16_t attributeTableAddress = PPU_ATTRIBUTE_ADDR + (nametableX * 0x400) + (nametableY * 0x800);
-                uint16_t attributeAddress = ((screenRow / 32) * 8 + (screenColumn / 32)) + attributeTableAddress;
-                attributeByte_ = memory_->PpuRead(attributeAddress);
-            }
-            if ((screenRow % 32) < 16)
+
+            // Get attribute value
+            // Should be one of: $23C0, $27C0, $2BC0, or $2FC0
+            uint16_t attributeTableAddress = PPU_ATTRIBUTE_ADDR + (nametableX * 0x400) + (nametableY * 0x800);
+            uint16_t attributeAddress = ((screenRow / 32) * 8 + (screenColumn / 32)) + attributeTableAddress;
+            attributeByte_ = memory_->PpuRead(attributeAddress);
+
+            if (((screenRow % 32) < 16) && (screenColumn % 32) < 16)
             {
                 attributeShift = 0;
             }
-            else if ((screenRow % 32) < 16)
+            else if (((screenRow % 32) < 16) && (screenColumn % 32) >=- 16)
             {
                 attributeShift = 2;
             }
-            else if ((screenRow % 32) >= 16)
+            else if (((screenRow % 32) >= 16) && (screenColumn % 32) < 16)
             {
                 attributeShift = 4;
             }
-            else if ((screenRow % 32) >= 16)
+            else if (((screenRow % 32) >= 16) && (screenColumn % 32) >= 16)
             {
                 attributeShift = 6;
             }
             attributeValue = ((attributeByte_  >> attributeShift) & 0x03);
 
-            if ((screenColumn % 8) == 0)
-            {
-                uint16_t tileRow = screenRow / 8;
-                uint16_t tileColumn = (screenColumn / 8);
-                // Should be one of: $2000, $2400, $2800, or $2C00
-                uint16_t nametableTableAddress = PPU_NAMETABLE_ADDR + (nametableX * 0x400) + (nametableY * 0x800);
-                nametableAddress_ = (((tileRow) * 32) + (tileColumn)) + nametableTableAddress;
-                patternEntryAddress_ = ((memory_->PpuRead(nametableAddress_) << 4)  + (screenRow % 8)) + 
-                    PPU_PATTERN_SIZE * controlRegister_.patternBackground;
-                charTableEntryLsb_ = memory_->PpuRead(patternEntryAddress_);
-                charTableEntryMsb_ = memory_->PpuRead(patternEntryAddress_ + 0x08);
-            }
-            
+            uint16_t tileRow = screenRow / 8;
+            uint16_t tileColumn = (screenColumn / 8);
+            // Should be one of: $2000, $2400, $2800, or $2C00
+            uint16_t nametableTableAddress = PPU_NAMETABLE_ADDR + (nametableX * 0x400) + (nametableY * 0x800);
+            nametableAddress_ = (((tileRow) * 32) + (tileColumn)) + nametableTableAddress;
+            patternEntryAddress_ = ((memory_->PpuRead(nametableAddress_) << 4)  + (screenRow % 8)) + 
+                PPU_PATTERN_SIZE * controlRegister_.patternBackground;
+            charTableEntryLsb_ = memory_->PpuRead(patternEntryAddress_) << (screenColumn % 8);
+            charTableEntryMsb_ = memory_->PpuRead(patternEntryAddress_ + 0x08) << (screenColumn % 8);
             uint8_t pixel = ((charTableEntryMsb_ & 0x80) >> 6) + ((charTableEntryLsb_ & 0x80) >> 7);
             uint16_t pixelAddress = PPU_PALETTE_ADDR + pixel + (attributeValue << 2);
             uint8_t color = memory_->PpuRead(pixelAddress);
-            charTableEntryLsb_ = charTableEntryLsb_ << 1;
-            charTableEntryMsb_ = charTableEntryMsb_ << 1;
+
             return color;
         }
         
@@ -212,31 +217,25 @@ namespace oa
         void NesPpu::ExecuteTick()
         {
             cycle_++;
-            if (cycle_ >= 341)
+            if (cycle_ >= 340)
             {
-                cycle_ = -32;
-                while (cycle_ < 0)
-                {
-                    RenderPixel();
-                    cycle_++;
-                }
+                // Set rendering registers for when scrolling happens
+                cycle_ = 0;
                 scanLine_++;
                 if (scanLine_ >= 261)
                 {
-                    scanLine_ = -1;
+                    scanLine_ = 0;
                 }
             }
             
             memory_->SetPpuScanLineStatus(scanLine_);
-            //uint8_t byte = (memory_->PpuStatusRead() & 0xE0) + scanLine_;
-            //memory_->CpuWrite(PPU_STATUS_ADDR, byte);
 
             if (scanLine_ > 0 && scanLine_ <= 240 && cycle_ >= 0  && cycle_ <= 256)
             {
                 RenderPixel();
             }
             
-            if (scanLine_ == 240 && cycle_ == 1)
+            if (scanLine_ == 241 && cycle_ == 1)
             {                
                 memory_->CpuSetVblank(1);
                 controlRegister_.reg = memory_->CpuRead(PPU_CONTROL_ADDR);
@@ -247,9 +246,11 @@ namespace oa
                     memory_->ppuXScrollWrite_ = true;
                 }
             }
-            if (scanLine_ == 260 && cycle_ == 1)
+            if (scanLine_ == 261 && cycle_ == 1)
             {
                 memory_->CpuSetVblank(0);
+                memory_->SetPpuSpriteOvervlow(0);
+                memory_->SetPpuSpriteZeroHit(0);
             }
         }
 

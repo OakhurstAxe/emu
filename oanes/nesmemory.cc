@@ -44,15 +44,31 @@ namespace oa
             cpuPpuRegisters_->Write(2, byte);
         }
         
-        void NesMemory::SetPpuSpriteOvervlow()
+        void NesMemory::SetPpuSpriteOvervlow(uint8_t value)
         {
-            uint8_t byte = cpuPpuRegisters_->Read(2) | 0x20;
+            uint8_t byte;
+            if (value > 0)
+            {
+                byte = cpuPpuRegisters_->Read(2) | 0x20;
+            }
+            else
+            {
+                byte = cpuPpuRegisters_->Read(2) & 0xdf;
+            }
             cpuPpuRegisters_->Write(2, byte);
         }
 
-        void NesMemory::SetPpuSpriteZeroHit()
+        void NesMemory::SetPpuSpriteZeroHit(uint8_t value)
         {
-            uint8_t byte = cpuPpuRegisters_->Read(2) | 0x40;
+            uint8_t byte;
+            if (value > 0)
+            {
+                byte = cpuPpuRegisters_->Read(2) | 0x40;
+            }
+            else
+            {
+                byte = cpuPpuRegisters_->Read(2) & 0xbf;
+            }
             cpuPpuRegisters_->Write(2, byte);
         }
 

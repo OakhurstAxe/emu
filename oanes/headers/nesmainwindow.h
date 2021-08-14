@@ -31,8 +31,8 @@ namespace oa
             NesMainWindow();
             ~NesMainWindow();
             void DrawFrame(uint8_t *screen);
-            uint8_t leftController = 0;
-            uint8_t rightController = 0;
+            uint8_t leftController_ = 0;
+            uint8_t rightController_ = 0;
         public slots:
             void leftControllerLeftRight(double value);
             void leftControllerUpDown(double value);
@@ -47,9 +47,9 @@ namespace oa
             NesPalette nesPalette_;
             NesConsole *nesConsole_;
             uint8_t *screen_;
-            bool inFrame = false;
-            QGamepad *m_gamepad;
-            QImage *qImage;
+            bool inFrame_ = false;
+            QGamepad *m_gamepad_;
+            QImage *qImage_;
         };
 
     }

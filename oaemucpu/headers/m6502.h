@@ -27,6 +27,7 @@ namespace oa
             {
                 OperationMethod operation_;
                 AddressMethod addressMethod_;
+                uint8_t ticks;
             };
             OperationStruct opCodeLookup_[0x100];
             
@@ -69,6 +70,7 @@ namespace oa
             
             // addressing modes
             uint16_t NullAddress();
+            uint16_t Accumlator();
             uint16_t ImmediateAddress();
             uint16_t ZeroAddress();
             uint16_t ZeroXAddress();
@@ -125,13 +127,9 @@ namespace oa
             
             // Shift operations
             virtual void OpASL(AddressMethod addressMethod);
-            virtual void OpASLAccumlator(AddressMethod addressMethod);
             virtual void OpLSR(AddressMethod addressMethod);
-            virtual void OpLSRAccululator(AddressMethod addressMethod);
             virtual void OpROL(AddressMethod addressMethod);
-            virtual void OpROLAccululator(AddressMethod addressMethod);
             virtual void OpROR(AddressMethod addressMethod);
-            virtual void OpRORAccumulator(AddressMethod addressMethod);
             
             // Jumps and Call operaions
             virtual void OpJMP(AddressMethod addressMethod);

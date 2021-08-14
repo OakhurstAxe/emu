@@ -13,7 +13,7 @@ namespace oa
         
         NesMainWindow::NesMainWindow()
         {
-            qImage = new QImage(256, 240, QImage::Format_RGB32);
+            qImage_ = new QImage(256, 240, QImage::Format_RGB32);
             
             nesConsole_ = new NesConsole(this);
             nesConsole_->StartUp();
@@ -24,21 +24,21 @@ namespace oa
                 return;
             }
             
-            m_gamepad = new QGamepad(*gamepads.begin(), this);
+            m_gamepad_ = new QGamepad(*gamepads.begin(), this);
             
-            connect(m_gamepad, SIGNAL(buttonAChanged(bool)), this, SLOT(leftControllerA(bool)));
-            connect(m_gamepad, SIGNAL(buttonBChanged(bool)), this, SLOT(leftControllerB(bool)));
-            connect(m_gamepad, SIGNAL(buttonXChanged(bool)), this, SLOT(leftControllerSelect(bool)));
-            connect(m_gamepad, SIGNAL(buttonYChanged(bool)), this, SLOT(leftControllerStart(bool)));
-            connect(m_gamepad, SIGNAL(axisLeftXChanged(double)), this, SLOT(leftControllerLeftRight(double)));
-            connect(m_gamepad, SIGNAL(axisLeftYChanged(double)), this, SLOT(leftControllerUpDown(double)));
+            connect(m_gamepad_, SIGNAL(buttonAChanged(bool)), this, SLOT(leftControllerA(bool)));
+            connect(m_gamepad_, SIGNAL(buttonBChanged(bool)), this, SLOT(leftControllerB(bool)));
+            connect(m_gamepad_, SIGNAL(buttonXChanged(bool)), this, SLOT(leftControllerSelect(bool)));
+            connect(m_gamepad_, SIGNAL(buttonYChanged(bool)), this, SLOT(leftControllerStart(bool)));
+            connect(m_gamepad_, SIGNAL(axisLeftXChanged(double)), this, SLOT(leftControllerLeftRight(double)));
+            connect(m_gamepad_, SIGNAL(axisLeftYChanged(double)), this, SLOT(leftControllerUpDown(double)));
         }
 
         NesMainWindow::~NesMainWindow()
         {
-            delete m_gamepad;
+            delete m_gamepad_;
             delete nesConsole_;
-            delete qImage;
+            delete qImage_;
         }
 
         void NesMainWindow::DrawFrame(uint8_t *screen)
@@ -49,69 +49,69 @@ namespace oa
         
         void NesMainWindow::leftControllerA(bool value)
         {
-            //qDebug() << "A" << value;
-            leftController &= 0xfe;
+            qDebug() << "A" << value;
+            leftController_ &= 0xfe;
             if (value != 0)
             {
-                leftController |= 0x01;
+                leftController_ |= 0x01;
             }
         }
 
         void NesMainWindow::leftControllerB(bool value)
         {
             //qDebug() << "B" << value;
-            leftController &= 0xfd;
+            leftController_ &= 0xfd;
             if (value != 0)
             {
-                leftController |= 0x02;
+                leftController_ |= 0x02;
             }
         }
 
         void NesMainWindow::leftControllerSelect(bool value)
         {
             //qDebug() << "Button Select" << value;
-            leftController &= 0xfb;
+            leftController_ &= 0xfb;
             if (value)
             {
-                leftController |= 0x04;
+                leftController_ |= 0x04;
             }
         }
 
         void NesMainWindow::leftControllerStart(bool value)
         {
             //qDebug() << "Button Start" << value;
-            leftController &= 0xf7;
+            leftController_ &= 0xf7;
             if (value)
             {
-                leftController |= 0x08;
+                leftController_ |= 0x08;
             }
         }
 
         void NesMainWindow::leftControllerUpDown(double value)
         {
             //qDebug() << "Button Up" << value;
-            leftController &= 0xcf;
+            leftController_ &= 0xcf;
             if (value < 0)
             {
-                leftController |= 0x10;
+                leftController_ |= 0x10;
             }
             if (value > 0)
             {
-                leftController |= 0x20;
+                leftController_ |= 0x20;
             }
         }
             
         void NesMainWindow::leftControllerLeftRight(double value)
         {
             //qDebug() << "Left X" << value;
-            leftController &= 0x3f;
+            leftController_ &= 0x3f;
             if (value < 0)
             {
-                leftController |= 0x40;
+                leftController_ |= 0x40;
             }
             if (value > 0)
             {
-                leftController |= 0x80;
+                leftController_ |= 0x80;
             }
         }
 
@@ -124,7 +124,7 @@ namespace oa
             
             for (int y=0; y<240; y++)
             {
-                QRgb *rowData = (QRgb*)qImage->scanLine(y);
+                QRgb *rowData = (QRgb*)qImage_->scanLine(y);
                 for (int x=0; x<256; x++)
                 {
                     int value = screen_[y*256+x];
@@ -132,7 +132,7 @@ namespace oa
                     rowData[x] = color.rgb();
                 }
             }
-            painter.drawImage(rect, *qImage);
+            painter.drawImage(rect, *qImage_);
         }
 
     }

@@ -22,8 +22,8 @@ namespace oa
             bool CpuReadFlagged(uint16_t location);
             bool CpuWriteFlagged(uint16_t location);
             void SetPpuScanLineStatus(uint16_t scanLine);
-            void SetPpuSpriteOvervlow();
-            void SetPpuSpriteZeroHit();
+            void SetPpuSpriteOvervlow(uint8_t value);
+            void SetPpuSpriteZeroHit(uint8_t value);
             
             uint8_t PpuRead(uint16_t location);
             void PpuWrite(uint16_t location, uint8_t byte);

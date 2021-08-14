@@ -39,6 +39,7 @@ namespace oa
            
             //iNesFile.LoadFile("roms/Donkey_kong.nes");
             iNesFile.LoadFile("roms/Excitebike (E).nes");
+            //iNesFile.LoadFile("roms/Ice Climber (U).nes");
             //iNesFile.LoadFile("roms/cpu.nes");
             
             nesMemory_.LoadProgRom(iNesFile.progRomData_, iNesFile.GetProgRomSize());
@@ -76,22 +77,17 @@ namespace oa
                 }
                 nesMainWindow_->DrawFrame(ppu_->GetScreen());
             }
-            //catch (std::exception &exception)
-            //{
-            //    qDebug() << "Error in frame" << exception.what();
-            //    throw std::out_of_range(QString("Error in frame [%1]").arg(exception.what()).toLocal8Bit().data());
-            //}  
         }
         
         void NesConsole::ReadGamepad()
         {
             if (nesMemory_.CpuWriteFlagged(0x4016))
             {
-                nesMemory_.SetLeftController(nesMainWindow_->leftController);
+                nesMemory_.SetLeftController(nesMainWindow_->leftController_);
             }
             if (nesMemory_.CpuWriteFlagged(0x4017))
             {
-                nesMemory_.SetRightController(0);
+                nesMemory_.SetRightController(nesMainWindow_->rightController_);
             }
         }
     }

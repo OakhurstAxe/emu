@@ -10,6 +10,7 @@ namespace oa
     
         R2A03::R2A03(emu::MemoryMapper *memory) : emu::M6502(memory)
         {
+            SetOpCodes();
         }
         
         R2A03::~R2A03()
