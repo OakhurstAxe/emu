@@ -40,7 +40,7 @@ DISTNAME      = oaemu1.0.0
 DISTDIR = /home/dmax/projects/oaemu/oaemu/build/build/oaemu1.0.0
 LINK          = g++
 LFLAGS        = 
-LIBS          = $(SUBLIBS) -L/home/dmax/projects/oaemu/oaemu/../oaemumemory/build -loaemumemory -L/home/dmax/projects/oaemu/oaemu/../oaemucpu/build -loaemucpu -L/home/dmax/projects/oaemu/oaemu/../oanes/build -loanes /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gamepad.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Core.so /usr/lib/x86_64-linux-gnu/libGL.so -lpthread   
+LIBS          = $(SUBLIBS) -L/home/dmax/projects/oaemu/oaemu/../oaemumemory/build -loaemumemory -L/home/dmax/projects/oaemu/oaemu/../oaemucpu/build -loaemucpu -L/home/dmax/projects/oaemu/oaemu/../oanesmapper/build -loanesmapper -L/home/dmax/projects/oaemu/oaemu/../oanes/build -loanes /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gamepad.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Core.so /usr/lib/x86_64-linux-gnu/libGL.so -lpthread   
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -409,6 +409,7 @@ build/main.o: ../main.cc ../../oanes/headers/nesmainwindow.h \
 		../../oaemumemory/headers/basememory.h \
 		../../oaemumemory/headers/memoryramflagged.h \
 		../../oaemumemory/headers/memoryrom.h \
+		../../oanesmapper/headers/nescartridge.h \
 		../../oanes/headers/nesapu.h \
 		../../oanes/headers/nesapuchannel.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/main.o ../main.cc

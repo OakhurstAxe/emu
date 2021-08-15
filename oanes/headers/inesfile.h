@@ -16,11 +16,12 @@ namespace oa
             uint8_t GetProgRomSize();
             uint8_t *GetCharRomData();
             uint8_t GetCharRomSize();
-            uint8_t *progRomData_;
-            uint8_t *charRomData_;
+            uint16_t GetMemoryMapper();
 
         private:
-            uint8_t memoryMapper_ = 0;
+            uint16_t memoryMapper_ = 0;
+            uint8_t *progRomData_;
+            uint8_t *charRomData_;
             char header_[4];
             uint8_t programRomSize_;
             uint8_t characterRomSize_;

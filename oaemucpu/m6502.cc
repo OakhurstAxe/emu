@@ -426,6 +426,10 @@ namespace oa
             programCounter_++;
             uint8_t loadh = memory_->CpuRead(programCounter_);
             uint8_t load = (loadh << 8) + loadl;
+            if (load == 0x00ff)
+            {
+                int x = 10;
+            }
             loadl = memory_->CpuRead(load);
             load++;
             loadh = memory_->CpuRead(load);

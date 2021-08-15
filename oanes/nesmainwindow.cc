@@ -49,7 +49,7 @@ namespace oa
         
         void NesMainWindow::leftControllerA(bool value)
         {
-            qDebug() << "A" << value;
+            //qDebug() << "A" << value;
             leftController_ &= 0xfe;
             if (value != 0)
             {

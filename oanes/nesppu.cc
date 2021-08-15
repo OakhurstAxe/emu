@@ -150,6 +150,7 @@ namespace oa
             uint8_t nametableX = controlRegister_.nametableX;
             uint8_t nametableY = controlRegister_.nametableY;
             screenColumn += xScroll;
+            screenRow += yScroll;
             
             if (screenColumn >= 256)
             {
@@ -161,6 +162,18 @@ namespace oa
                 else
                 {
                     nametableX = 0;
+                }
+            }
+            if (screenRow >= 240)
+            {
+                screenRow -= 240;
+                if (nametableY == 0)
+                {
+                    nametableY = 1;
+                }
+                else
+                {
+                    nametableY = 0;
                 }
             }
 

@@ -10,13 +10,8 @@ namespace oa
         {
             cpuWorkRam_ = new emu::MemoryRam(0x0800, "CPU Work RAM");
             cpuPpuRegisters_ = new emu::MemoryRam(0x0008, "PPU Registers");
-            for (int index=0; index<16; index++)
-            {
-                cpuPrgRom_[index] = new emu::MemoryRom(0x4000, "CPU Program ROM");
-            }
             cpuApuIoRegisters_ = new emu::MemoryRamFlagged(0x001f, "APU IO Registers");
             
-            ppuCharRom_ = new emu::MemoryRom(0x4000, "PPU Character ROM");
             ppuNameTable_ = new emu::MemoryRam(0x1f00, "PPU Name Table RAM");
             ppuPalette_ = new emu::MemoryRam(0x0100, "PPU Palette RAM");
             ppuOam_ = new emu::MemoryRam(0x0100, "PPU OAM RAM");
@@ -26,18 +21,18 @@ namespace oa
         {
             delete cpuWorkRam_;
             delete cpuPpuRegisters_;
-            for (int index=0; index<16; index++)
-            {
-                delete cpuPrgRom_[index];
-            }
             delete cpuApuIoRegisters_;
             
-            delete ppuCharRom_;
             delete ppuNameTable_;
             delete ppuPalette_;
             delete ppuOam_;
         }
 
+        void NesMemory::SetCartridge(NesCartridge* cartridge)
+        {
+            cartridge_ = cartridge;
+        }
+        
         void NesMemory::SetPpuScanLineStatus(uint16_t scanLine)
         {
             uint8_t byte = (cpuPpuRegisters_->Read(2) & 0xe0) + (scanLine & 0x7f);
@@ -130,24 +125,10 @@ namespace oa
                 return cpuApuIoRegisters_->Read(location);
             }
             
-            else if (location < 0x8000)
-            {
-                throw std::out_of_range(QString("CPU Read in unknown area %1").arg(originalLocation).toLocal8Bit().data());
-            }
-            
-            // ROM
+            // Cartridge RAM/ROM
             else
             {
-                location -= 0x8000;
-                if (location < 0x4000)
-                {
-                    return cpuPrgRom_[cpuProgRomLowerBlock_]->Read(location);
-                }
-                else
-                {
-                    location -= 0x4000;
-                    return cpuPrgRom_[cpuProgRomUpperBlock_]->Read(location);
-                }
+                return cartridge_->CpuRead(location);
             }
             
             throw std::out_of_range(QString("Invalid NES memory location for read %1").arg(originalLocation).toLocal8Bit().data());
@@ -248,37 +229,10 @@ namespace oa
                 return;
             }
             
-            else if (location < 0x8000)
-            {
-                throw std::out_of_range(QString("CPU Write in unknown area %1").arg(originalLocation).toLocal8Bit().data());
-            }
-            
-            // ROM
+            // Cartridge RAM/ROM
             else
             {
-                if ((byte & 0x80) > 0)
-                {
-                    cpuProgRomBufferRegister_ = 0;
-                    cpuProgRomBufferCounter_ = 0;
-                }
-                else
-                {
-                    cpuProgRomBufferCounter_++;
-                    if (cpuProgRomBufferCounter_ <= 4)
-                    {
-                        cpuProgRomBufferRegister_ = cpuProgRomBufferRegister_ >> 1;
-                        if (byte & 0x01)
-                        {
-                            cpuProgRomBufferRegister_ = cpuProgRomBufferRegister_ | 0x08;
-                        }
-                    }
-                    if (cpuProgRomBufferCounter_ == 5)
-                    {
-                        cpuProgRomBufferRegister_ = cpuProgRomBufferRegister_ >> 1;
-                        cpuProgRomBufferCounter_ = 0;
-                        cpuProgRomLowerBlock_ = 0;// cpuProgRomBufferRegister_;
-                    }
-                }
+                cartridge_->CpuWrite(location, byte);
                 return;
             }
 
@@ -315,9 +269,10 @@ namespace oa
 
         uint8_t NesMemory::PpuRead(uint16_t location)
         {
+            //  Cartridge PPU ROM
             if (location < 0x2000)
             {
-                return ppuCharRom_->Read(location);        
+                return cartridge_->PpuRead(location);
             }
             
             else if (location < 0x3f00)
@@ -342,9 +297,10 @@ namespace oa
 
         void NesMemory::PpuWrite(uint16_t location, uint8_t byte)
         {
+            // Cartridge PPU ROM
             if (location < 0x2000)
             {
-                ppuCharRom_->Write(location, byte); 
+                cartridge_->PpuWrite(location, byte);
                 return;
             }
             
@@ -401,22 +357,6 @@ namespace oa
         void NesMemory::SetRightController(uint8_t byte)
         {
             rightController_ = byte;
-        }
-
-        void NesMemory::LoadProgRom(uint8_t* data, uint8_t size)
-        {
-            cpuProgRomBlockCount_ = size;
-            for (int index=0; index<size; index++)
-            {
-                cpuPrgRom_[index]->LoadData(&data[index*0x4000], 0x4000);
-            }
-            cpuProgRomLowerBlock_ = 0;
-            cpuProgRomUpperBlock_ = cpuProgRomBlockCount_ - 1;
-        }
-
-        void NesMemory::LoadCharRom(uint8_t* data, uint8_t size)
-        {
-            ppuCharRom_->LoadData(data, size * 0x2000);
         }
 
     }

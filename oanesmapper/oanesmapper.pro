@@ -1,20 +1,20 @@
-TEMPLATE = app
 
-QT += widgets core gui gamepad
+TEMPLATE = lib
+
+QT += widgets
 
 CONFIG += debug
 
-SOURCES += main.cc
+SOURCES += nescartridge.cc
+SOURCES += nescartridge000.cc nescartridge001.cc
+
 LIBS += -L"$$_PRO_FILE_PWD_/../oaemumemory/build" -loaemumemory 
 LIBS += -L"$$_PRO_FILE_PWD_/../oaemucpu/build" -loaemucpu 
-LIBS += -L"$$_PRO_FILE_PWD_/../oanesmapper/build" -loanesmapper
-LIBS += -L"$$_PRO_FILE_PWD_/../oanes/build" -loanes
 
 MOC_DIR = build
 OBJECTS_DIR = build
 UI_DIR = build
 
 DESTDIR = build
-
 
 

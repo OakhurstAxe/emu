@@ -30,6 +30,11 @@ namespace oa
             return characterRomSize_;
         }
         
+        uint16_t INesFile::GetMemoryMapper()
+        {
+            return memoryMapper_;
+        }
+
         void INesFile::LoadFile(QString fileName)
         {            
             std::ifstream inFile;

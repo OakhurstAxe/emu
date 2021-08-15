@@ -15,7 +15,9 @@ SOURCES += nesmemory.cc r2a03.cc nesapu.cc nesppu.cc nesmainwindow.cc
 SOURCES += nesconsole.cc nespalette.cc inesfile.cc
 SOURCES += nesapuchannel.cc nesapupulsechannel.cc nesaputrianglechannel.cc nesapunoisechannel.cc
 
-LIBS += -L"$$_PRO_FILE_PWD_/../oaemumemory/build" -loaemumemory -L"$$_PRO_FILE_PWD_/../oaemucpu/build" -loaemucpu 
+LIBS += -L"$$_PRO_FILE_PWD_/../oaemumemory/build" -loaemumemory
+LIBS += -L"$$_PRO_FILE_PWD_/../oaemucpu/build" -loaemucpu 
+LIBS += -L"$$_PRO_FILE_PWD_/../oanesmapper/build" -loanesmapper
 LIBS += -lportaudio
 
 MOC_DIR = build

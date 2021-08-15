@@ -8,6 +8,7 @@
 #include <QDebug>
 
 #include "headers/inesfile.h"
+#include "../oanesmapper/headers/nescartridge.h"
 
 #define TICKS_PER_FRAME 49917
 
@@ -17,10 +18,11 @@ namespace oa
     {
         NesConsole::NesConsole(NesMainWindow* nesMainWindow)
         {
+            nesMemory_ = new NesMemory();
             cpuTimer_ = new QTimer();
-            cpu_ = new R2A03(&nesMemory_);
-            ppu_ = new NesPpu(&nesMemory_);
-            apu_ = new NesApu(&nesMemory_);
+            cpu_ = new R2A03(nesMemory_);
+            ppu_ = new NesPpu(nesMemory_);
+            apu_ = new NesApu(nesMemory_);
             
             nesMainWindow_ = nesMainWindow;
         }
@@ -31,6 +33,11 @@ namespace oa
             delete apu_;
             delete ppu_;
             delete cpu_;
+            if (nesCartridge_ != 0)
+            {
+                delete nesCartridge_;
+            }
+            delete nesMemory_;
         }
         
         void NesConsole::StartUp()
@@ -38,12 +45,14 @@ namespace oa
             INesFile iNesFile;
            
             //iNesFile.LoadFile("roms/Donkey_kong.nes");
-            iNesFile.LoadFile("roms/Excitebike (E).nes");
-            //iNesFile.LoadFile("roms/Ice Climber (U).nes");
+            //iNesFile.LoadFile("roms/Excitebike (E).nes");
+            iNesFile.LoadFile("roms/Ice Climber (U).nes");
             //iNesFile.LoadFile("roms/cpu.nes");
             
-            nesMemory_.LoadProgRom(iNesFile.progRomData_, iNesFile.GetProgRomSize());
-            nesMemory_.LoadCharRom(iNesFile.charRomData_, iNesFile.GetCharRomSize());
+            nesCartridge_ = NesCartridge::GetCartridge(iNesFile.GetMemoryMapper());
+            nesCartridge_->LoadProgRom(iNesFile.GetProgRomData(), iNesFile.GetProgRomSize());
+            nesCartridge_->LoadCharRom(iNesFile.GetCharRomData(), iNesFile.GetCharRomSize());
+            nesMemory_->SetCartridge(nesCartridge_);
 
             cpu_->Reset();
             
@@ -81,13 +90,13 @@ namespace oa
         
         void NesConsole::ReadGamepad()
         {
-            if (nesMemory_.CpuWriteFlagged(0x4016))
+            if (nesMemory_->CpuWriteFlagged(0x4016))
             {
-                nesMemory_.SetLeftController(nesMainWindow_->leftController_);
+                nesMemory_->SetLeftController(nesMainWindow_->leftController_);
             }
-            if (nesMemory_.CpuWriteFlagged(0x4017))
+            if (nesMemory_->CpuWriteFlagged(0x4017))
             {
-                nesMemory_.SetRightController(nesMainWindow_->rightController_);
+                nesMemory_->SetRightController(nesMainWindow_->rightController_);
             }
         }
     }
