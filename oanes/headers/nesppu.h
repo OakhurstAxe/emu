@@ -10,7 +10,6 @@ namespace oa
 {
     namespace nes
     {
-        
         class NesPpu : emu::BaseCpu
         {
         public:

@@ -83,14 +83,15 @@ namespace oa
             {
                 // Mirroring, and bring to zero
                 location = location % 8;
-                if (location == 2)
+                if (location == 0x02)
                 {
                     uint8_t byte = cpuPpuRegisters_->Read(2);
                     byte = byte & 0xd9;
                     cpuPpuRegisters_->Write(2,  byte);
                     ppuAddrCount_ = 0;
+                    return byte;
                 }
-                if (location == 5)
+                if (location == 0x05)
                 {
                     if (ppuXScrollRead_)
                     {
@@ -108,7 +109,7 @@ namespace oa
 
             // APU and IO Registers
             else if (location < 0x4020)
-            {
+            {                
                 location -= 0x4000;
                 if (location == 0x16)
                 {
@@ -157,16 +158,16 @@ namespace oa
                 location = location % 8;
                 cpuPpuRegisters_->Write(location, byte);
 
-                if (location == 03)
+                if (location == 0x03)
                 {
                     ppuOamAddr_ = byte;
                 }
-                if (location == 0x4)
+                if (location == 0x04)
                 {
                     ppuOam_->Write(ppuOamAddr_, byte);
                     ppuOamAddr_++;
                 }
-                if (location == 0x5)
+                if (location == 0x05)
                 {
                     if (ppuXScrollWrite_)
                     {
@@ -179,7 +180,7 @@ namespace oa
                         ppuXScrollWrite_ = true;
                     }
                 }
-                if (location == 0x6)
+                if (location == 0x06)
                 {
                     ppuAddrCount_++;
                     if (ppuAddrCount_ == 1)
@@ -194,7 +195,7 @@ namespace oa
                     }
                 }
                 
-                if (location == 0x7 && ppuAddr_ != 0)
+                if (location == 0x07)// && ppuAddr_ != 0)
                 {
                     PpuWrite(ppuAddr_, byte);
                     uint8_t controller = CpuRead(0x2000);

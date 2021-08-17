@@ -17,7 +17,7 @@ namespace oa
         
         uint8_t INesFile::GetProgRomSize()
         {
-            return programRomSize_;
+            return progRomSize_;
         }
         
         uint8_t *INesFile::GetCharRomData()
@@ -27,7 +27,7 @@ namespace oa
             
         uint8_t INesFile::GetCharRomSize()
         {
-            return characterRomSize_;
+            return charRomSize_;
         }
         
         uint16_t INesFile::GetMemoryMapper()
@@ -59,34 +59,43 @@ namespace oa
             int position = 0;
             memcpy(header_, &fileData[position], 4);
             position += 4;
-            memcpy(&programRomSize_, &fileData[position], 1);
+            memcpy(&progRomSizeLsb_, &fileData[position], 1);
             position += 1;
-            memcpy(&characterRomSize_, &fileData[position], 1);
+            memcpy(&charRomSizeLsb_, &fileData[position], 1);
             position += 1;
             memcpy(&cartridgeFlags_.reg, &fileData[position], 1);
             position += 1;
-            memcpy(&playChoiceFlags_.reg, &fileData[position], 1);
+            memcpy(&consoleTypeFlags_.reg, &fileData[position], 1);
             position += 1;
-            memcpy(&programRamSize_, &fileData[position], 1);
+            memcpy(&mapperFlags_.reg, &fileData[position], 1);
             position += 1;
-            memcpy(&romSize_.reg, &fileData[position], 1);
+            memcpy(&romSizeFlags_.reg, &fileData[position], 1);
             position += 1;
-            memcpy(&tvSystemFlags_.reg, &fileData[position], 1);
+            memcpy(&ramEpromSizeFlags_.reg, &fileData[position], 1);
             position += 1;
+            memcpy(&charRomSizeFlags_.reg, &fileData[position], 1);
             position += 5;
             
-            memoryMapper_ = (playChoiceFlags_.msbMapper << 8) + cartridgeFlags_.lsbMapper;
-            
-            if (cartridgeFlags_.hasTrainer)
+            memoryMapper_ = (mapperFlags_.mapperMsb_ << 8) +
+                (consoleTypeFlags_.MapperCsb_ << 4) + 
+                cartridgeFlags_.mapperLsb_;
+            progRomSize_ = (romSizeFlags_.prgRomSizeMsb_ << 8) + progRomSizeLsb_;
+            charRomSize_ = (romSizeFlags_.cahrRomSizeMsb_ << 8) + charRomSizeLsb_;
+            if (charRomSize_ == 0)
+            {
+                charRomSize_ = 1;
+            }
+
+            if (cartridgeFlags_.hasTrainer_)
             {
                 memcpy(&trainer_, &fileData[position], 512);
                 position += 512;
             }
-            progRomData_ = new uint8_t[0x4000 * programRomSize_];
-            memcpy(progRomData_, &fileData[position], 0x4000 * programRomSize_);
-            position += 0x4000 * programRomSize_;
-            charRomData_ = new uint8_t[0x2000 * characterRomSize_];
-            memcpy(charRomData_, &fileData[position], 0x2000 * characterRomSize_);
+            progRomData_ = new uint8_t[0x4000 * progRomSize_];
+            memcpy(progRomData_, &fileData[position], 0x4000 * progRomSize_);
+            position += 0x4000 * charRomSize_;
+            charRomData_ = new uint8_t[0x2000 * charRomSize_];
+            memcpy(charRomData_, &fileData[position], 0x2000 * charRomSize_);
             
             delete []fileData;
             // Skip play choice for now

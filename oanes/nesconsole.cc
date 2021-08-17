@@ -10,7 +10,7 @@
 #include "headers/inesfile.h"
 #include "../oanesmapper/headers/nescartridge.h"
 
-#define TICKS_PER_FRAME 49917
+#define TICKS_PER_FRAME 59667
 
 namespace oa
 {
@@ -47,7 +47,9 @@ namespace oa
             //iNesFile.LoadFile("roms/Donkey_kong.nes");
             //iNesFile.LoadFile("roms/Excitebike (E).nes");
             iNesFile.LoadFile("roms/Ice Climber (U).nes");
+            //iNesFile.LoadFile("roms/Kid Niki - Radical Ninja (USA).nes");
             //iNesFile.LoadFile("roms/cpu.nes");
+            //iNesFile.LoadFile("roms/nestest.nes");
             
             nesCartridge_ = NesCartridge::GetCartridge(iNesFile.GetMemoryMapper());
             nesCartridge_->LoadProgRom(iNesFile.GetProgRomData(), iNesFile.GetProgRomSize());
@@ -65,7 +67,6 @@ namespace oa
         void NesConsole::StartNextFrame()
         {
             //qDebug() << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-            //try 
             {
                 int ticks = 0;
                 apu_->ExecuteTick();

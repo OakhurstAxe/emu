@@ -20,20 +20,23 @@ namespace oa
 
         private:
             uint16_t memoryMapper_ = 0;
+            uint16_t progRomSize_;
+            uint16_t charRomSize_;
+            
             uint8_t *progRomData_;
             uint8_t *charRomData_;
             char header_[4];
-            uint8_t programRomSize_;
-            uint8_t characterRomSize_;
+            uint8_t progRomSizeLsb_;
+            uint8_t charRomSizeLsb_;
             union
             {
             struct
                 {
-                    uint8_t mirroring: 1;
-                    uint8_t batteryBackup: 1;
-                    uint8_t hasTrainer: 1;
-                    uint8_t ignoreMirroring: 1;
-                    uint8_t lsbMapper: 4;
+                    uint8_t nametableMirroring_: 1;
+                    uint8_t batteryBackup_: 1;
+                    uint8_t hasTrainer_: 1;
+                    uint8_t fourScreenMode_: 1;
+                    uint8_t mapperLsb_: 4;
                 };
                 uint8_t reg;
             }
@@ -42,38 +45,53 @@ namespace oa
             {
                 struct
                 {
-                    uint8_t vsUnisystem: 1;
-                    uint8_t isPlayChoice: 1;
-                    uint8_t nes2Format: 2;
-                    uint8_t msbMapper: 4;
+                    uint8_t consoleType_: 2;
+                    uint8_t nes2Format_: 2;
+                    uint8_t MapperCsb_: 4;
                 };
                 uint8_t reg;
             }
-            playChoiceFlags_;
-            uint8_t programRamSize_;
+            consoleTypeFlags_;
+            union
+            {
+                struct
+                {
+                    uint8_t mapperMsb_: 4;
+                    uint8_t msbMapper_: 4;
+                };
+                uint8_t reg;
+            }
+            mapperFlags_;
             union
             {
                 struct
                 {
                     uint8_t prgRomSizeMsb_: 4;
-                    uint8_t chrRomSizeMsb_: 4;
+                    uint8_t cahrRomSizeMsb_: 4;
                 };
                 uint8_t reg;
             }
-            romSize_;
+            romSizeFlags_;
             union
             {
                 struct
                 {
-                    uint8_t tvSystem: 2;
-                    uint8_t unused: 2;
-                    uint8_t hasProgramRam: 1;
-                    uint8_t hasBusConfilcts: 1;
-                    uint8_t unused2: 2;
+                    uint8_t prgRamShiftCount_: 4;
+                    uint8_t epromShiftCount_: 4;
                 };
                 uint8_t reg;
             }
-            tvSystemFlags_;
+            ramEpromSizeFlags_;
+            union
+            {
+                struct
+                {
+                    uint8_t charRamShiftCount_: 4;
+                    uint8_t charNvRamShiftCount_: 4;
+                };
+                uint8_t reg;
+            }
+            charRomSizeFlags_;
             uint8_t unusedPadding_;
             
             uint8_t trainer_[512];

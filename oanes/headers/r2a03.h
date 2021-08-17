@@ -19,9 +19,15 @@ namespace oa
             void SetNmi();
             void DmaSuspend();
         protected:
-            // ISC (Discouraged opcodes)
-            virtual void OpISC(AddressMethod addressMethod);
             void SetOpCodes() override;
+            virtual void OpISC(AddressMethod addressMethod);
+            virtual void OpLAX(AddressMethod addressMethod);
+            virtual void OpSAX(AddressMethod addressMethod);
+            virtual void OpDCP(AddressMethod addressMethod);
+            virtual void OpSLO(AddressMethod addressMethod);
+            virtual void OpRLA(AddressMethod addressMethod);
+            virtual void OpSRE(AddressMethod addressMethod);
+            virtual void OpRRA(AddressMethod addressMethod);
         private:
             bool isNmiSet_;
         };

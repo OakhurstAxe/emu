@@ -31,14 +31,15 @@ namespace oa
         
         uint8_t NesCartridge001::CpuRead(uint16_t location)
         {
-            if (location < 0x4000)
+            if (location < 0xc000)
             {
+                location -= 0x8000;
                 return cpuPrgRom_[cpuProgRomLowerBlock_]->Read(location);
             }
             else
             {
-                location -= 0x4000;
-                return cpuPrgRom_[cpuProgRomUpperBlock_]->Read(location);
+                location -= 0xc000;
+                return cpuPrgRom_[1]->Read(location);
             }
         }
         
