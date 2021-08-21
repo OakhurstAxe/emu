@@ -90,13 +90,10 @@ namespace oa
             
             uint wavelength = ((DataSampleRateHz / frequency_));
             uint wavelengthEigth = wavelength / 8;
-            uint sampleIndex = 0;
+            int sampleIndex = 0;
 
-            //qDebug() << "Pulse frequency: " << frequency_ << " volume: " << volume_ << " constantVolume_: " << constantVolume_;
             while (sampleIndex < sampleCount) 
             {
-
-                int x = 32;
                 if (loadCounter_ == 0 && haltFlag_ == false)
                 {
                     m_buffer_[sampleIndex] = 0.0;

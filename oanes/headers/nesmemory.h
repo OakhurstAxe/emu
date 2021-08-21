@@ -6,6 +6,7 @@
 #include "../oaemumemory/headers/memoryrom.h"
 #include "../oaemumemory/headers/memorymapper.h"
 #include "../oanesmapper/headers/nescartridge.h"
+#include "r2a03.h"
 
 namespace oa
 {
@@ -16,13 +17,12 @@ namespace oa
         {
         public:
             NesMemory();
-            ~NesMemory();
+            virtual ~NesMemory();
 
             uint8_t CpuRead(uint16_t location) override;
             void CpuWrite(uint16_t location, uint8_t byte) override;
             bool CpuReadFlagged(uint16_t location);
             bool CpuWriteFlagged(uint16_t location);
-            void SetPpuScanLineStatus(uint16_t scanLine);
             void SetPpuSpriteOvervlow(uint8_t value);
             void SetPpuSpriteZeroHit(uint8_t value);
             
@@ -35,6 +35,7 @@ namespace oa
             void SetRightController(uint8_t byte);
 
             void SetCartridge(NesCartridge* cartridge);
+            void SetCpu(R2A03* cpu);
 
             bool ppuXScrollWrite_ = true;
             bool ppuXScrollRead_ = true;
@@ -49,7 +50,8 @@ namespace oa
             emu::MemoryRam* ppuNameTable_;
             emu::MemoryRam* ppuPalette_;
             emu::MemoryRam* ppuOam_;
-
+            R2A03 *cpu_;
+            
             uint8_t leftController_ = 0;
             uint8_t rightController_ = 0;
             

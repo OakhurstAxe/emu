@@ -33,12 +33,11 @@ namespace oa
             cartridge_ = cartridge;
         }
         
-        void NesMemory::SetPpuScanLineStatus(uint16_t scanLine)
+        void NesMemory::SetCpu(R2A03* cpu)
         {
-            uint8_t byte = (cpuPpuRegisters_->Read(2) & 0xe0) + (scanLine & 0x7f);
-            cpuPpuRegisters_->Write(2, byte);
+            cpu_ = cpu;
         }
-        
+
         void NesMemory::SetPpuSpriteOvervlow(uint8_t value)
         {
             uint8_t byte;
@@ -86,8 +85,7 @@ namespace oa
                 if (location == 0x02)
                 {
                     uint8_t byte = cpuPpuRegisters_->Read(2);
-                    byte = byte & 0xd9;
-                    cpuPpuRegisters_->Write(2,  byte);
+                    cpuPpuRegisters_->Write(2,  byte & 0x60);
                     ppuAddrCount_ = 0;
                     return byte;
                 }
@@ -142,10 +140,6 @@ namespace oa
             // Working RAM
             if (location < 0x2000)
             {
-                if (location == 583)
-                {
-                    int x = 10;
-                }
                 location = location % 0x800;  // mirroring
                 cpuWorkRam_->Write(location, byte);
                 return;
@@ -216,6 +210,7 @@ namespace oa
             {
                 if (location == 0x4014)
                 {
+                    cpu_->DmaSuspend();
                     uint16_t cpuAddr = byte << 8;
                     for (int i=0; i<256; i++)
                     {

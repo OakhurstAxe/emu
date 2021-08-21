@@ -11,6 +11,7 @@ namespace oa
         class NesCartridge
         {
         public:
+            virtual ~NesCartridge() {};
             virtual uint8_t CpuRead(uint16_t location) = 0;
             virtual void CpuWrite(uint16_t location, uint8_t byte) = 0;
             virtual uint8_t PpuRead(uint16_t location) = 0;

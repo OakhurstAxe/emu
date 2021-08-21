@@ -301,6 +301,7 @@ namespace oa
             OperationStruct operation_;
                         
             uint8_t instruction = memory_->CpuRead(programCounter_);
+            programCounter_++;
             operation_.operation_ = &M6502::OpBRK;
             operation_.addressMethod_ = &M6502::NullAddress;
             
@@ -309,18 +310,6 @@ namespace oa
             
             CallOpMethod(operation_.operation_, operation_.addressMethod_);
             overflowTicks_ += operation_.ticks;
-            
-            prevInstruction9_ = prevInstruction8_;
-            prevInstruction8_ = prevInstruction7_;
-            prevInstruction7_ = prevInstruction6_;
-            prevInstruction6_ = prevInstruction5_;
-            prevInstruction5_ = prevInstruction4_;
-            prevInstruction4_ = prevInstruction3_;
-            prevInstruction3_ = prevInstruction2_;
-            prevInstruction2_ = prevInstruction1_;
-            prevInstruction1_ = instruction;
-            programCounter_++;
-
             overflowTicks_--;
         }
 
@@ -366,39 +355,43 @@ namespace oa
         }
         uint16_t M6502::ImmediateAddress()
         {
+            uint16_t address = programCounter_;
             programCounter_++;
-            return programCounter_;
+            return address;
         }
         uint16_t M6502::ZeroAddress()
         {
+            uint16_t address = memory_->CpuRead(programCounter_) & 0xFF;
             programCounter_++;
-            return memory_->CpuRead(programCounter_) & 0xFF;
+            return address;
         }
 
         uint16_t M6502::ZeroXAddress()
         {
+            uint16_t address = (memory_->CpuRead(programCounter_) + registerX_) & 0xFF;
             programCounter_++;
-            return (memory_->CpuRead(programCounter_) + registerX_) & 0xFF;
+            return address;
         }
         uint16_t M6502::ZeroYAddress()
         {
+            uint16_t address = (memory_->CpuRead(programCounter_) + registerY_) & 0xFF;
             programCounter_++;
-            return (memory_->CpuRead(programCounter_) + registerY_) & 0xFF;
+            return address;
         }
         uint16_t M6502::AbsoluteAddress()
         {
-            programCounter_++;
             uint8_t loadl = memory_->CpuRead(programCounter_);
             programCounter_++;
             uint8_t loadh = memory_->CpuRead(programCounter_);
+            programCounter_++;
             return (loadh << 8) + loadl;
         }
         uint16_t M6502::AbsoluteXAddress()
         {
-            programCounter_++;
             uint8_t loadl = memory_->CpuRead(programCounter_);
             programCounter_++;
             uint8_t loadh = memory_->CpuRead(programCounter_);
+            programCounter_++;
             uint16_t address = (loadh << 8) + loadl + registerX_;
             if ((address & 0xff00) != (programCounter_ & 0xff00))
             {
@@ -408,10 +401,10 @@ namespace oa
         }
         uint16_t M6502::AbsoluteYAddress()
         {
-            programCounter_++;
             uint8_t loadl = memory_->CpuRead(programCounter_);
             programCounter_++;
             uint8_t loadh = memory_->CpuRead(programCounter_);
+            programCounter_++;
             uint16_t address = (loadh << 8) + loadl + registerY_;
             if ((address & 0xff00) != (programCounter_ & 0xff00))
             {
@@ -421,10 +414,10 @@ namespace oa
         }
         uint16_t M6502::IndirectAddress()
         {
-            programCounter_++;
             uint8_t loadl = memory_->CpuRead(programCounter_);
             programCounter_++;
             uint8_t loadh = memory_->CpuRead(programCounter_);
+            programCounter_++;
             uint16_t load = (loadh << 8) + loadl;
             // Bug in M6502 if low nibble is end of page
             if (loadl == 0x00ff)
@@ -442,8 +435,8 @@ namespace oa
         }
         uint16_t M6502::IndirectXAddress()
         {
-            programCounter_++;
             uint16_t indirect = (memory_->CpuRead(programCounter_) + registerX_);
+            programCounter_++;
             uint8_t loadl = memory_->CpuRead(indirect & 0xff);
             indirect++;
             uint8_t loadh = memory_->CpuRead(indirect & 0xff);
@@ -451,8 +444,8 @@ namespace oa
         }
         uint16_t M6502::IndirectYAddress()
         {
-            programCounter_++;
             uint16_t indirect = memory_->CpuRead(programCounter_);
+            programCounter_++;
             uint8_t loadl = memory_->CpuRead(indirect & 0xff);
             indirect++;
             uint8_t loadh = memory_->CpuRead(indirect & 0xff);
@@ -468,7 +461,8 @@ namespace oa
         // Load Store operations
         void M6502::OpLDA(AddressMethod addressMethod) 
         {
-            accumulator_ = memory_->CpuRead(CallAddressMethod(addressMethod));
+            uint16_t address = CallAddressMethod(addressMethod);
+            accumulator_ = memory_->CpuRead(address);
             statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
             statusRegister_.zeroFlag = (accumulator_ == 0);
         }
@@ -486,7 +480,8 @@ namespace oa
         }
         void M6502::OpSTA(AddressMethod addressMethod)
         {
-            memory_->CpuWrite(CallAddressMethod(addressMethod), accumulator_);
+            uint16_t address = CallAddressMethod(addressMethod);
+            memory_->CpuWrite(address, accumulator_);
         }
         void M6502::OpSTX(AddressMethod addressMethod)
         {
@@ -802,14 +797,14 @@ namespace oa
         void M6502::OpJMP(AddressMethod addressMethod)
         {
             uint16_t address = CallAddressMethod(addressMethod);
-            programCounter_ = address - 1;
+            programCounter_ = address;
         }
         void M6502::OpJSR(AddressMethod addressMethod) 
         {
             uint16_t jumpAddress = CallAddressMethod(addressMethod);
-            PushStack(programCounter_ >> 8);
+            PushStack((programCounter_ & 0xff00) >> 8);
             PushStack(programCounter_ & 0xff);
-            programCounter_ = jumpAddress - 1;
+            programCounter_ = jumpAddress;
         }
         void M6502::OpRTS(AddressMethod addressMethod) 
         {
@@ -823,7 +818,7 @@ namespace oa
         // branch operations
         void M6502::OpBCC(AddressMethod addressMethod) 
         {
-            char relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
+            int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.carryFlag == false)
             {
                 overflowTicks_++;
@@ -834,7 +829,7 @@ namespace oa
         }
         void M6502::OpBCS(AddressMethod addressMethod) 
         {
-            char relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
+            int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.carryFlag == true)
             {
                 overflowTicks_++;
@@ -845,7 +840,7 @@ namespace oa
         }
         void M6502::OpBEQ(AddressMethod addressMethod) 
         {
-            char relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
+            int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.zeroFlag == true)
             {
                 overflowTicks_++;
@@ -856,7 +851,7 @@ namespace oa
         }
         void M6502::OpBMI(AddressMethod addressMethod) 
         {
-            char relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
+            int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.negativeFlag == true)
             {
                 overflowTicks_++;
@@ -867,7 +862,7 @@ namespace oa
         }    
         void M6502::OpBNE(AddressMethod addressMethod) 
         { 
-            char relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
+            int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.zeroFlag == false)
             {
                 overflowTicks_++;
@@ -878,7 +873,7 @@ namespace oa
         }
         void M6502::OpBPL(AddressMethod addressMethod) 
         {
-            char relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
+            int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.negativeFlag == false)
             {
                 overflowTicks_++;
@@ -889,7 +884,7 @@ namespace oa
         }
         void M6502::OpBVC(AddressMethod addressMethod) 
         {
-            char relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
+            int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.overflowFlag == false)
             {
                 overflowTicks_++;
@@ -900,7 +895,7 @@ namespace oa
         }
         void M6502::OpBVS(AddressMethod addressMethod) 
         {
-            char relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
+            int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.overflowFlag == true)
             {
                 overflowTicks_++;
@@ -952,7 +947,7 @@ namespace oa
         {
             Q_UNUSED(addressMethod);
             statusRegister_.interruptDisable = 1;
-            PushStack(programCounter_ >> 8);
+            PushStack((programCounter_ & 0xff00) >> 8);
             PushStack(programCounter_ & 0x00ff);
             statusRegister_.breakCommand = true;
             PushStack(statusRegister_.register_);
@@ -960,14 +955,15 @@ namespace oa
             uint8_t loadl = memory_->CpuRead(0xfffe);
             uint8_t loadh = memory_->CpuRead(0xffff);
             uint16_t load = (loadh << 8) + loadl;
-            programCounter_ = load - 1;
+            programCounter_ = load;
         }
         void M6502::OpNOP(AddressMethod addressMethod) 
         {
-            uint16_t address = CallAddressMethod(addressMethod);
+            Q_UNUSED(addressMethod);
         }
         void M6502::OpRTI(AddressMethod addressMethod)
         {
+            Q_UNUSED(addressMethod);
             statusRegister_.register_ = PopStack();
             statusRegister_.breakCommand = false;
             uint8_t loadl = PopStack();

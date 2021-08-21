@@ -12,7 +12,6 @@ namespace oa
                 cpuPrgRom_[index] = new emu::MemoryRom(0x4000, "Cartridge Program ROM");
                 ppuCharRom_[index] = new emu::MemoryRom(0x2000, "PPU Character ROM");
             }
-            cartRam_ = new emu::MemoryRam(0x4000, "Cart RAM");
         }
         
         NesCartridge000::~NesCartridge000()
@@ -22,16 +21,11 @@ namespace oa
                 delete cpuPrgRom_[index];
                 delete ppuCharRom_[index];
             }
-            delete cartRam_;
         }
         
         uint8_t NesCartridge000::CpuRead(uint16_t location)
         {
-            if (location < 0x8000)
-            {
-                return cartRam_->Read(location - 0x4020);
-            }
-            else if (location < 0xc000)
+            if (location < 0xc000)
             {
                 location -= 0x8000;
                 return cpuPrgRom_[0]->Read(location);
@@ -45,6 +39,7 @@ namespace oa
         
         void NesCartridge000::CpuWrite(uint16_t location, uint8_t byte)
         {
+            Q_UNUSED(byte);
             throw std::out_of_range(QString("Cannot write to Cart ROM %1").arg(location).toLocal8Bit().data());
         }
         
@@ -63,6 +58,7 @@ namespace oa
         
         void NesCartridge000::PpuWrite(uint16_t location, uint8_t byte)
         {
+            Q_UNUSED(byte);
             throw std::out_of_range(QString("Cannot write to Cart PPU ROM %1").arg(location).toLocal8Bit().data());
         }
 

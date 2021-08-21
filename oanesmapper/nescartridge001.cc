@@ -45,6 +45,7 @@ namespace oa
         
         void NesCartridge001::CpuWrite(uint16_t location, uint8_t byte)
         {
+            Q_UNUSED(location);
             if ((byte & 0x80) > 0)
             {
                 cpuProgRomBufferRegister_ = 0;
@@ -85,6 +86,7 @@ namespace oa
         
         void NesCartridge001::PpuWrite(uint16_t location, uint8_t byte)
         {
+            Q_UNUSED(byte);
             throw std::out_of_range(QString("Cannot write to Cart PPU ROM %1").arg(location).toLocal8Bit().data());
         }
 

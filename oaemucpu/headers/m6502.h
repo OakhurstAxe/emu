@@ -36,15 +36,6 @@ namespace oa
             uint8_t PopStack(void);
             
             MemoryMapper *memory_;
-            int prevInstruction1_ = 0;
-            int prevInstruction2_ = 0;
-            int prevInstruction3_ = 0;
-            int prevInstruction4_ = 0;
-            int prevInstruction5_ = 0;
-            int prevInstruction6_ = 0;
-            int prevInstruction7_ = 0;
-            int prevInstruction8_ = 0;
-            int prevInstruction9_ = 0;
             uint16_t programCounter_;
             uint16_t stackPointer_;
             uint8_t accumulator_;

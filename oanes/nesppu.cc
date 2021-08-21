@@ -58,10 +58,6 @@ namespace oa
                     uint8_t yPos = memory_->PpuOamRead(i*4);
                     if (screenScanLine - yPos > 0 && screenScanLine - yPos <= 8)
                     {
-                        if (i == 0)
-                        {
-                            //memory_->SetPpuSpriteZeroHit();
-                        }                        
                         renderSprites_[spriteCount] = i;
                         spriteCount++;
                     }            
@@ -136,17 +132,6 @@ namespace oa
             controlRegister_.reg = memory_->CpuRead(PPU_CONTROL_ADDR);
             uint8_t xScroll = memory_->ppuXScroll_;
             uint8_t yScroll = memory_->ppuYScroll_;
-
-            if (xScroll > 0 && screenRow == 10 && screenColumn == -1)
-            {
-                int x = 10;
-            }
-            // Donky Kong hammer barrel stop
-            if (screenRow == 175 && screenColumn == 1)
-            {
-                //qDebug() << "xScroll: " << xScroll << " NametableX: " << controlRegister_.nametableX;
-                int x = 10;
-            }
             uint8_t nametableX = controlRegister_.nametableX;
             uint8_t nametableY = controlRegister_.nametableY;
             screenColumn += xScroll;
@@ -179,7 +164,8 @@ namespace oa
 
             // Get attribute value
             // Should be one of: $23C0, $27C0, $2BC0, or $2FC0
-            uint16_t attributeTableAddress = PPU_ATTRIBUTE_ADDR + (nametableX * 0x400) + (nametableY * 0x800);
+            uint16_t attributeTableAddress = PPU_ATTRIBUTE_ADDR + (nametableX * PPU_NAMETABLE_SIZE) + 
+                (nametableY * PPU_NAMETABLE_SIZE * 2);
             uint16_t attributeAddress = ((screenRow / 32) * 8 + (screenColumn / 32)) + attributeTableAddress;
             attributeByte_ = memory_->PpuRead(attributeAddress);
 
@@ -204,7 +190,8 @@ namespace oa
             uint16_t tileRow = screenRow / 8;
             uint16_t tileColumn = (screenColumn / 8);
             // Should be one of: $2000, $2400, $2800, or $2C00
-            uint16_t nametableTableAddress = PPU_NAMETABLE_ADDR + (nametableX * 0x400) + (nametableY * 0x800);
+            uint16_t nametableTableAddress = PPU_NAMETABLE_ADDR + (nametableX * PPU_NAMETABLE_SIZE) + 
+                (nametableY * PPU_NAMETABLE_SIZE * 2);
             nametableAddress_ = (((tileRow) * 32) + (tileColumn)) + nametableTableAddress;
             patternEntryAddress_ = ((memory_->PpuRead(nametableAddress_) << 4)  + (screenRow % 8)) + 
                 PPU_PATTERN_SIZE * controlRegister_.patternBackground;
@@ -235,14 +222,12 @@ namespace oa
                 // Set rendering registers for when scrolling happens
                 cycle_ = 0;
                 scanLine_++;
-                if (scanLine_ >= 261)
+                if (scanLine_ > 261)
                 {
                     scanLine_ = 0;
                 }
             }
             
-            memory_->SetPpuScanLineStatus(scanLine_);
-
             if (scanLine_ > 0 && scanLine_ <= 240 && cycle_ >= 0  && cycle_ <= 256)
             {
                 RenderPixel();

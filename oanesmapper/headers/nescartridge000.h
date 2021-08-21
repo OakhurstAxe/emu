@@ -26,9 +26,6 @@ namespace oa
         private:
             emu::MemoryRom* cpuPrgRom_[2];
             emu::MemoryRom* ppuCharRom_[2];
-            
-            // Only due to bad read from Ice Climber test
-            emu::MemoryRam* cartRam_;
         };
         
     }
