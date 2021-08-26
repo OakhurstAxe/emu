@@ -10,7 +10,7 @@
 #include "headers/inesfile.h"
 #include "../oanesmapper/headers/nescartridge.h"
 
-#define TICKS_PER_FRAME 59667
+#define TICKS_PER_FRAME 59736
 
 namespace oa
 {
@@ -44,8 +44,8 @@ namespace oa
         {
             INesFile iNesFile;
            
-            //iNesFile.LoadFile("roms/Donkey_kong.nes");
-            iNesFile.LoadFile("roms/Excitebike (E).nes");
+            iNesFile.LoadFile("roms/Donkey_kong.nes");
+            //iNesFile.LoadFile("roms/Excitebike (E).nes");
             //iNesFile.LoadFile("roms/Ice Climber (U).nes");
             //iNesFile.LoadFile("roms/Super Mario Bros (E).nes");
             //iNesFile.LoadFile("roms/Kid Niki - Radical Ninja (USA).nes");

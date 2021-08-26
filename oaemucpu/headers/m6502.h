@@ -17,6 +17,7 @@ namespace oa
         {
         public:
             M6502(MemoryMapper *memory);
+            virtual ~M6502();
             virtual void ExecuteTick();
             virtual void Reset();
         protected:
@@ -36,6 +37,9 @@ namespace oa
             uint8_t PopStack(void);
             
             MemoryMapper *memory_;
+            uint16_t stackPointerMax_;
+            uint16_t stackPointerMin_;
+            
             uint16_t programCounter_;
             uint16_t stackPointer_;
             uint8_t accumulator_;

@@ -425,12 +425,15 @@ compiler_clean: compiler_moc_predefs_clean
 build/nescartridge.o: ../nescartridge.cc ../headers/nescartridge.h \
 		../../oaemumemory/headers/memoryrom.h \
 		../../oaemumemory/headers/basememory.h \
-		../headers/nescartridge000.h
+		../headers/nescartridge000.h \
+		../../oaemumemory/headers/memoryram.h \
+		../headers/nescartridge001.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nescartridge.o ../nescartridge.cc
 
 build/nescartridge000.o: ../nescartridge000.cc ../headers/nescartridge000.h \
-		../../oaemumemory/headers/memoryrom.h \
+		../../oaemumemory/headers/memoryram.h \
 		../../oaemumemory/headers/basememory.h \
+		../../oaemumemory/headers/memoryrom.h \
 		../headers/nescartridge.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nescartridge000.o ../nescartridge000.cc
 

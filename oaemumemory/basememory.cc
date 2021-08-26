@@ -20,7 +20,7 @@ namespace oa
         
         void BaseMemory::LoadData(uint8_t* data, uint16_t size)
         {
-            memcpy(memory_, data, size);
+            memcpy(memory_, data, size * 0x1000);
         }
         
         uint8_t BaseMemory::Read(uint16_t location)

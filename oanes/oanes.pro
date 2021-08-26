@@ -9,7 +9,8 @@ FORMS += nesmainwindow.ui
 
 HEADERS += headers/nesmemory.h headers/r2a03.h headers/nesapu.h headers/nesppu.h headers/nesmainwindow.h
 HEADERS += headers/nesconsole.h headers/nespalette.h headers/inesfile.h
-HEADERS += headers/nesapuchannel.h headers/nesapupulsechannel.h headers/nesaputrianglechannel.h headers/nesapunoisechannel.h
+HEADERS += headers/nesapuchannel.h headers/nesapupulsechannel.h headers/nesaputrianglechannel.h 
+HEADERS += headers/nesapunoisechannel.h
 
 SOURCES += nesmemory.cc r2a03.cc nesapu.cc nesppu.cc nesmainwindow.cc
 SOURCES += nesconsole.cc nespalette.cc inesfile.cc

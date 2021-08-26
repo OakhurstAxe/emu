@@ -13,6 +13,12 @@ namespace oa
         {
             memory_ = memory;
             SetOpCodes();
+            stackPointerMax_ = 0x1FF;
+            stackPointerMin_ = 0xFF;
+        }
+        
+        M6502::~M6502()
+        {
         }
         
         void M6502::SetOpCodes()
@@ -315,7 +321,7 @@ namespace oa
 
         void M6502::PushStack(uint8_t byte)
         {
-            if (stackPointer_ < 255)
+            if (stackPointer_ < stackPointerMin_)
             {
                 throw std::out_of_range(QString("Stack overflow").toLocal8Bit().data());
             }
@@ -325,7 +331,7 @@ namespace oa
 
         uint8_t M6502::PopStack(void)
         {
-            if (stackPointer_ >= 511)
+            if (stackPointer_ >= stackPointerMax_)
             {
                 throw std::out_of_range(QString("Stack underflow").toLocal8Bit().data());
             }
@@ -335,7 +341,7 @@ namespace oa
 
         void M6502::Reset()
         {
-            stackPointer_ = 0x001ff;
+            stackPointer_ = stackPointerMax_;
             uint8_t pcl = memory_->CpuRead(0xfffc);
             uint8_t pch = memory_->CpuRead(0xfffd);
             programCounter_ = (pch << 8) + pcl;
