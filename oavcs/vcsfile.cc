@@ -49,7 +49,11 @@ namespace oa
             }
             inFile.close();            
 
-            memcpy(&progRomData_, &fileData[0], fileSize);
+            memcpy(&progRomData_[0], &fileData[0], fileSize);
+            if (fileSize == 0x800)
+            {
+                memcpy(&progRomData_[0x800], &fileData[0], fileSize);
+            }
             
             delete []fileData;
         }

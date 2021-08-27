@@ -44,12 +44,12 @@ namespace oa
         {
             INesFile iNesFile;
            
-            iNesFile.LoadFile("roms/Donkey_kong.nes");
+            //iNesFile.LoadFile("roms/Donkey_kong.nes");
             //iNesFile.LoadFile("roms/Excitebike (E).nes");
             //iNesFile.LoadFile("roms/Ice Climber (U).nes");
             //iNesFile.LoadFile("roms/Super Mario Bros (E).nes");
             //iNesFile.LoadFile("roms/Kid Niki - Radical Ninja (USA).nes");
-            //iNesFile.LoadFile("roms/nestest.nes");
+            iNesFile.LoadFile("roms/nestest.nes");
             
             nesCartridge_ = NesCartridge::GetCartridge(iNesFile.GetMemoryMapper());
             nesCartridge_->LoadProgRom(iNesFile.GetProgRomData(), iNesFile.GetProgRomSize());

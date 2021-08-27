@@ -66,13 +66,13 @@ namespace oa
         {
             if (size == 1)
             {
-                cpuPrgRom_[0]->LoadData(&data[0], 0x4000);
-                cpuPrgRom_[1]->LoadData(&data[0], 0x4000);
+                cpuPrgRom_[0]->LoadData(&data[0], 4);
+                cpuPrgRom_[1]->LoadData(&data[0], 4);
             }
             else if (size == 2)
             {
-                cpuPrgRom_[0]->LoadData(&data[0], 0x4000);
-                cpuPrgRom_[1]->LoadData(&data[0x4000], 0x4000);
+                cpuPrgRom_[0]->LoadData(&data[0], 4);
+                cpuPrgRom_[1]->LoadData(&data[0x4000], 4);
             }
         }
         
@@ -80,8 +80,8 @@ namespace oa
         {
             if (size == 1)
             {
-                ppuCharRom_[0]->LoadData(&data[0], 0x2000);
-                ppuCharRom_[1]->LoadData(&data[0], 0x2000);
+                ppuCharRom_[0]->LoadData(&data[0], 2);
+                ppuCharRom_[1]->LoadData(&data[0], 2);
             }
             else if (size == 2)
             {

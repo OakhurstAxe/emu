@@ -20,6 +20,7 @@ namespace oa
             virtual void Write(uint16_t location, uint8_t byte) override;
         private:
             void RenderPixel();
+            uint8_t ReverseBits(uint8_t n);
             uint16_t cycle_;
             uint16_t scanLine_;
             uint8_t screen_[30720];      

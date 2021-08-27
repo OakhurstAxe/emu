@@ -305,7 +305,12 @@ namespace oa
             }
 
             OperationStruct operation_;
-                        
+            
+            if (programCounter_ == 0)
+            {
+                int x = 10;
+            }
+            
             uint8_t instruction = memory_->CpuRead(programCounter_);
             programCounter_++;
             operation_.operation_ = &M6502::OpBRK;
@@ -317,6 +322,17 @@ namespace oa
             CallOpMethod(operation_.operation_, operation_.addressMethod_);
             overflowTicks_ += operation_.ticks;
             overflowTicks_--;
+            
+            prevInt10 = prevInt9;
+            prevInt9 = prevInt8;
+            prevInt8 = prevInt7;
+            prevInt7 = prevInt6;
+            prevInt6 = prevInt5;
+            prevInt5 = prevInt4;
+            prevInt4 = prevInt3;
+            prevInt3 = prevInt2;
+            prevInt2 = prevInt1;
+            prevInt1 = instruction;
         }
 
         void M6502::PushStack(uint8_t byte)
@@ -532,14 +548,14 @@ namespace oa
         void M6502::OpTSX(AddressMethod addressMethod) 
         {
             Q_UNUSED(addressMethod);
-            registerX_ = PopStack();
+            registerX_ = stackPointer_ & 0xFF;
             statusRegister_.negativeFlag = (registerX_ & 0x80) > 0;
             statusRegister_.zeroFlag = (registerX_ == 0);
         }
         void M6502::OpTXS(AddressMethod addressMethod) 
         {
             Q_UNUSED(addressMethod);
-            PushStack(registerX_);
+            stackPointer_ = registerX_ | 0x100;
         }
         void M6502::OpPHA(AddressMethod addressMethod) 
         {
@@ -828,7 +844,7 @@ namespace oa
             if (statusRegister_.carryFlag == false)
             {
                 overflowTicks_++;
-                if ((relativeAddress & 0xff00) != (programCounter_ & 0xff00))
+                if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
                     overflowTicks_++;
                 programCounter_ += relativeAddress;
             }
@@ -839,7 +855,7 @@ namespace oa
             if (statusRegister_.carryFlag == true)
             {
                 overflowTicks_++;
-                if ((relativeAddress & 0xff00) != (programCounter_ & 0xff00))
+                if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
                     overflowTicks_++;
                 programCounter_ += relativeAddress;
             }
@@ -850,7 +866,7 @@ namespace oa
             if (statusRegister_.zeroFlag == true)
             {
                 overflowTicks_++;
-                if ((relativeAddress & 0xff00) != (programCounter_ & 0xff00))
+                if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
                     overflowTicks_++;
                 programCounter_ += relativeAddress;
             }
@@ -861,7 +877,7 @@ namespace oa
             if (statusRegister_.negativeFlag == true)
             {
                 overflowTicks_++;
-                if ((relativeAddress & 0xff00) != (programCounter_ & 0xff00))
+                if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
                     overflowTicks_++;
                 programCounter_ += relativeAddress;
             }
@@ -872,7 +888,7 @@ namespace oa
             if (statusRegister_.zeroFlag == false)
             {
                 overflowTicks_++;
-                if ((relativeAddress & 0xff00) != (programCounter_ & 0xff00))
+                if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
                     overflowTicks_++;
                 programCounter_ += relativeAddress;
             }
@@ -883,7 +899,7 @@ namespace oa
             if (statusRegister_.negativeFlag == false)
             {
                 overflowTicks_++;
-                if ((relativeAddress & 0xff00) != (programCounter_ & 0xff00))
+                if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
                     overflowTicks_++;
                 programCounter_ += relativeAddress;
             }
@@ -894,7 +910,7 @@ namespace oa
             if (statusRegister_.overflowFlag == false)
             {
                 overflowTicks_++;
-                if ((relativeAddress & 0xff00) != (programCounter_ & 0xff00))
+                if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
                     overflowTicks_++;
                 programCounter_ += relativeAddress;
             }
@@ -905,7 +921,7 @@ namespace oa
             if (statusRegister_.overflowFlag == true)
             {
                 overflowTicks_++;
-                if ((relativeAddress & 0xff00) != (programCounter_ & 0xff00))
+                if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
                     overflowTicks_++;
                 programCounter_ += relativeAddress;
             }

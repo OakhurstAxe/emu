@@ -42,6 +42,10 @@ namespace oa
             else if (location >= 0x200 && location < 0x300)
             {
                 location -= 0x200;
+                if (originalLocation == 0x284 && vcsRiot_->Read(location) == 0)
+                {
+                    int x = 10;
+                }
                 return vcsRiot_->Read(location);                
             }
             

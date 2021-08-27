@@ -23,6 +23,16 @@ namespace oa
         protected:
             typedef uint16_t (M6502::*AddressMethod)();
             typedef void (M6502::*OperationMethod)(AddressMethod addressMethod);
+            int prevInt1 = 0;
+            int prevInt2 = 0;
+            int prevInt3 = 0;
+            int prevInt4 = 0;
+            int prevInt5 = 0;
+            int prevInt6 = 0;
+            int prevInt7 = 0;
+            int prevInt8 = 0;
+            int prevInt9 = 0;
+            int prevInt10 = 0;
 
             struct OperationStruct
             {
@@ -33,8 +43,8 @@ namespace oa
             OperationStruct opCodeLookup_[0x100];
             
             virtual void SetOpCodes();
-            void PushStack(uint8_t byte);
-            uint8_t PopStack(void);
+            virtual void PushStack(uint8_t byte);
+            virtual uint8_t PopStack(void);
             
             MemoryMapper *memory_;
             uint16_t stackPointerMax_;

@@ -44,6 +44,7 @@ namespace oa
             VcsFile vcsFile;
            
             vcsFile.LoadFile("vcsroms/ROMS/Adventure (1980) (Atari, Warren Robinett - Sears) (CX2613 - 49-75154) ~.bin");
+            //vcsFile.LoadFile("vcsroms/ROMS/Combat - Tank-Plus (Tank) (1977) (Atari, Joe Decuir, Larry Kaplan, Steve Mayer, Larry Wagner - Sears) (CX2601 - 99801, 6-99801, 49-75101, 49-75124) ~.bin");
 
             vcsCartridge_->LoadData(vcsFile.GetProgRomData(), vcsFile.GetProgRomSize());
 
@@ -71,11 +72,6 @@ namespace oa
                         vscRiot_->ExecuteTick();
                     }
                     vcsTia_->ExecuteTick();
-                    //if (ppu_->IsNmiSet())
-                    {
-                        //cpu_->SetNmi();
-                        //ppu_->ResetNmi();
-                    }
                     ReadGamepad();
                     ticks++;
                 }
