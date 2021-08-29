@@ -60,7 +60,8 @@ SOURCES       = ../vcscartridge.cc \
 		../vcstia.cc \
 		../m6507.cc \
 		../vcspalette.cc \
-		../vcsriot.cc build/moc_vcsconsole.cpp \
+		../vcsriot.cc \
+		../vcsinput.cc build/moc_vcsconsole.cpp \
 		build/moc_vcsmainwindow.cpp
 OBJECTS       = build/vcscartridge.o \
 		build/vcsconsole.o \
@@ -71,6 +72,7 @@ OBJECTS       = build/vcscartridge.o \
 		build/m6507.o \
 		build/vcspalette.o \
 		build/vcsriot.o \
+		build/vcsinput.o \
 		build/moc_vcsconsole.o \
 		build/moc_vcsmainwindow.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
@@ -169,7 +171,8 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		../headers/vcstia.h \
 		../headers/m6507.h \
 		../headers/vcspalette.h \
-		../headers/vcsriot.h ../vcscartridge.cc \
+		../headers/vcsriot.h \
+		../headers/vcsinput.h ../vcscartridge.cc \
 		../vcsconsole.cc \
 		../vcsmainwindow.cc \
 		../vcsmemory.cc \
@@ -177,7 +180,8 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		../vcstia.cc \
 		../m6507.cc \
 		../vcspalette.cc \
-		../vcsriot.cc
+		../vcsriot.cc \
+		../vcsinput.cc
 QMAKE_TARGET  = oavcs
 DESTDIR       = 
 TARGET        = liboavcs.so.1.0.0
@@ -400,8 +404,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../headers/vcscartridge.h ../headers/vcsconsole.h ../headers/vcsmainwindow.h ../headers/vcsmemory.h ../headers/vcsfile.h ../headers/vcstia.h ../headers/m6507.h ../headers/vcspalette.h ../headers/vcsriot.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../vcscartridge.cc ../vcsconsole.cc ../vcsmainwindow.cc ../vcsmemory.cc ../vcsfile.cc ../vcstia.cc ../m6507.cc ../vcspalette.cc ../vcsriot.cc $(DISTDIR)/
+	$(COPY_FILE) --parents ../headers/vcscartridge.h ../headers/vcsconsole.h ../headers/vcsmainwindow.h ../headers/vcsmemory.h ../headers/vcsfile.h ../headers/vcstia.h ../headers/m6507.h ../headers/vcspalette.h ../headers/vcsriot.h ../headers/vcsinput.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../vcscartridge.cc ../vcsconsole.cc ../vcsmainwindow.cc ../vcsmemory.cc ../vcsfile.cc ../vcstia.cc ../m6507.cc ../vcspalette.cc ../vcsriot.cc ../vcsinput.cc $(DISTDIR)/
 	$(COPY_FILE) --parents ../vcsmainwindow.ui $(DISTDIR)/
 
 
@@ -452,6 +456,7 @@ build/moc_vcsconsole.cpp: ../headers/vcsconsole.h \
 		../../oaemumemory/headers/memoryramflagged.h \
 		../headers/vcscartridge.h \
 		../headers/vcstia.h \
+		../headers/vcsriot.h \
 		../headers/m6507.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
@@ -503,6 +508,7 @@ build/vcsconsole.o: ../vcsconsole.cc ../headers/vcsconsole.h \
 		../../oaemumemory/headers/memoryramflagged.h \
 		../headers/vcscartridge.h \
 		../headers/vcstia.h \
+		../headers/vcsriot.h \
 		../headers/m6507.h \
 		../headers/vcsfile.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/vcsconsole.o ../vcsconsole.cc
@@ -521,6 +527,7 @@ build/vcsmainwindow.o: ../vcsmainwindow.cc ../headers/vcsmainwindow.h \
 		../../oaemumemory/headers/memoryramflagged.h \
 		../headers/vcscartridge.h \
 		../headers/vcstia.h \
+		../headers/vcsriot.h \
 		../headers/m6507.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/vcsmainwindow.o ../vcsmainwindow.cc
 
@@ -533,7 +540,8 @@ build/vcsmemory.o: ../vcsmemory.cc ../headers/vcsmemory.h \
 		../../oaemucpu/headers/m6502.h \
 		../../oaemucpu/headers/basecpu.h \
 		../headers/vcscartridge.h \
-		../headers/vcstia.h
+		../headers/vcstia.h \
+		../headers/vcsriot.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/vcsmemory.o ../vcsmemory.cc
 
 build/vcsfile.o: ../vcsfile.cc ../headers/vcsfile.h
@@ -557,6 +565,9 @@ build/vcsriot.o: ../vcsriot.cc ../headers/vcsriot.h \
 		../../oaemumemory/headers/memoryram.h \
 		../../oaemumemory/headers/basememory.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/vcsriot.o ../vcsriot.cc
+
+build/vcsinput.o: ../vcsinput.cc ../headers/vcsinput.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/vcsinput.o ../vcsinput.cc
 
 build/moc_vcsconsole.o: build/moc_vcsconsole.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/moc_vcsconsole.o build/moc_vcsconsole.cpp

@@ -14,6 +14,7 @@
 #include "headers/vcstia.h"
 #include "headers/m6507.h"
 #include "headers/vcsriot.h"
+#include "headers/vcsinput.h"
 
 namespace oa
 {
@@ -28,10 +29,11 @@ namespace oa
             VcsConsole(VcsMainWindow* vcsMainWindow);
             virtual ~VcsConsole();
             void StartUp();
+            VcsInput *GetVcsInput();
         public slots:
             void StartNextFrame();
         private:
-            void ReadGamepad();
+            void ReadInput();
             
             VcsTia *vcsTia_;
             emu::MemoryRam *ram_;
@@ -39,6 +41,7 @@ namespace oa
             VcsCartridge *vcsCartridge_;
             M6507 *cpu_;
             VcsMemory *vcsMemory_;
+            VcsInput *vcsInput_;
             
             VcsMainWindow *vcsMainWindow_;
             QTimer *cpuTimer_;

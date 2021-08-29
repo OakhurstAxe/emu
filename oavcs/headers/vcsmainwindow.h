@@ -8,6 +8,7 @@
 #include <QImage>
 
 #include "vcspalette.h"
+#include "vcsinput.h"
 
 QT_BEGIN_NAMESPACE
 class QGamepad;
@@ -30,6 +31,8 @@ namespace oa
             void DrawFrame(uint8_t *screen);
         public slots:
             void LeftControllerA(bool value);
+            void LeftControllerReset(bool value);
+            void LeftControllerSelect(bool value);
             void LeftControllerUpDown(double value);
             void LeftControllerLeftRight(double value);
         protected:
@@ -37,13 +40,12 @@ namespace oa
             void ReadGamepad();
         private:
             VcsPalette vcsPalette_;
-            uint8_t leftController_ = 0;
-            uint8_t rightController_ = 0;
             VcsConsole *vcsConsole_;
             uint8_t *screen_;
             bool inFrame_ = false;
             QGamepad *m_gamepad_;
             QImage *qImage_;
+            VcsInput *vcsInput;
         };
 
     }
