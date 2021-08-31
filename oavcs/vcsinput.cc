@@ -140,13 +140,13 @@ namespace oa
                 case (JOYSTICK1_LEFT):  // swcha bit 6
                 {
                     regSwcha_ |= 0xC0;
-                    regSwcha_ &= 0xBF;
+                    regSwcha_ &= 0x7F;
                     break;
                 }
                 case (JOYSTICK1_RIGHT):  // swcha bit 7
                 {
                     regSwcha_ |= 0xC0;
-                    regSwcha_ &= 0x7F;
+                    regSwcha_ &= 0xBF;
                     break;
                 }
                 case (JOYSTICK1_HORZ_ZERO):  // swcha bit 6/7
@@ -156,12 +156,12 @@ namespace oa
                 }                
                 case (JOYSTICK1_FIRE):  // inpt4 bit 4
                 {
-                    regInpt4_ &= 0xEF;
+                    regInpt4_ &= 0x7F;
                     break;
                 }                
                 case (JOYSTICK1_FIRE_OFF):  // inpt4 bit 4
                 {
-                    regInpt4_ |= 0x10;
+                    regInpt4_ |= 0x80;
                     break;
                 }                
             }    
