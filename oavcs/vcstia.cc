@@ -36,10 +36,14 @@
 #define REG_HMM0    0x22
 #define REG_HMM1    0x23
 #define REG_HMBL    0x24
+#define REG_VDELP0  0x25
+#define REG_VDELP1  0x26
+#define REG_VDELBL  0x27
 #define REG_RESMP0  0x28
 #define REG_RESMP1  0x29
 #define REG_HMOVE   0x2A
 #define REG_HMCLR   0x2B
+#define REG_CXCLR   0x2C
 
 #define REG_CXM0P   0x30
 #define REG_CXM1P   0x31
@@ -55,6 +59,10 @@
 #define REG_INPT3   0x3B
 #define REG_INPT4   0x3C
 #define REG_INPT5   0x3D
+
+#define CLOSE       16
+#define MEDIUM      (CLOSE * 2)
+#define WIDE        (CLOSE * 4)
 
 namespace oa
 {
@@ -84,12 +92,12 @@ namespace oa
         void VcsTia::ExecuteTick()
         {
             cycle_++;
-            if (cycle_ > 228)
+            if (cycle_ > 68 + RESOLUTION_X)
             {
                 // Set rendering registers for when scrolling happens
                 cycle_ = 1;
                 scanLine_++;
-                if (scanLine_ > 262)
+                if (scanLine_ > 40 + RESOLUTION_Y)
                 {
                     scanLine_ = 1;
                 }
@@ -100,8 +108,8 @@ namespace oa
                 RenderPixel();
             }
             
-            // WSYNC
-            if (cycle_ == 1)
+            // WSYNC 
+            if (cycle_ == 6) // Not sure this should be 6, but works pretty good
             {
                 wSyncSet_ = false;
             }
@@ -119,42 +127,17 @@ namespace oa
             int8_t moveValue = (move & 0x70) >> 4;
             if (move & 0x80)
             {
-                switch (moveValue)
-                {
-                    case (7):
-                        moveValue = -1;
-                        break;
-                    case (6):
-                        moveValue = -2;
-                        break;
-                    case (5):
-                        moveValue = -3;
-                        break;
-                    case (4):
-                        moveValue = -4;
-                        break;
-                    case (3):
-                        moveValue = -5;
-                        break;
-                    case (2):
-                        moveValue = -6;
-                        break;
-                    case (1):
-                        moveValue = -7;
-                        break;
-                    case (0):
-                        moveValue = -8;
-                        break;
-                }
+                // twos compliment
+                moveValue = moveValue | 0xF8;
             }
-            *objectCycle += moveValue;
-            if (*objectCycle < 68)
+            *objectCycle -= moveValue;
+            if (*objectCycle < 69)
             {
                 *objectCycle = 228;
             }
             if (*objectCycle > 228)
             {
-                *objectCycle = 68 + 3;
+                *objectCycle = 69 + 3;
             }
         }
         
@@ -176,19 +159,83 @@ namespace oa
             Write(REG_HMBL, 0);
         }
         
-        void VcsTia::RenderPixel()
+        int16_t VcsTia::GetPlayerPixel(uint8_t graphicsPlayerReg, uint8_t playerSizeReg,
+            uint8_t reflectPlayerReg, uint8_t colorReg, uint16_t playerCycle)
+        {
+            int16_t result = -1;
+            
+            if ((playerCycle) <= cycle_ && (playerCycle + 24) >= cycle_)
+            {
+                uint8_t spriteData = Read(graphicsPlayerReg);
+                uint16_t position2Cycle_ = playerCycle;
+                uint16_t position3Cycle_ = playerCycle;
+                uint8_t sizeMultiple = 1;
+                uint8_t size = Read(playerSizeReg);
+                if ((size & 0x07) == 0)
+                {
+                    sizeMultiple = 1;
+                }
+                else if ((size & 0x07) == 1)
+                {
+                    position2Cycle_ = playerCycle + CLOSE;
+                }
+                else if ((size & 0x07) == 2)
+                {
+                    position2Cycle_ = playerCycle + MEDIUM;
+                }
+                else if ((size & 0x07) == 3)
+                {
+                    position2Cycle_ = playerCycle + CLOSE;
+                    position3Cycle_ = playerCycle + MEDIUM;
+                }
+                else if ((size & 0x07) == 4)
+                {
+                    position2Cycle_ = playerCycle + WIDE;
+                }
+                else if ((size & 0x07) == 5)
+                {
+                    sizeMultiple = 2;
+                }
+                else if ((size & 0x07) == 6)
+                {
+                    position2Cycle_ = playerCycle + MEDIUM;
+                    position3Cycle_ = playerCycle + WIDE;
+                }
+                else if ((size & 0x07) == 7)
+                {
+                    sizeMultiple = 4;
+                }
+                if (spriteData != 0)
+                {
+                    if ((Read(reflectPlayerReg) & 0x08) == 0)
+                    {
+                        spriteData = ReverseBits(spriteData);
+                    }
+                    if (((spriteData) >> (((cycle_ - playerCycle))/ sizeMultiple) & 0x01) > 0)
+                    {
+                        result = Read(colorReg);
+                    }
+                    if (((spriteData) >> (((cycle_ - position2Cycle_))/ sizeMultiple) & 0x01) > 0)
+                    {
+                        result = Read(colorReg);
+                    }
+                    if (((spriteData) >> (((cycle_ - position3Cycle_))/ sizeMultiple) & 0x01) > 0)
+                    {
+                        result = Read(colorReg);
+                    }                    
+                }
+            }
+            return result;
+        }
+ 
+        int16_t VcsTia::GetPlayfieldPixel()
         {
             uint16_t screenX = cycle_ - 69;
-            uint16_t screenY = scanLine_ - 41;
-            uint8_t background = Read(REG_COLUBK);
-            uint8_t playfieldColor = Read(REG_COLUPF);
             uint8_t controlPlayfield = Read(REG_CTRLPF);
+            uint8_t playfieldColor = Read(REG_COLUPF);
             uint8_t byte;
+            int16_t result = -1;
             
-            // Background
-            screen_[screenY * RESOLUTION_X + screenX] = background;
-            
-            // Playfield
             if ((controlPlayfield & 0x02) > 0)
             {
                 if (screenX < 80)
@@ -206,26 +253,29 @@ namespace oa
                 byte = (byte >> (screenX >> 2)) & 0x01;
                 if (byte > 0)
                 {
-                    screen_[screenY * 160 + screenX]  = playfieldColor;
+                    result  = playfieldColor;
                 }
             }
             else if (screenX < 48)
             {
                 byte = Read(REG_PF1);
-                byte = (byte >> ((screenX - 16) >> 2)) & 0x01;
+                byte = ReverseBits(byte);
+                uint8_t shift = (screenX - 16) >> 2;
+                byte = (byte >> shift) & 0x01;
                 if (byte > 0)
                 {
-                    screen_[screenY * 160 + screenX]  = playfieldColor;
-                }                    
+                    result  = playfieldColor;
+                }
             }
             else if (screenX < 80)
             {
                 byte = Read(REG_PF2);
-                byte = (byte >> ((screenX - 48) >> 2)) & 0x01;
+                uint8_t shift = (screenX - 48) >> 2;
+                byte = (byte >> shift) & 0x01;
                 if (byte > 0)
                 {
-                    screen_[screenY * 160 + screenX]  = playfieldColor;
-                }                    
+                    result  = playfieldColor;
+                }
             }
             else if (screenX < 112)
             {
@@ -234,24 +284,26 @@ namespace oa
                 {
                     byte = ReverseBits(byte);
                 }
-                byte = (byte >> ((screenX - 80) >> 2)) & 0x01;
+                uint8_t shift = (screenX - 80) >> 2;
+                byte = (byte >> shift) & 0x01;
                 if (byte > 0)
                 {
-                    screen_[screenY * 160 + screenX]  = playfieldColor;
-                }                    
+                    result  = playfieldColor;
+                }
             }
             else if (screenX < 144)
             {
                 byte = Read(REG_PF1);
-                if ((controlPlayfield & 0x01) > 0)
+                if ((controlPlayfield & 0x01) == 0)
                 {
                     byte = ReverseBits(byte);
                 }
-                byte = (byte >> ((screenX - 112) >> 2)) & 0x01;
+                uint8_t shift = (screenX - 112) >> 2;
+                byte = (byte >> shift) & 0x01;
                 if (byte > 0)
                 {
-                    screen_[screenY * 160 + screenX]  = playfieldColor;
-                }                    
+                    result  = playfieldColor;
+                }
             }
             else if (screenX < 160)
             {
@@ -260,49 +312,49 @@ namespace oa
                 {
                     byte = ReverseBits(byte);
                 }
-                byte = (byte >> ((screenX - 144) >> 2)) & 0x01;
+                uint8_t shift = (screenX - 144) >> 2;
+                byte = (byte >> shift) & 0x01;
                 if (byte > 0)
                 {
-                    screen_[screenY * 160 + screenX]  = playfieldColor;
+                    result  = playfieldColor;
                 }
             }
             
-            // Sprites
-            if ((resP0Cycle_ + 1) <= cycle_ && (resP0Cycle_ + 9) >= cycle_)
+            return result;
+        }
+        
+        int16_t VcsTia::GetMisslePixel(uint8_t enableReg, uint8_t missleResetReg, uint8_t missleSizeReg,
+            uint8_t missleColorReg, uint16_t missleCycle)
+        {
+            int16_t result = -1;
+                        
+            if ((Read(enableReg) & 0x02) > 0 && (Read(missleResetReg) & 0x01) == 0)
             {
-                uint8_t spriteData = Read(REG_GRP0);
-                if (spriteData != 0)
+                uint16_t position2Cycle_ = missleCycle;
+                uint16_t position3Cycle_ = missleCycle;
+                uint8_t size = Read(missleSizeReg);
+                if ((size & 0x07) == 1)
                 {
-                    if ((Read(REG_REFP0) & 0x08) > 0)
-                    {
-                        spriteData = ReverseBits(spriteData);
-                    }
-                    if ((spriteData >> (cycle_ - resP0Cycle_ - 1) & 0x01) > 0)
-                    {
-                        screen_[screenY * 160 + screenX]  = Read(REG_COLIP0);
-                    }
+                    position2Cycle_ = missleCycle + CLOSE;
                 }
-            }
-            if ((resP1Cycle_ + 1) <= cycle_ && (resP1Cycle_ + 9) >= cycle_)
-            {
-                uint8_t spriteData = Read(REG_GRP1);
-                if (spriteData != 0)
+                else if ((size & 0x07) == 2)
                 {
-                    if ((Read(REG_REFP1) & 0x08) > 0)
-                    {
-                        spriteData = ReverseBits(spriteData);
-                    }
-                    if ((spriteData >> (cycle_ - resP1Cycle_ - 1) & 0x01) > 0)
-                    {
-                        screen_[screenY * 160 + screenX]  = Read(REG_COLIP1);
-                    }
+                    position2Cycle_ = missleCycle + MEDIUM;
                 }
-            }
-            
-            // Missiles
-            if ((Read(REG_ENAM0) & 0x02) > 0 && (Read(REG_RESMP0) & 0x01) == 0)
-            {
-                uint8_t size = Read(REG_NUSIZ0);
+                else if ((size & 0x07) == 3)
+                {
+                    position2Cycle_ = missleCycle + CLOSE;
+                    position3Cycle_ = missleCycle + MEDIUM;
+                }
+                else if ((size & 0x07) == 4)
+                {
+                    position2Cycle_ = missleCycle + WIDE;
+                }
+                else if ((size & 0x07) == 6)
+                {
+                    position2Cycle_ = missleCycle + MEDIUM;
+                    position3Cycle_ = missleCycle + WIDE;
+                }
                 size = ((size & 0x30) >> 4);
                 switch (size)
                 {
@@ -319,14 +371,28 @@ namespace oa
                         size = 8;
                         break;
                 }
-                if ((resM0Cycle_ + 1) <= cycle_ && (resM0Cycle_ + size) >= cycle_)
+                if ((missleCycle) <= cycle_ && (missleCycle + size) > cycle_)
                 {
-                    screen_[screenY * 160 + screenX]  = Read(REG_COLIP0);
+                    result  = Read(missleColorReg);
                 }
-            }            
-            if ((Read(REG_ENAM1) & 0x02) > 0 && (Read(REG_RESMP1) & 0x01) == 0)
+                if ((position2Cycle_) <= cycle_ && (position2Cycle_ + size) > cycle_)
+                {
+                    result  = Read(missleColorReg);
+                }
+                if ((position3Cycle_) <= cycle_ && (position3Cycle_ + size) > cycle_)
+                {
+                    result  = Read(missleColorReg);
+                }
+            }
+            return result;
+        }
+        int16_t VcsTia::GetBallPixel()
+        {
+            int16_t result = -1;
+            
+            if ((Read(REG_ENABL) & 0x02) > 0)
             {
-                uint8_t size = Read(REG_NUSIZ1);
+                uint8_t size = Read(REG_CTRLPF);
                 size = ((size & 0x30) >> 4);
                 switch (size)
                 {
@@ -343,11 +409,157 @@ namespace oa
                         size = 8;
                         break;
                 }
-                if ((resM0Cycle_ + 1) <= cycle_ && (resM0Cycle_ + size) >= cycle_)
+                if ((resBLCycle_) <= cycle_ && (resBLCycle_ + size) >= cycle_)
                 {
-                    screen_[screenY * 160 + screenX]  = Read(REG_COLIP1);
+                    result  = Read(REG_COLUPF);
                 }
+            }
+            
+            return result;
+        }
+
+        void VcsTia::RenderPixel()
+        {
+            uint16_t screenX = cycle_ - 69;
+            uint16_t screenY = scanLine_ - 41;
+            uint8_t background = Read(REG_COLUBK);
+            
+            // Background
+            screen_[screenY * RESOLUTION_X + screenX] = background;
+            
+            // Playfield
+            int16_t playfieldPixel = GetPlayfieldPixel();
+            if (playfieldPixel >= 0)
+            {
+                screen_[screenY * 160 + screenX]  = (uint8_t)playfieldPixel;
+            }
+            bool pfAbove = false;
+            if ((Read(REG_CTRLPF) & 0x04) > 0)
+            {
+                pfAbove = true;
+            }
+            
+            // Get each pixel for collision detection
+            int16_t p0Pixel = GetPlayerPixel(REG_GRP0, REG_NUSIZ0, REG_REFP0, REG_COLIP0, resP0Cycle_);
+            int16_t p1Pixel = GetPlayerPixel(REG_GRP1, REG_NUSIZ1, REG_REFP1, REG_COLIP1, resP1Cycle_);
+            int16_t m0Pixel = GetMisslePixel(REG_ENAM0, REG_RESMP0, REG_NUSIZ0, REG_COLIP0, resM0Cycle_);
+            int16_t m1Pixel = GetMisslePixel(REG_ENAM1, REG_RESMP1, REG_NUSIZ1, REG_COLIP1, resM1Cycle_);
+            int16_t ballPixel = GetBallPixel();
+            
+            // Don't display pixel if PF has priority and is set
+            if (playfieldPixel == -1 || pfAbove == false)
+            {
+                // Sprites
+                if (p0Pixel >= 0)
+                {
+                    screen_[screenY * 160 + screenX]  = (uint8_t)p0Pixel;
+                }
+                if (p1Pixel >= 0)
+                {
+                    screen_[screenY * 160 + screenX]  = (uint8_t)p1Pixel;
+                }
+                
+                // Missiles
+                if (m0Pixel >= 0)
+                {
+                    screen_[screenY * 160 + screenX]  = (uint8_t)m0Pixel;
+                }
+                if (m1Pixel >= 0)
+                {
+                    screen_[screenY * 160 + screenX]  = (uint8_t)m1Pixel;
+                }
+
+                // Ball
+                if (ballPixel >= 0)
+                {
+                    screen_[screenY * 160 + screenX]  = (uint8_t)ballPixel;
+                }                
             }            
+            
+            // Collisions
+            uint8_t collision = MemoryRam::Read(REG_CXM0P);
+            if (m0Pixel >= 0 && p1Pixel >= 0)
+            {
+                collision |= 0x80;
+            }
+            if (m0Pixel >= 0 && p0Pixel >= 0)
+            {
+                collision |= 0x40;
+            }
+            MemoryRam::Write(REG_CXM0P, collision);
+
+            collision = MemoryRam::Read(REG_CXM1P);
+            if (m1Pixel >= 0 && p0Pixel >= 0)
+            {
+                collision |= 0x80;
+            }
+            if (m1Pixel >= 0 && p1Pixel >= 0)
+            {
+                collision |= 0x40;
+            }
+            MemoryRam::Write(REG_CXM1P, collision);
+
+            collision = MemoryRam::Read(REG_CXP0FB);
+            if (p0Pixel >= 0 && playfieldPixel >= 0)
+            {
+                collision |= 0x80;
+            }
+            if (p0Pixel >= 0 && ballPixel >= 0)
+            {
+                collision |= 0x40;
+            }
+            MemoryRam::Write(REG_CXP0FB, collision);
+
+            collision = MemoryRam::Read(REG_CXP1FB);
+            if (p1Pixel >= 0 && playfieldPixel >= 0)
+            {
+                collision |= 0x80;
+            }
+            if (p1Pixel >= 0 && ballPixel >= 0)
+            {
+                collision |= 0x40;
+            }
+            MemoryRam::Write(REG_CXP1FB, collision);
+            
+            collision = MemoryRam::Read(REG_CXM0FB);
+            if (m0Pixel >= 0 && playfieldPixel >= 0)
+            {
+                collision |= 0x80;
+            }
+            if (m0Pixel >= 0 && ballPixel >= 0)
+            {
+                collision |= 0x40;
+            }
+            MemoryRam::Write(REG_CXM0FB, collision);
+
+            collision = MemoryRam::Read(REG_CXM1FB);
+            if (m1Pixel >= 0 && playfieldPixel >= 0)
+            {
+                collision |= 0x80;
+            }
+            if (m1Pixel >= 0 && ballPixel >= 0)
+            {
+                collision |= 0x40;
+            }
+            MemoryRam::Write(REG_CXM1FB, collision);
+            
+            collision = MemoryRam::Read(REG_CXBLPF);
+            if (ballPixel >= 0 && playfieldPixel >= 0)
+            {
+                collision |= 0x80;
+            }
+            MemoryRam::Write(REG_CXBLPF, collision);
+
+            collision = MemoryRam::Read(REG_CXPPMM);
+            if (p0Pixel >= 0 && p1Pixel >= 0)
+            {
+                collision |= 0x80;
+            }
+            if (m0Pixel >= 0 && m1Pixel >= 0)
+            {
+                collision |= 0x40;
+            }
+            MemoryRam::Write(REG_CXPPMM, collision);            
         }
         
         bool VcsTia::IsCpuBlocked()
@@ -383,6 +595,7 @@ namespace oa
             {
                 wSyncSet_ = true;
             }
+
             if (location == REG_RSYNC)
             {
                 cycle_ = 0;
@@ -390,41 +603,41 @@ namespace oa
             if (location == REG_RESP0)
             {
                 resP0Cycle_ = cycle_;
-                if (resP0Cycle_ < 60)
+                if (resP0Cycle_ < 69)
                 {
-                    resP0Cycle_ = 63;
+                    resP0Cycle_ = 72;
                 }
             }
             if (location == REG_RESP1)
             {
                 resP1Cycle_ = cycle_;
-                if (resP1Cycle_ < 60)
+                if (resP1Cycle_ < 69)
                 {
-                    resP1Cycle_ = 63;
+                    resP1Cycle_ = 72;
                 }
             }
             if (location == REG_RESM0)
             {
                 resM0Cycle_ = cycle_;
-                if (resM0Cycle_ < 60)
+                if (resM0Cycle_ < 69)
                 {
-                    resM0Cycle_ = 63;
+                    resM0Cycle_ = 71;
                 }
             }
             if (location == REG_RESM1)
             {
                 resM1Cycle_ = cycle_;
-                if (resM1Cycle_ < 60)
+                if (resM1Cycle_ < 69)
                 {
-                    resM1Cycle_ = 63;
+                    resM1Cycle_ = 71;
                 }
             }
             if (location == REG_RESBL)
             {
                 resBLCycle_ = cycle_;
-                if (resBLCycle_ < 60)
+                if (resBLCycle_ < 69)
                 {
-                    resBLCycle_ = 63;
+                    resBLCycle_ = 71;
                 }
             }
             if (location == REG_HMOVE)
@@ -449,8 +662,72 @@ namespace oa
                     resM1Cycle_ = resP1Cycle_;
                 }
             }
-
-
+            if (location == REG_CXCLR)
+            {
+                MemoryRam::Write(REG_CXM0P, 0);
+                MemoryRam::Write(REG_CXM1P, 0);
+                MemoryRam::Write(REG_CXP0FB, 0);
+                MemoryRam::Write(REG_CXP1FB, 0);
+                MemoryRam::Write(REG_CXM0FB, 0);
+                MemoryRam::Write(REG_CXM1FB, 0);
+                MemoryRam::Write(REG_CXBLPF, 0);
+                MemoryRam::Write(REG_CXPPMM, 0);
+            }
+            if (location == REG_VDELP0)
+            {
+                vertDelayGrP0_ = true;
+            }
+            if (location == REG_GRP0)
+            {
+                if (vertDelayGrP0_)
+                {
+                    delayedGrP0_ = byte;
+                    return;
+                }                
+            }
+            if (location == REG_VDELP1)
+            {
+                vertDelayGrP1_ = true;
+            }
+            if (location == REG_VDELBL)
+            {
+                vertDelayGrBl_ = true;                
+            }
+            if (location == REG_GRP0)
+            {
+                if (vertDelayGrP1_)
+                {
+                    vertDelayGrP1_ = false;
+                    MemoryRam::Write(REG_GRP1, delayedGrP1_);
+                }
+            }            
+            if (location == REG_GRP1)
+            {
+                if (vertDelayGrP0_)
+                {
+                    vertDelayGrP0_ = false;
+                    MemoryRam::Write(REG_GRP0, delayedGrP0_);
+                }
+                if (vertDelayGrBl_)
+                {
+                    vertDelayGrBl_ = false;
+                    MemoryRam::Write(REG_ENABL, delayedGrBl_);
+                }                
+                if (vertDelayGrP1_)
+                {
+                    delayedGrP1_ = byte;
+                    return;
+                } 
+            }
+            if (location == REG_ENABL)
+            {
+                if (vertDelayGrBl_)
+                {
+                    delayedGrBl_ = byte;
+                    return;
+                } 
+            }
+            
             MemoryRam::Write(location, byte);
         }
 

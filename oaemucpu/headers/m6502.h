@@ -23,17 +23,8 @@ namespace oa
         protected:
             typedef uint16_t (M6502::*AddressMethod)();
             typedef void (M6502::*OperationMethod)(AddressMethod addressMethod);
-            int prevInt1 = 0;
-            int prevInt2 = 0;
-            int prevInt3 = 0;
-            int prevInt4 = 0;
-            int prevInt5 = 0;
-            int prevInt6 = 0;
-            int prevInt7 = 0;
-            int prevInt8 = 0;
-            int prevInt9 = 0;
-            int prevInt10 = 0;
-
+            void SetOverflowForOperation();
+            void SetOverflowForAddressAccess();
             struct OperationStruct
             {
                 OperationMethod operation_;
@@ -41,6 +32,7 @@ namespace oa
                 uint8_t ticks;
             };
             OperationStruct opCodeLookup_[0x100];
+            OperationStruct operation_;            
             
             virtual void SetOpCodes();
             virtual void PushStack(uint8_t byte);

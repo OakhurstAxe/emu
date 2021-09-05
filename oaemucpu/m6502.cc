@@ -298,41 +298,90 @@ namespace oa
         
         void M6502::ExecuteTick()
         {
-            if (IsOverflowed())
+            if (overflowTicks_ > 1)
             {
                 overflowTicks_--;
                 return;
             }
+            overflowTicks_--;
 
-            OperationStruct operation_;
-            
-            if (programCounter_ == 0)
-            {
-                int x = 10;
-            }
-            
+            CallOpMethod(operation_.operation_, operation_.addressMethod_);
+
             uint8_t instruction = memory_->CpuRead(programCounter_);
             programCounter_++;
-            operation_.operation_ = &M6502::OpBRK;
-            operation_.addressMethod_ = &M6502::NullAddress;
-            
             operation_ = opCodeLookup_[instruction];
-            //qDebug() << "Instruction:" << instruction;
             
-            CallOpMethod(operation_.operation_, operation_.addressMethod_);
+            // Add ticks for next instruction
             overflowTicks_ += operation_.ticks;
-            overflowTicks_--;
-            
-            prevInt10 = prevInt9;
-            prevInt9 = prevInt8;
-            prevInt8 = prevInt7;
-            prevInt7 = prevInt6;
-            prevInt6 = prevInt5;
-            prevInt5 = prevInt4;
-            prevInt4 = prevInt3;
-            prevInt3 = prevInt2;
-            prevInt2 = prevInt1;
-            prevInt1 = instruction;
+            SetOverflowForOperation();
+            SetOverflowForAddressAccess();
+        }
+
+        void M6502::SetOverflowForOperation()
+        {
+            if ((operation_.operation_ == &M6502::OpBCC && statusRegister_.carryFlag == false)
+                || (operation_.operation_ == &M6502::OpBCS && statusRegister_.carryFlag == true)
+                || (operation_.operation_ == &M6502::OpBEQ && statusRegister_.zeroFlag == true)
+                || (operation_.operation_ == &M6502::OpBMI && statusRegister_.negativeFlag == true)
+                || (operation_.operation_ == &M6502::OpBNE && statusRegister_.zeroFlag == false)
+                || (operation_.operation_ == &M6502::OpBPL && statusRegister_.negativeFlag == false)
+                || (operation_.operation_ == &M6502::OpBVC && statusRegister_.overflowFlag == false)
+                || (operation_.operation_ == &M6502::OpBVS && statusRegister_.overflowFlag == true))
+            {
+                overflowTicks_++;
+                int8_t relativeAddress = CallAddressMethod(operation_.addressMethod_);
+                if (operation_.addressMethod_ == &M6502::ImmediateAddress
+                    || operation_.addressMethod_ == &M6502::ZeroAddress
+                    || operation_.addressMethod_ == &M6502::ZeroYAddress
+                    || operation_.addressMethod_ == &M6502::IndirectXAddress
+                    || operation_.addressMethod_ == &M6502::IndirectYAddress)
+                {
+                    programCounter_--;
+                }
+                else if (operation_.addressMethod_ == &M6502::AbsoluteAddress
+                    || operation_.addressMethod_ == &M6502::AbsoluteXAddress
+                    || operation_.addressMethod_ == &M6502::AbsoluteYAddress
+                    || operation_.addressMethod_ == &M6502::IndirectAddress)
+                {
+                    programCounter_ -= 2;
+                }
+                if (((programCounter_ & 0x00FF) + relativeAddress) > 0x00FF)
+                {
+                    overflowTicks_++;
+                }
+            }
+        }
+        
+        void M6502::SetOverflowForAddressAccess()
+        {
+            if (operation_.addressMethod_ == &M6502::AbsoluteXAddress)
+            {
+                uint8_t loadl = memory_->CpuRead(programCounter_);
+                uint16_t carry = loadl + registerX_;
+                if (carry > 0x00FF)
+                {
+                    overflowTicks_ += 1;
+                }
+            }
+            else if (operation_.addressMethod_ == &M6502::AbsoluteYAddress)
+            {
+                uint8_t loadl = memory_->CpuRead(programCounter_);
+                uint16_t carry = loadl + registerY_;
+                if (carry > 0x00FF)
+                {
+                    overflowTicks_ += 1;
+                }
+            }
+            else if (operation_.addressMethod_ == &M6502::IndirectYAddress)
+            {
+                uint16_t indirect = memory_->CpuRead(programCounter_);
+                uint8_t loadl = memory_->CpuRead(indirect & 0xff);
+                uint16_t carry = loadl + registerY_;
+                if (carry > 0x00FF)
+                {
+                    overflowTicks_ += 1;
+                }
+            }            
         }
 
         void M6502::PushStack(uint8_t byte)
@@ -357,6 +406,8 @@ namespace oa
 
         void M6502::Reset()
         {
+            operation_ = opCodeLookup_[0xea]; //OpNOP
+            
             stackPointer_ = stackPointerMax_;
             uint8_t pcl = memory_->CpuRead(0xfffc);
             uint8_t pch = memory_->CpuRead(0xfffd);
@@ -417,7 +468,7 @@ namespace oa
             uint16_t address = (loadh << 8) + loadl + registerX_;
             if ((address & 0xff00) != (programCounter_ & 0xff00))
             {
-                overflowTicks_ += 1;
+                //overflowTicks_ += 1;
             }
             return address;
         }
@@ -430,7 +481,7 @@ namespace oa
             uint16_t address = (loadh << 8) + loadl + registerY_;
             if ((address & 0xff00) != (programCounter_ & 0xff00))
             {
-                overflowTicks_ += 1;
+                //overflowTicks_ += 1;
             }
             return address;
         }
@@ -475,7 +526,7 @@ namespace oa
             address += registerY_;
             if ((address & 0xff00) != (programCounter_ & 0xff00))
             {
-                overflowTicks_ += 1;
+                //overflowTicks_ += 1;
             }
             return address;            
         }
@@ -485,19 +536,19 @@ namespace oa
         {
             uint16_t address = CallAddressMethod(addressMethod);
             accumulator_ = memory_->CpuRead(address);
-            statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
+            statusRegister_.negativeFlag = (accumulator_ & 0x80) != 0;
             statusRegister_.zeroFlag = (accumulator_ == 0);
         }
         void M6502::OpLDX(AddressMethod addressMethod) 
         {
             registerX_ = memory_->CpuRead(CallAddressMethod(addressMethod));
-            statusRegister_.negativeFlag = (registerX_ & 0x80) > 0;
+            statusRegister_.negativeFlag = (registerX_ & 0x80) != 0;
             statusRegister_.zeroFlag = (registerX_ == 0);
         }
         void M6502::OpLDY(AddressMethod addressMethod) 
         {
             registerY_ = memory_->CpuRead(CallAddressMethod(addressMethod));
-            statusRegister_.negativeFlag = (registerY_ & 0x80) > 0;
+            statusRegister_.negativeFlag = (registerY_ & 0x80) != 0;
             statusRegister_.zeroFlag = (registerY_ == 0);
         }
         void M6502::OpSTA(AddressMethod addressMethod)
@@ -519,28 +570,28 @@ namespace oa
         {
             Q_UNUSED(addressMethod);
             registerX_ = accumulator_;
-            statusRegister_.negativeFlag = (registerX_ & 0x80) > 0;
+            statusRegister_.negativeFlag = (registerX_ & 0x80) != 0;
             statusRegister_.zeroFlag = (registerX_ == 0);
         }
         void M6502::OpTAY(AddressMethod addressMethod) 
         {
             Q_UNUSED(addressMethod);
             registerY_ = accumulator_;
-            statusRegister_.negativeFlag = (registerY_ & 0x80) > 0;
+            statusRegister_.negativeFlag = (registerY_ & 0x80) != 0;
             statusRegister_.zeroFlag = (registerY_ == 0);
         }
         void M6502::OpTXA(AddressMethod addressMethod) 
         {
             Q_UNUSED(addressMethod);
             accumulator_ = registerX_;
-            statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
+            statusRegister_.negativeFlag = (accumulator_ & 0x80) != 0;
             statusRegister_.zeroFlag = (accumulator_ == 0);
         }
         void M6502::OpTYA(AddressMethod addressMethod)
         {
             Q_UNUSED(addressMethod);
             accumulator_ = registerY_;
-            statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
+            statusRegister_.negativeFlag = (accumulator_ & 0x80) != 0;
             statusRegister_.zeroFlag = (accumulator_ == 0);
         }
 
@@ -549,7 +600,7 @@ namespace oa
         {
             Q_UNUSED(addressMethod);
             registerX_ = stackPointer_ & 0xFF;
-            statusRegister_.negativeFlag = (registerX_ & 0x80) > 0;
+            statusRegister_.negativeFlag = (registerX_ & 0x80) != 0;
             statusRegister_.zeroFlag = (registerX_ == 0);
         }
         void M6502::OpTXS(AddressMethod addressMethod) 
@@ -575,7 +626,7 @@ namespace oa
         {
             Q_UNUSED(addressMethod);
             accumulator_ = PopStack();
-            statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
+            statusRegister_.negativeFlag = (accumulator_ & 0x80) != 0;
             statusRegister_.zeroFlag = (accumulator_ == 0);
         }
         void M6502::OpPLP(AddressMethod addressMethod)
@@ -589,50 +640,68 @@ namespace oa
         {
             uint8_t byte = memory_->CpuRead(CallAddressMethod(addressMethod));
             accumulator_ &= byte;
-            statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
+            statusRegister_.negativeFlag = (accumulator_ & 0x80) != 0;
             statusRegister_.zeroFlag = (accumulator_ == 0);
         }
         void M6502::OpEOR(AddressMethod addressMethod)
         {
             uint8_t byte = memory_->CpuRead(CallAddressMethod(addressMethod));
             accumulator_ ^= byte;
-            statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
+            statusRegister_.negativeFlag = (accumulator_ & 0x80) != 0;
             statusRegister_.zeroFlag = (accumulator_ == 0);
         }
         void M6502::OpORA(AddressMethod addressMethod)
         {
             uint8_t byte = memory_->CpuRead(CallAddressMethod(addressMethod));
             accumulator_ |= byte;
-            statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
+            statusRegister_.negativeFlag = (accumulator_ & 0x80) != 0;
             statusRegister_.zeroFlag = (accumulator_ == 0);
         }
         void M6502::OpBIT(AddressMethod addressMethod)
         {
             uint8_t byte = memory_->CpuRead(CallAddressMethod(addressMethod));
             statusRegister_.zeroFlag = (((byte & accumulator_) & 0xff) == 0);
-            statusRegister_.negativeFlag = (byte & 0x80) > 0;
-            statusRegister_.overflowFlag = (byte & 0x40) > 0;
+            statusRegister_.negativeFlag = (byte & 0x80) != 0;
+            statusRegister_.overflowFlag = (byte & 0x40) != 0;
         }
             
         // Arithmetic operations
         void M6502::OpADC(AddressMethod addressMethod)
         {
             uint16_t byte = memory_->CpuRead(CallAddressMethod(addressMethod));
-            uint16_t value = accumulator_ + byte + statusRegister_.carryFlag;
+            uint8_t tmpAccumulator = accumulator_;
+            if (statusRegister_.decimalMode)
+            {
+                tmpAccumulator = (((tmpAccumulator & 0xF0) >> 4) * 10) + (tmpAccumulator & 0x0F);
+            }
+            uint16_t value = tmpAccumulator + byte + statusRegister_.carryFlag;
+            if (statusRegister_.decimalMode)
+            {
+                value = ((value / 10) << 4) + (value % 10);
+            }
             statusRegister_.carryFlag = (value > 255);
             statusRegister_.zeroFlag = ((value & 0xff) == 0);
-            statusRegister_.overflowFlag = (~(accumulator_ ^ byte) & (accumulator_ ^ value) & 0x80) > 0;
-            statusRegister_.negativeFlag = (value & 0x80) > 0;
+            statusRegister_.overflowFlag = (~(accumulator_ ^ byte) & (accumulator_ ^ value) & 0x80) != 0;
+            statusRegister_.negativeFlag = (value & 0x80) != 0;
             accumulator_ = (value & 0xff);
         }    
         void M6502::OpSBC(AddressMethod addressMethod)
         {
             uint16_t byte = memory_->CpuRead(CallAddressMethod(addressMethod)) ^ 0xff;
-            uint16_t value = accumulator_ + byte + statusRegister_.carryFlag;
-            statusRegister_.carryFlag = (value & 0xff00) > 0;
+            uint8_t tmpAccumulator = accumulator_;
+            if (statusRegister_.decimalMode)
+            {
+                tmpAccumulator = (((tmpAccumulator & 0xF0) >> 4) * 10) + (tmpAccumulator & 0x0F);
+            }
+            uint16_t value = tmpAccumulator + byte + statusRegister_.carryFlag;
+            if (statusRegister_.decimalMode)
+            {
+                value = ((value / 10) << 4) + (value % 10);
+            }
+            statusRegister_.carryFlag = (value & 0xff00) != 0;
             statusRegister_.zeroFlag = (value & 0xff) == 0;
-            statusRegister_.overflowFlag  = ((value ^ accumulator_) & (value ^ byte) & 0x80) > 0;
-            statusRegister_.negativeFlag = (value & 0x80) > 0;
+            statusRegister_.overflowFlag  = ((value ^ accumulator_) & (value ^ byte) & 0x80) != 0;
+            statusRegister_.negativeFlag = (value & 0x80) != 0;
             accumulator_ = value & 0xff;
         }
         void M6502::OpCMP(AddressMethod addressMethod)
@@ -640,21 +709,21 @@ namespace oa
             uint8_t byte = memory_->CpuRead(CallAddressMethod(addressMethod));
             statusRegister_.carryFlag = (accumulator_ >= byte);
             statusRegister_.zeroFlag = (accumulator_ == byte);
-            statusRegister_.negativeFlag = ((accumulator_ - byte) & 0x80) > 0;
+            statusRegister_.negativeFlag = ((accumulator_ - byte) & 0x80) != 0;
         }
         void M6502::OpCPX(AddressMethod addressMethod)
         {
             uint8_t byte = memory_->CpuRead(CallAddressMethod(addressMethod));
             statusRegister_.carryFlag = (registerX_ >= byte);
             statusRegister_.zeroFlag = (registerX_ == byte);
-            statusRegister_.negativeFlag = ((registerX_ - byte) & 0x80) > 0;
+            statusRegister_.negativeFlag = ((registerX_ - byte) & 0x80) != 0;
         }
         void M6502::OpCPY(AddressMethod addressMethod)
         {
             uint8_t byte = memory_->CpuRead(CallAddressMethod(addressMethod));
             statusRegister_.carryFlag = (registerY_ >= byte);
             statusRegister_.zeroFlag = (registerY_ == byte);
-            statusRegister_.negativeFlag = ((registerY_ - byte) & 0x80) > 0;
+            statusRegister_.negativeFlag = ((registerY_ - byte) & 0x80) != 0;
         }
 
         // Increment and decrement operations
@@ -665,21 +734,21 @@ namespace oa
             byte++;
             memory_->CpuWrite(address, byte);
             statusRegister_.zeroFlag = (byte == 0);
-            statusRegister_.negativeFlag = (byte & 0x80) > 0;
+            statusRegister_.negativeFlag = (byte & 0x80) != 0;
         }
         void M6502::OpINX(AddressMethod addressMethod)
         {
             Q_UNUSED(addressMethod);
             registerX_++;
             statusRegister_.zeroFlag = (registerX_ == 0);
-            statusRegister_.negativeFlag = (registerX_ & 0x80) > 0;
+            statusRegister_.negativeFlag = (registerX_ & 0x80) != 0;
         }
         void M6502::OpINY(AddressMethod addressMethod)
         {
             Q_UNUSED(addressMethod);
             registerY_++;
             statusRegister_.zeroFlag = (registerY_ == 0);
-            statusRegister_.negativeFlag = (registerY_ & 0x80) > 0;
+            statusRegister_.negativeFlag = (registerY_ & 0x80) != 0;
         }
         void M6502::OpDEC(AddressMethod addressMethod) 
         {
@@ -688,21 +757,21 @@ namespace oa
             byte--;
             memory_->CpuWrite(address, byte);
             statusRegister_.zeroFlag = (byte == 0);
-            statusRegister_.negativeFlag = (byte & 0x80) > 0;
+            statusRegister_.negativeFlag = (byte & 0x80) != 0;
         }
         void M6502::OpDEX(AddressMethod addressMethod)
         {
             Q_UNUSED(addressMethod);
             registerX_--;
             statusRegister_.zeroFlag = (registerX_ == 0);
-            statusRegister_.negativeFlag = (registerX_ & 0x80) > 0;
+            statusRegister_.negativeFlag = (registerX_ & 0x80) != 0;
         }
         void M6502::OpDEY(AddressMethod addressMethod) 
         {
             Q_UNUSED(addressMethod);
             registerY_--;
             statusRegister_.zeroFlag = (registerY_ == 0);
-            statusRegister_.negativeFlag = (registerY_ & 0x80) > 0;
+            statusRegister_.negativeFlag = (registerY_ & 0x80) != 0;
         }
 
         // Shift operations
@@ -712,16 +781,16 @@ namespace oa
             uint16_t address = 0;
             if (addressMethod == &M6502::Accumlator)
             {
-                byte = CallAddressMethod(addressMethod);
+                byte = accumulator_;// CallAddressMethod(addressMethod);
             }
             else
             {
                 address = CallAddressMethod(addressMethod);
                 byte = memory_->CpuRead(address);
             }
-            statusRegister_.carryFlag = (byte & 0x80) > 0;
+            statusRegister_.carryFlag = (byte & 0x80) != 0;
             byte = byte << 1;
-            statusRegister_.negativeFlag = (byte & 0x80) > 0;
+            statusRegister_.negativeFlag = (byte & 0x80) != 0;
             statusRegister_.zeroFlag = (byte == 0);
             if (addressMethod == &M6502::Accumlator)
             {
@@ -746,9 +815,9 @@ namespace oa
                 address = CallAddressMethod(addressMethod);
                 byte = memory_->CpuRead(address);
             }
-            statusRegister_.carryFlag = (byte & 0x01) > 0;
+            statusRegister_.carryFlag = (byte & 0x01) != 0;
             byte = byte >> 1;
-            statusRegister_.negativeFlag = (byte & 0x80) > 0;
+            statusRegister_.negativeFlag = (byte & 0x80) != 0;
             statusRegister_.zeroFlag = (byte == 0);
             if (addressMethod == &M6502::Accumlator)
             {
@@ -773,9 +842,9 @@ namespace oa
                 byte = memory_->CpuRead(address);
             }
             uint8_t temp = (byte << 1) + statusRegister_.carryFlag;
-            statusRegister_.carryFlag = (byte & 0x80) > 0;
+            statusRegister_.carryFlag = (byte & 0x80) != 0;
             byte = temp;
-            statusRegister_.negativeFlag = (byte & 0x80) > 0;
+            statusRegister_.negativeFlag = (byte & 0x80) != 0;
             statusRegister_.zeroFlag = (byte == 0);
             if (addressMethod == &M6502::Accumlator)
             {
@@ -801,9 +870,9 @@ namespace oa
                 byte = memory_->CpuRead(address);
             }
             uint8_t temp = (byte >> 1) + (statusRegister_.carryFlag << 7);
-            statusRegister_.carryFlag = (byte & 0x01) > 0;
+            statusRegister_.carryFlag = (byte & 0x01) != 0;
             byte = temp;
-            statusRegister_.negativeFlag = (byte & 0x80) > 0;
+            statusRegister_.negativeFlag = (byte & 0x80) != 0;
             statusRegister_.zeroFlag = (byte == 0);
             if (addressMethod == &M6502::Accumlator)
             {
@@ -843,9 +912,9 @@ namespace oa
             int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.carryFlag == false)
             {
-                overflowTicks_++;
-                if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
-                    overflowTicks_++;
+                //overflowTicks_++;
+                //if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
+                    //overflowTicks_++;
                 programCounter_ += relativeAddress;
             }
         }
@@ -854,9 +923,9 @@ namespace oa
             int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.carryFlag == true)
             {
-                overflowTicks_++;
-                if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
-                    overflowTicks_++;
+                //overflowTicks_++;
+                //if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
+                    //overflowTicks_++;
                 programCounter_ += relativeAddress;
             }
         }
@@ -865,9 +934,9 @@ namespace oa
             int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.zeroFlag == true)
             {
-                overflowTicks_++;
-                if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
-                    overflowTicks_++;
+                //overflowTicks_++;
+                //if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
+                    //overflowTicks_++;
                 programCounter_ += relativeAddress;
             }
         }
@@ -876,9 +945,9 @@ namespace oa
             int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.negativeFlag == true)
             {
-                overflowTicks_++;
-                if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
-                    overflowTicks_++;
+                //overflowTicks_++;
+                //if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
+                    //overflowTicks_++;
                 programCounter_ += relativeAddress;
             }
         }    
@@ -887,9 +956,9 @@ namespace oa
             int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.zeroFlag == false)
             {
-                overflowTicks_++;
-                if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
-                    overflowTicks_++;
+                //overflowTicks_++;
+                //if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
+                    //overflowTicks_++;
                 programCounter_ += relativeAddress;
             }
         }
@@ -898,9 +967,9 @@ namespace oa
             int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.negativeFlag == false)
             {
-                overflowTicks_++;
-                if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
-                    overflowTicks_++;
+                //overflowTicks_++;
+                //if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
+                    //overflowTicks_++;
                 programCounter_ += relativeAddress;
             }
         }
@@ -909,9 +978,9 @@ namespace oa
             int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.overflowFlag == false)
             {
-                overflowTicks_++;
-                if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
-                    overflowTicks_++;
+                //overflowTicks_++;
+                //if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
+                    //overflowTicks_++;
                 programCounter_ += relativeAddress;
             }
         }
@@ -920,9 +989,9 @@ namespace oa
             int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.overflowFlag == true)
             {
-                overflowTicks_++;
-                if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
-                    overflowTicks_++;
+                //overflowTicks_++;
+                //if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
+                    //overflowTicks_++;
                 programCounter_ += relativeAddress;
             }
         }

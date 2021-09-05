@@ -412,7 +412,9 @@ build/main.o: ../main.cc ../../oanes/headers/nesmainwindow.h \
 		../../oanesmapper/headers/nescartridge.h \
 		../../oanes/headers/nesapu.h \
 		../../oanes/headers/nesapuchannel.h \
-		../../oavcs/headers/vcsmainwindow.h
+		../../oavcs/headers/vcsmainwindow.h \
+		../../oavcs/headers/vcspalette.h \
+		../../oavcs/headers/vcsinput.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/main.o ../main.cc
 
 ####### Install

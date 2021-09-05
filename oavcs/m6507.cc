@@ -16,14 +16,7 @@ namespace oa
         
         void M6507::ExecuteTick(bool isCpuBlocked)
         {
-            if (isCpuBlocked)
-            {
-                if (overflowTicks_ > 0)
-                {
-                    overflowTicks_ --;
-                }
-            }
-            else
+            if (!isCpuBlocked)
             {
                 emu::M6502::ExecuteTick();
             }

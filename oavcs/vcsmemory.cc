@@ -42,10 +42,6 @@ namespace oa
             else if (location >= 0x200 && location < 0x300)
             {
                 location -= 0x200;
-                if (originalLocation == 0x284 && vcsRiot_->Read(location) == 0)
-                {
-                    int x = 10;
-                }
                 return vcsRiot_->Read(location);                
             }
             
@@ -62,7 +58,7 @@ namespace oa
         void VcsMemory::CpuWrite(uint16_t location, uint8_t byte)
         {
             uint16_t originalLocation = location;
-            
+
             // Only 13 bit address
             location = location & 0x1FFF;
 
@@ -99,17 +95,6 @@ namespace oa
             throw std::out_of_range(QString("Invalid VCS memory location for write %1").arg(originalLocation).toLocal8Bit().data());
         }
 
-        /*
-        void NesMemory::SetLeftController(uint8_t byte)
-        {
-            leftController_ = byte;
-        }
-
-        void NesMemory::SetRightController(uint8_t byte)
-        {
-            rightController_ = byte;
-        }
-        */
     }
 }
 

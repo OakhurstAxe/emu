@@ -452,6 +452,7 @@ build/moc_vcsconsole.cpp: ../headers/vcsconsole.h \
 		../../oaemumemory/headers/memorymapper.h \
 		../headers/vcsmainwindow.h \
 		../headers/vcspalette.h \
+		../headers/vcsinput.h \
 		../headers/vcsmemory.h \
 		../../oaemumemory/headers/memoryramflagged.h \
 		../headers/vcscartridge.h \
@@ -464,6 +465,7 @@ build/moc_vcsconsole.cpp: ../headers/vcsconsole.h \
 
 build/moc_vcsmainwindow.cpp: ../headers/vcsmainwindow.h \
 		../headers/vcspalette.h \
+		../headers/vcsinput.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/dmax/projects/oaemu/oavcs/build/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/dmax/projects/oaemu/oavcs -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGamepad -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../headers/vcsmainwindow.h -o build/moc_vcsmainwindow.cpp
@@ -504,6 +506,7 @@ build/vcsconsole.o: ../vcsconsole.cc ../headers/vcsconsole.h \
 		../../oaemumemory/headers/memorymapper.h \
 		../headers/vcsmainwindow.h \
 		../headers/vcspalette.h \
+		../headers/vcsinput.h \
 		../headers/vcsmemory.h \
 		../../oaemumemory/headers/memoryramflagged.h \
 		../headers/vcscartridge.h \
@@ -515,6 +518,7 @@ build/vcsconsole.o: ../vcsconsole.cc ../headers/vcsconsole.h \
 
 build/vcsmainwindow.o: ../vcsmainwindow.cc ../headers/vcsmainwindow.h \
 		../headers/vcspalette.h \
+		../headers/vcsinput.h \
 		../headers/vcsconsole.h \
 		../../oaemumemory/headers/memoryram.h \
 		../../oaemumemory/headers/basememory.h \

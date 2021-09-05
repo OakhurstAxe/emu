@@ -12,7 +12,7 @@ namespace oa
     {
         VcsMainWindow::VcsMainWindow()
         {
-            qImage_ = new QImage(160, 192, QImage::Format_RGB32);
+            qImage_ = new QImage(RESOLUTION_X, RESOLUTION_Y, QImage::Format_RGB32);
             
             vcsConsole_ = new VcsConsole(this);
             vcsConsole_->StartUp();
@@ -27,7 +27,6 @@ namespace oa
             m_gamepad_ = new QGamepad(*gamepads.begin(), this);
             
             connect(m_gamepad_, SIGNAL(buttonAChanged(bool)), this, SLOT(LeftControllerA(bool)));
-            //connect(m_gamepad_, SIGNAL(buttonBChanged(bool)), this, SLOT(leftControllerB(bool)));
             connect(m_gamepad_, SIGNAL(buttonXChanged(bool)), this, SLOT(LeftControllerReset(bool)));
             connect(m_gamepad_, SIGNAL(buttonYChanged(bool)), this, SLOT(LeftControllerSelect(bool)));
             connect(m_gamepad_, SIGNAL(axisLeftXChanged(double)), this, SLOT(LeftControllerLeftRight(double)));
@@ -124,15 +123,15 @@ namespace oa
         {
             Q_UNUSED(event);
             
-            QRect rect(0,0,640,768);
+            QRect rect(0,0,RESOLUTION_X*4,RESOLUTION_Y*4);
             QPainter painter(this);
             
-            for (int y=0; y<192; y++)
+            for (int y=0; y<RESOLUTION_Y; y++)
             {
                 QRgb *rowData = (QRgb*)qImage_->scanLine(y);
-                for (int x=0; x<160; x++)
+                for (int x=0; x<RESOLUTION_X; x++)
                 {
-                    uint8_t value = screen_[y*160+x];
+                    uint8_t value = screen_[y*RESOLUTION_X+x];
                     QColor color = vcsPalette_.GetColor(value);
                     rowData[x] = color.rgb();
                 }

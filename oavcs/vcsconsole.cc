@@ -68,22 +68,20 @@ namespace oa
         void VcsConsole::StartNextFrame()
         {
             //qDebug() << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+            ReadInput();
+            int ticks = 0;
+            //apu_->ExecuteTick();
+            while (ticks < TICKS_PER_FRAME)
             {
-                int ticks = 0;
-                //apu_->ExecuteTick();
-                while (ticks < TICKS_PER_FRAME)
+                vscRiot_->ExecuteTick();
+                vcsTia_->ExecuteTick();
+                if ((ticks % 3) == 0)
                 {
-                    if ((ticks % 3) == 0)
-                    {
-                        cpu_->ExecuteTick(vcsTia_->IsCpuBlocked());
-                    }
-                    vscRiot_->ExecuteTick();
-                    vcsTia_->ExecuteTick();
-                    ticks++;
+                    cpu_->ExecuteTick(vcsTia_->IsCpuBlocked());
                 }
-                ReadInput();
-                vcsMainWindow_->DrawFrame(vcsTia_->GetScreen());
+                ticks++;
             }
+            vcsMainWindow_->DrawFrame(vcsTia_->GetScreen());
         }
         
         void VcsConsole::ReadInput()

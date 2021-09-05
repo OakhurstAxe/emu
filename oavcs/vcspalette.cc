@@ -59,7 +59,6 @@ namespace oa
 
         QColor VcsPalette::GetColor(uint8_t position, Palette palette)
         {
-            QColor col = palette_[palette][position];
             return palette_[palette][position];
         }
 
