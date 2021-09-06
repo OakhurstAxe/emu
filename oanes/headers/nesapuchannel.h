@@ -27,7 +27,7 @@ namespace oa
                 unsigned long frameCount,
                 const PaStreamCallbackTimeInfo* timeInfo,
                 PaStreamCallbackFlags statusFlags,
-                void* userData);            
+                void* userData);
             virtual void SetChannelSettings(uint8_t register1, bool register1flag,
                                             uint8_t register2, bool register2flag,
                                             uint8_t register3, bool register3flag,

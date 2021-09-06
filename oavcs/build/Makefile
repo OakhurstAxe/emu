@@ -61,7 +61,9 @@ SOURCES       = ../vcscartridge.cc \
 		../m6507.cc \
 		../vcspalette.cc \
 		../vcsriot.cc \
-		../vcsinput.cc build/moc_vcsconsole.cpp \
+		../vcsinput.cc \
+		../vcsaudio.cc \
+		../vcsaudiochannel.cc build/moc_vcsconsole.cpp \
 		build/moc_vcsmainwindow.cpp
 OBJECTS       = build/vcscartridge.o \
 		build/vcsconsole.o \
@@ -73,6 +75,8 @@ OBJECTS       = build/vcscartridge.o \
 		build/vcspalette.o \
 		build/vcsriot.o \
 		build/vcsinput.o \
+		build/vcsaudio.o \
+		build/vcsaudiochannel.o \
 		build/moc_vcsconsole.o \
 		build/moc_vcsmainwindow.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
@@ -172,7 +176,9 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		../headers/m6507.h \
 		../headers/vcspalette.h \
 		../headers/vcsriot.h \
-		../headers/vcsinput.h ../vcscartridge.cc \
+		../headers/vcsinput.h \
+		../headers/vcsaudio.h \
+		../headers/vcsaudiochannel.h ../vcscartridge.cc \
 		../vcsconsole.cc \
 		../vcsmainwindow.cc \
 		../vcsmemory.cc \
@@ -181,7 +187,9 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		../m6507.cc \
 		../vcspalette.cc \
 		../vcsriot.cc \
-		../vcsinput.cc
+		../vcsinput.cc \
+		../vcsaudio.cc \
+		../vcsaudiochannel.cc
 QMAKE_TARGET  = oavcs
 DESTDIR       = 
 TARGET        = liboavcs.so.1.0.0
@@ -404,8 +412,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../headers/vcscartridge.h ../headers/vcsconsole.h ../headers/vcsmainwindow.h ../headers/vcsmemory.h ../headers/vcsfile.h ../headers/vcstia.h ../headers/m6507.h ../headers/vcspalette.h ../headers/vcsriot.h ../headers/vcsinput.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../vcscartridge.cc ../vcsconsole.cc ../vcsmainwindow.cc ../vcsmemory.cc ../vcsfile.cc ../vcstia.cc ../m6507.cc ../vcspalette.cc ../vcsriot.cc ../vcsinput.cc $(DISTDIR)/
+	$(COPY_FILE) --parents ../headers/vcscartridge.h ../headers/vcsconsole.h ../headers/vcsmainwindow.h ../headers/vcsmemory.h ../headers/vcsfile.h ../headers/vcstia.h ../headers/m6507.h ../headers/vcspalette.h ../headers/vcsriot.h ../headers/vcsinput.h ../headers/vcsaudio.h ../headers/vcsaudiochannel.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../vcscartridge.cc ../vcsconsole.cc ../vcsmainwindow.cc ../vcsmemory.cc ../vcsfile.cc ../vcstia.cc ../m6507.cc ../vcspalette.cc ../vcsriot.cc ../vcsinput.cc ../vcsaudio.cc ../vcsaudiochannel.cc $(DISTDIR)/
 	$(COPY_FILE) --parents ../vcsmainwindow.ui $(DISTDIR)/
 
 
@@ -459,6 +467,8 @@ build/moc_vcsconsole.cpp: ../headers/vcsconsole.h \
 		../headers/vcstia.h \
 		../headers/vcsriot.h \
 		../headers/m6507.h \
+		../headers/vcsaudio.h \
+		../headers/vcsaudiochannel.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/dmax/projects/oaemu/oavcs/build/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/dmax/projects/oaemu/oavcs -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGamepad -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../headers/vcsconsole.h -o build/moc_vcsconsole.cpp
@@ -513,6 +523,8 @@ build/vcsconsole.o: ../vcsconsole.cc ../headers/vcsconsole.h \
 		../headers/vcstia.h \
 		../headers/vcsriot.h \
 		../headers/m6507.h \
+		../headers/vcsaudio.h \
+		../headers/vcsaudiochannel.h \
 		../headers/vcsfile.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/vcsconsole.o ../vcsconsole.cc
 
@@ -532,7 +544,9 @@ build/vcsmainwindow.o: ../vcsmainwindow.cc ../headers/vcsmainwindow.h \
 		../headers/vcscartridge.h \
 		../headers/vcstia.h \
 		../headers/vcsriot.h \
-		../headers/m6507.h
+		../headers/m6507.h \
+		../headers/vcsaudio.h \
+		../headers/vcsaudiochannel.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/vcsmainwindow.o ../vcsmainwindow.cc
 
 build/vcsmemory.o: ../vcsmemory.cc ../headers/vcsmemory.h \
@@ -572,6 +586,24 @@ build/vcsriot.o: ../vcsriot.cc ../headers/vcsriot.h \
 
 build/vcsinput.o: ../vcsinput.cc ../headers/vcsinput.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/vcsinput.o ../vcsinput.cc
+
+build/vcsaudio.o: ../vcsaudio.cc ../headers/vcsaudio.h \
+		../headers/vcsaudiochannel.h \
+		../headers/vcsmemory.h \
+		../../oaemumemory/headers/memoryram.h \
+		../../oaemumemory/headers/basememory.h \
+		../../oaemumemory/headers/memoryramflagged.h \
+		../../oaemumemory/headers/memoryrom.h \
+		../../oaemumemory/headers/memorymapper.h \
+		../../oaemucpu/headers/m6502.h \
+		../../oaemucpu/headers/basecpu.h \
+		../headers/vcscartridge.h \
+		../headers/vcstia.h \
+		../headers/vcsriot.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/vcsaudio.o ../vcsaudio.cc
+
+build/vcsaudiochannel.o: ../vcsaudiochannel.cc ../headers/vcsaudiochannel.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/vcsaudiochannel.o ../vcsaudiochannel.cc
 
 build/moc_vcsconsole.o: build/moc_vcsconsole.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/moc_vcsconsole.o build/moc_vcsconsole.cpp

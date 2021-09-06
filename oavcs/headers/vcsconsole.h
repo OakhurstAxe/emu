@@ -15,6 +15,7 @@
 #include "headers/m6507.h"
 #include "headers/vcsriot.h"
 #include "headers/vcsinput.h"
+#include "headers/vcsaudio.h"
 
 namespace oa
 {
@@ -42,6 +43,7 @@ namespace oa
             M6507 *cpu_;
             VcsMemory *vcsMemory_;
             VcsInput *vcsInput_;
+            VcsAudio *vcsAudio_;
             
             VcsMainWindow *vcsMainWindow_;
             QTimer *cpuTimer_;

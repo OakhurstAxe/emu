@@ -25,6 +25,7 @@ namespace oa
             vcsInput_ = new VcsInput();
             
             vcsMemory_ = new VcsMemory(vcsTia_, ram_, vscRiot_, vcsCartridge_);
+            vcsAudio_ = new VcsAudio(vcsMemory_);
             cpu_ = new M6507(vcsMemory_);
             cpuTimer_ = new QTimer();
         }
@@ -37,6 +38,7 @@ namespace oa
             delete ram_;
             delete vcsTia_;
             delete cpu_;
+            delete vcsAudio_;
             delete vcsMemory_;
             delete vcsInput_;
         }
@@ -70,7 +72,7 @@ namespace oa
             //qDebug() << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
             ReadInput();
             int ticks = 0;
-            //apu_->ExecuteTick();
+            vcsAudio_->ExecuteTick();
             while (ticks < TICKS_PER_FRAME)
             {
                 vscRiot_->ExecuteTick();
