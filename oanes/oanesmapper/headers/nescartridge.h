@@ -1,7 +1,7 @@
 #ifndef _OA_NES_CARTRIDGE_H
 #define _OA_NES_CARTRIDGE_H
 
-#include "../oaemumemory/headers/memoryrom.h"
+#include "oaemumemory/headers/memoryrom.h"
 
 namespace oa
 {

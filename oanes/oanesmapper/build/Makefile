@@ -17,7 +17,7 @@ CXX           = g++
 DEFINES       = -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../../oanesmapper -I. -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -Ibuild -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
+INCPATH       = -I../../oanesmapper -I. -I../../../../oaemu -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -Ibuild -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
 QMAKE         = /usr/lib/qt5/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -37,10 +37,10 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = oanesmapper1.0.0
-DISTDIR = /home/dmax/projects/oaemu/oanesmapper/build/build/oanesmapper1.0.0
+DISTDIR = /home/dmax/projects/oaemu/oanes/oanesmapper/build/build/oanesmapper1.0.0
 LINK          = g++
 LFLAGS        = -shared -Wl,-soname,liboanesmapper.so.1
-LIBS          = $(SUBLIBS) -L/home/dmax/projects/oaemu/oanesmapper/../oaemumemory/build -loaemumemory -L/home/dmax/projects/oaemu/oanesmapper/../oaemucpu/build -loaemucpu /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Core.so /usr/lib/x86_64-linux-gnu/libGL.so -lpthread   
+LIBS          = $(SUBLIBS) -L/home/dmax/projects/oaemu/oanes/oanesmapper/../../oaemumemory/build -loaemumemory -L/home/dmax/projects/oaemu/oanes/oanesmapper/../../oaemucpu/build -loaemucpu /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Core.so /usr/lib/x86_64-linux-gnu/libGL.so -lpthread   
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -423,23 +423,23 @@ compiler_clean: compiler_moc_predefs_clean
 ####### Compile
 
 build/nescartridge.o: ../nescartridge.cc ../headers/nescartridge.h \
-		../../oaemumemory/headers/memoryrom.h \
-		../../oaemumemory/headers/basememory.h \
+		../../../oaemumemory/headers/memoryrom.h \
+		../../../oaemumemory/headers/basememory.h \
 		../headers/nescartridge000.h \
-		../../oaemumemory/headers/memoryram.h \
+		../../../oaemumemory/headers/memoryram.h \
 		../headers/nescartridge001.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nescartridge.o ../nescartridge.cc
 
 build/nescartridge000.o: ../nescartridge000.cc ../headers/nescartridge000.h \
-		../../oaemumemory/headers/memoryram.h \
-		../../oaemumemory/headers/basememory.h \
-		../../oaemumemory/headers/memoryrom.h \
+		../../../oaemumemory/headers/memoryram.h \
+		../../../oaemumemory/headers/basememory.h \
+		../../../oaemumemory/headers/memoryrom.h \
 		../headers/nescartridge.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nescartridge000.o ../nescartridge000.cc
 
 build/nescartridge001.o: ../nescartridge001.cc ../headers/nescartridge001.h \
-		../../oaemumemory/headers/memoryrom.h \
-		../../oaemumemory/headers/basememory.h \
+		../../../oaemumemory/headers/memoryrom.h \
+		../../../oaemumemory/headers/basememory.h \
 		../headers/nescartridge.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nescartridge001.o ../nescartridge001.cc
 

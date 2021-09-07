@@ -1,8 +1,8 @@
-#ifndef VCS_M6507_H
-#define VCS_M6507_H
+#ifndef _OA_VCS_M6507_H
+#define _OA_VCS_M6507_H
 
-#include "../oaemucpu/headers/m6502.h"
-#include "../oaemumemory/headers/memorymapper.h"
+#include "oaemucpu/headers/m6502.h"
+#include "oaemumemory/headers/memorymapper.h"
 
 namespace oa
 {

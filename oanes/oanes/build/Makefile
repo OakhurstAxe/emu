@@ -17,7 +17,7 @@ CXX           = g++
 DEFINES       = -DQT_WIDGETS_LIB -DQT_GAMEPAD_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../../oanes -I. -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGamepad -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -Ibuild -Ibuild -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
+INCPATH       = -I../../oanes -I. -I../../../../oaemu -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGamepad -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -Ibuild -Ibuild -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
 QMAKE         = /usr/lib/qt5/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -37,10 +37,10 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = oanes1.0.0
-DISTDIR = /home/dmax/projects/oaemu/oanes/build/build/oanes1.0.0
+DISTDIR = /home/dmax/projects/oaemu/oanes/oanes/build/build/oanes1.0.0
 LINK          = g++
 LFLAGS        = -shared -Wl,-soname,liboanes.so.1
-LIBS          = $(SUBLIBS) -L/home/dmax/projects/oaemu/oanes/../oaemumemory/build -loaemumemory -L/home/dmax/projects/oaemu/oanes/../oaemucpu/build -loaemucpu -L/home/dmax/projects/oaemu/oanes/../oanesmapper/build -loanesmapper -lportaudio /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gamepad.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Core.so /usr/lib/x86_64-linux-gnu/libGL.so -lpthread   
+LIBS          = $(SUBLIBS) -L/home/dmax/projects/oaemu/oanes/oanes/../../oaemumemory/build -loaemumemory -L/home/dmax/projects/oaemu/oanes/oanes/../../oaemucpu/build -loaemucpu -L/home/dmax/projects/oaemu/oanes/oanes/../oanesmapper/build -loanesmapper -lportaudio /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gamepad.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Core.so /usr/lib/x86_64-linux-gnu/libGL.so -lpthread   
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -453,41 +453,41 @@ compiler_moc_header_clean:
 build/moc_nesmainwindow.cpp: ../headers/nesmainwindow.h \
 		../headers/nespalette.h \
 		../headers/r2a03.h \
-		../../oaemucpu/headers/m6502.h \
-		../../oaemucpu/headers/basecpu.h \
-		../../oaemumemory/headers/memorymapper.h \
+		../../../oaemucpu/headers/m6502.h \
+		../../../oaemucpu/headers/basecpu.h \
+		../../../oaemumemory/headers/memorymapper.h \
 		../headers/nesppu.h \
 		../headers/nesmemory.h \
-		../../oaemumemory/headers/memoryram.h \
-		../../oaemumemory/headers/basememory.h \
-		../../oaemumemory/headers/memoryramflagged.h \
-		../../oaemumemory/headers/memoryrom.h \
+		../../../oaemumemory/headers/memoryram.h \
+		../../../oaemumemory/headers/basememory.h \
+		../../../oaemumemory/headers/memoryramflagged.h \
+		../../../oaemumemory/headers/memoryrom.h \
 		../../oanesmapper/headers/nescartridge.h \
 		../headers/nesapu.h \
 		../headers/nesapuchannel.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/dmax/projects/oaemu/oanes/build/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/dmax/projects/oaemu/oanes -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGamepad -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../headers/nesmainwindow.h -o build/moc_nesmainwindow.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/dmax/projects/oaemu/oanes/oanes/build/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/dmax/projects/oaemu/oanes/oanes -I/home/dmax/projects/oaemu -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGamepad -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../headers/nesmainwindow.h -o build/moc_nesmainwindow.cpp
 
 build/moc_nesconsole.cpp: ../headers/nesconsole.h \
-		../../oaemumemory/headers/memoryram.h \
-		../../oaemumemory/headers/basememory.h \
-		../../oaemumemory/headers/memoryrom.h \
+		../../../oaemumemory/headers/memoryram.h \
+		../../../oaemumemory/headers/basememory.h \
+		../../../oaemumemory/headers/memoryrom.h \
 		../../oanesmapper/headers/nescartridge.h \
 		../headers/r2a03.h \
-		../../oaemucpu/headers/m6502.h \
-		../../oaemucpu/headers/basecpu.h \
-		../../oaemumemory/headers/memorymapper.h \
+		../../../oaemucpu/headers/m6502.h \
+		../../../oaemucpu/headers/basecpu.h \
+		../../../oaemumemory/headers/memorymapper.h \
 		../headers/nesppu.h \
 		../headers/nesmemory.h \
-		../../oaemumemory/headers/memoryramflagged.h \
+		../../../oaemumemory/headers/memoryramflagged.h \
 		../headers/nesapu.h \
 		../headers/nesapuchannel.h \
 		../headers/nesmainwindow.h \
 		../headers/nespalette.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/dmax/projects/oaemu/oanes/build/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/dmax/projects/oaemu/oanes -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGamepad -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../headers/nesconsole.h -o build/moc_nesconsole.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/dmax/projects/oaemu/oanes/oanes/build/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/dmax/projects/oaemu/oanes/oanes -I/home/dmax/projects/oaemu -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGamepad -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../headers/nesconsole.h -o build/moc_nesconsole.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -511,65 +511,65 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 ####### Compile
 
 build/nesmemory.o: ../nesmemory.cc ../headers/nesmemory.h \
-		../../oaemumemory/headers/memoryram.h \
-		../../oaemumemory/headers/basememory.h \
-		../../oaemumemory/headers/memoryramflagged.h \
-		../../oaemumemory/headers/memoryrom.h \
-		../../oaemumemory/headers/memorymapper.h \
+		../../../oaemumemory/headers/memoryram.h \
+		../../../oaemumemory/headers/basememory.h \
+		../../../oaemumemory/headers/memoryramflagged.h \
+		../../../oaemumemory/headers/memoryrom.h \
+		../../../oaemumemory/headers/memorymapper.h \
 		../../oanesmapper/headers/nescartridge.h \
 		../headers/r2a03.h \
-		../../oaemucpu/headers/m6502.h \
-		../../oaemucpu/headers/basecpu.h
+		../../../oaemucpu/headers/m6502.h \
+		../../../oaemucpu/headers/basecpu.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nesmemory.o ../nesmemory.cc
 
 build/r2a03.o: ../r2a03.cc ../headers/r2a03.h \
-		../../oaemucpu/headers/m6502.h \
-		../../oaemucpu/headers/basecpu.h \
-		../../oaemumemory/headers/memorymapper.h
+		../../../oaemucpu/headers/m6502.h \
+		../../../oaemucpu/headers/basecpu.h \
+		../../../oaemumemory/headers/memorymapper.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/r2a03.o ../r2a03.cc
 
 build/nesapu.o: ../nesapu.cc ../headers/nesapu.h \
 		../headers/nesapuchannel.h \
 		../headers/nesmemory.h \
-		../../oaemumemory/headers/memoryram.h \
-		../../oaemumemory/headers/basememory.h \
-		../../oaemumemory/headers/memoryramflagged.h \
-		../../oaemumemory/headers/memoryrom.h \
-		../../oaemumemory/headers/memorymapper.h \
+		../../../oaemumemory/headers/memoryram.h \
+		../../../oaemumemory/headers/basememory.h \
+		../../../oaemumemory/headers/memoryramflagged.h \
+		../../../oaemumemory/headers/memoryrom.h \
+		../../../oaemumemory/headers/memorymapper.h \
 		../../oanesmapper/headers/nescartridge.h \
 		../headers/r2a03.h \
-		../../oaemucpu/headers/m6502.h \
-		../../oaemucpu/headers/basecpu.h \
+		../../../oaemucpu/headers/m6502.h \
+		../../../oaemucpu/headers/basecpu.h \
 		../headers/nesapupulsechannel.h \
 		../headers/nesaputrianglechannel.h \
 		../headers/nesapunoisechannel.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nesapu.o ../nesapu.cc
 
 build/nesppu.o: ../nesppu.cc ../headers/nesppu.h \
-		../../oaemucpu/headers/basecpu.h \
+		../../../oaemucpu/headers/basecpu.h \
 		../headers/nesmemory.h \
-		../../oaemumemory/headers/memoryram.h \
-		../../oaemumemory/headers/basememory.h \
-		../../oaemumemory/headers/memoryramflagged.h \
-		../../oaemumemory/headers/memoryrom.h \
-		../../oaemumemory/headers/memorymapper.h \
+		../../../oaemumemory/headers/memoryram.h \
+		../../../oaemumemory/headers/basememory.h \
+		../../../oaemumemory/headers/memoryramflagged.h \
+		../../../oaemumemory/headers/memoryrom.h \
+		../../../oaemumemory/headers/memorymapper.h \
 		../../oanesmapper/headers/nescartridge.h \
 		../headers/r2a03.h \
-		../../oaemucpu/headers/m6502.h
+		../../../oaemucpu/headers/m6502.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nesppu.o ../nesppu.cc
 
 build/nesmainwindow.o: ../nesmainwindow.cc ../headers/nesmainwindow.h \
 		../headers/nespalette.h \
 		../headers/r2a03.h \
-		../../oaemucpu/headers/m6502.h \
-		../../oaemucpu/headers/basecpu.h \
-		../../oaemumemory/headers/memorymapper.h \
+		../../../oaemucpu/headers/m6502.h \
+		../../../oaemucpu/headers/basecpu.h \
+		../../../oaemumemory/headers/memorymapper.h \
 		../headers/nesppu.h \
 		../headers/nesmemory.h \
-		../../oaemumemory/headers/memoryram.h \
-		../../oaemumemory/headers/basememory.h \
-		../../oaemumemory/headers/memoryramflagged.h \
-		../../oaemumemory/headers/memoryrom.h \
+		../../../oaemumemory/headers/memoryram.h \
+		../../../oaemumemory/headers/basememory.h \
+		../../../oaemumemory/headers/memoryramflagged.h \
+		../../../oaemumemory/headers/memoryrom.h \
 		../../oanesmapper/headers/nescartridge.h \
 		../headers/nesapu.h \
 		../headers/nesapuchannel.h \
@@ -577,17 +577,17 @@ build/nesmainwindow.o: ../nesmainwindow.cc ../headers/nesmainwindow.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nesmainwindow.o ../nesmainwindow.cc
 
 build/nesconsole.o: ../nesconsole.cc ../headers/nesconsole.h \
-		../../oaemumemory/headers/memoryram.h \
-		../../oaemumemory/headers/basememory.h \
-		../../oaemumemory/headers/memoryrom.h \
+		../../../oaemumemory/headers/memoryram.h \
+		../../../oaemumemory/headers/basememory.h \
+		../../../oaemumemory/headers/memoryrom.h \
 		../../oanesmapper/headers/nescartridge.h \
 		../headers/r2a03.h \
-		../../oaemucpu/headers/m6502.h \
-		../../oaemucpu/headers/basecpu.h \
-		../../oaemumemory/headers/memorymapper.h \
+		../../../oaemucpu/headers/m6502.h \
+		../../../oaemucpu/headers/basecpu.h \
+		../../../oaemumemory/headers/memorymapper.h \
 		../headers/nesppu.h \
 		../headers/nesmemory.h \
-		../../oaemumemory/headers/memoryramflagged.h \
+		../../../oaemumemory/headers/memoryramflagged.h \
 		../headers/nesapu.h \
 		../headers/nesapuchannel.h \
 		../headers/nesmainwindow.h \

@@ -1,7 +1,7 @@
 #ifndef _OA_NES_APUTRIANGLECHANNEL_H
 #define _OA_NES_APUTRIANGLECHANNEL_H
 
-#include "headers/nesapuchannel.h"
+#include "nesapuchannel.h"
 
 namespace oa
 {

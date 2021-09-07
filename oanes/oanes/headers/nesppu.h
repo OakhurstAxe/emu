@@ -1,9 +1,9 @@
 #ifndef _OA_NES_PPU_H
 #define _OA_NES_PPU_H
 
-#include "../oaemucpu/headers/basecpu.h"
+#include "oaemucpu/headers/basecpu.h"
 
-#include "../oanes/headers/nesmemory.h"
+#include "nesmemory.h"
 #include "r2a03.h"
 
 namespace oa

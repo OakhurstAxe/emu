@@ -12,7 +12,6 @@ namespace oa
             virtual void ExecuteTick() = 0;
             virtual void Reset();
         protected:
-            bool IsOverflowed();
             int overflowTicks_ = 0;
         };
 

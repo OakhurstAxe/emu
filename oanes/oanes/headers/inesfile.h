@@ -1,5 +1,5 @@
-#ifndef _INESFILE_H
-#define _INESFILE_H
+#ifndef _OA_NES_INESFILE_H
+#define _OA_NES_INESFILE_H
 
 #include <stdint.h>
 #include <QString>

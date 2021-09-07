@@ -63,13 +63,13 @@ namespace oa
             switch (noiseReg & 0x0F)
             {
                 case (0):
+                    [[fallthrough]];
                 case (11):
                     volume_ = 0;
                     break;
                 case (1):
                     if (shiftRegister_ != four)
                     {
-                        shift4Register_ = 0xFFFF;
                         shiftRegister_ = four;
                     }
                     break;
@@ -77,19 +77,17 @@ namespace oa
                     if (shiftRegister_ != div31four)
                     {
                         div31Count_ = 0;
-                        shift4Register_ = 0xFFFF;
                         shiftRegister_ = div31four;
                     }
                     break;
                 case(3):
                     if (shiftRegister_ != fiveToFour)
                     {
-                        shift4Register_ = 0xFFFF;
-                        shift5Register_ = 0xFFFF;
                         shiftRegister_ = fiveToFour;
                     }
                     break;
                 case (4):
+                    [[fallthrough]];
                 case (5):
                     if (shiftRegister_ != div2)
                     {
@@ -98,28 +96,30 @@ namespace oa
                     }
                     break;
                 case (6):
+                    [[fallthrough]];
                 case (10):
                     if (shiftRegister_ != div31)
                     {
                         div31Count_ = 0;
                         shiftRegister_ = div31;
                     }
+                    break;
                 case (8):
                     if (shiftRegister_ != nine)
                     {
-                        shift9Register_ = 0xFFFF;
                         shiftRegister_ = nine;
                     }
                     break;
                 case (7):
+                    [[fallthrough]];
                 case (9):
                     if (shiftRegister_ != five)
                     {
-                        shift5Register_ = 0xFFFF;
                         shiftRegister_ = five;
                     }
                     break;
                 case (12):
+                    [[fallthrough]];
                 case (13):
                     if (shiftRegister_ != div2)
                     {
@@ -128,6 +128,7 @@ namespace oa
                         applyThird_ = true;
                         thirdCount_ = 0;
                     }
+                    break;
                 case (14):
                     if (shiftRegister_ != div31)
                     {
@@ -136,10 +137,10 @@ namespace oa
                         applyThird_ = true;
                         thirdCount_ = 0;
                     }
+                    break;
                 case (15):
                     if (shiftRegister_ != five)
                     {
-                        shift5Register_ = 0xFFFF;
                         shiftRegister_ = five;
                         applyThird_ = true;
                         thirdCount_ = 0;
@@ -148,10 +149,50 @@ namespace oa
             
         }
         
+        void VcsAudioChannel::ShiftFourRegister()
+        {
+            uint8_t newBit = ((shift4Register_ & 0x0002) >> 1) ^ (shift4Register_ & 0x0001);
+            shift4Register_ = shift4Register_ >> 1;
+            if (newBit > 0)
+            {
+                shift4Register_ |= 0x0008;
+            }
+            else
+            {
+                shift4Register_ &= 0xFFF7;
+            }
+        }
+        
+        void VcsAudioChannel::ShiftFiveRegister()
+        {
+            uint8_t newBit = ((shift5Register_ & 0x0004) >> 2) ^ (shift5Register_ & 0x0001);
+            shift5Register_ = shift5Register_ >> 1;
+            if (newBit > 0)
+            {
+                shift5Register_ |= 0x0010;
+            }
+            else
+            {
+                shift5Register_ &= 0xFFEF;
+            }
+        }
+        
+        void VcsAudioChannel::ShiftNineRegister()
+        {
+            uint8_t newBit = ((shift9Register_ & 0x0010) >> 4) ^ (shift9Register_ & 0x0001);
+            shift9Register_ = shift9Register_ >> 1;
+            if (newBit > 0)
+            {
+                shift9Register_ |= 0x0100;
+            }
+            else
+            {
+                shift9Register_ &= 0xFEFF;
+            }            
+        }
+
         void VcsAudioChannel::ShiftRegisters()
         {
-            uint8_t newBit = 0;
-            
             if (applyThird_)
             {
                 thirdCount_++;
@@ -162,76 +203,27 @@ namespace oa
                 thirdCount_ = 0;
             }
             
-            if (shiftRegister_ == four)
+            bool shouldShiftFour = true;
+            if (shiftRegister_ == fiveToFour)
             {
-                // Four
-                newBit = ((shift4Register_ & 0x0002) >> 1) ^ (shift4Register_ & 0x0001);
-                shift4Register_ = shift4Register_ >> 1;
-                if (newBit > 0)
-                {
-                    shift4Register_ |= 0x0008;
-                }
-                else
-                {
-                    shift4Register_ &= 0xFFF7;
-                }
+                shouldShiftFour = (shift5Register_ & 0x0001) > 0;
             }
-            else if (shiftRegister_ == five)
+            if (shiftRegister_ == div31four)
             {
-                // Five
-                newBit = ((shift5Register_ & 0x0004) >> 2) ^ (shift5Register_ & 0x0001);
-                shift5Register_ = shift5Register_ >> 1;
-                if (newBit > 0)
+                if (div31Count_ != 17 && div31Count_ != 30)
                 {
-                    shift5Register_ |= 0x0010;
-                }
-                else
-                {
-                    shift5Register_ &= 0xFFEF;
+                    shouldShiftFour = false;
                 }
             }
-            else if (shiftRegister_ == nine)
-            {                
-                // Nine
-                newBit = ((shift9Register_ & 0x0010) >> 4) ^ (shift9Register_ & 0x0001);
-                shift9Register_ = shift9Register_ >> 1;
-                if (newBit > 0)
-                {
-                    shift9Register_ |= 0x0100;
-                }
-                else
-                {
-                    shift9Register_ &= 0xFEFF;
-                }
-            }
-            else if (shiftRegister_ == fiveToFour)
+            if (shouldShiftFour)
             {
-                bool shiftFour = (shift5Register_ & 0x0001) > 0;
-                if (shiftFour)
-                {
-                    newBit = ((shift4Register_ & 0x0002) >> 1) ^ (shift4Register_ & 0x0001);
-                    shift4Register_ = shift4Register_ >> 1;
-                    if (newBit > 0)
-                    {
-                        shift4Register_ |= 0x0008;
-                    }
-                    else
-                    {
-                        shift4Register_ &= 0xFFF7;
-                    }
-                }                
-                newBit = ((shift5Register_ & 0x0004) >> 2) ^ (shift5Register_ & 0x0001);
-                shift5Register_ = shift5Register_ >> 1;
-                if (newBit > 0)
-                {
-                    shift5Register_ |= 0x0010;
-                }
-                else
-                {
-                    shift5Register_ &= 0xFFEF;
-                }
+                ShiftFourRegister();
             }
-            else if (shiftRegister_ == div2)
+
+            ShiftFiveRegister();
+            ShiftNineRegister();
+            
+            if (shiftRegister_ == div2)
             {
                 if (div2Count_ == 0)
                 {
@@ -242,32 +234,11 @@ namespace oa
                     div2Count_ = 0;
                 }
             }
-            else if (shiftRegister_ == div31)
-            {
-                if (div31Count_ >= 31)
-                {
-                    div31Count_ = 0;
-                }
-            }
-            else if (shiftRegister_ == div31four)
+            else if (shiftRegister_ == div31 || shiftRegister_ == div31four)
             {
                 div31Count_++;
-                
-                if (div31Count_ == 18 || div31Count_ == 31)
-                {
-                    // Four
-                    newBit = ((shift4Register_ & 0x0002) >> 1) ^ (shift4Register_ & 0x0001);
-                    shift4Register_ = shift4Register_ >> 1;
-                    if (newBit > 0)
-                    {
-                        shift4Register_ |= 0x0008;
-                    }
-                    else
-                    {
-                        shift4Register_ &= 0xFFF7;
-                    }
-                }
-                if (div31Count_ == 31)
+
+                if (div31Count_ >= 31)
                 {
                     div31Count_ = 0;
                 }
@@ -283,7 +254,6 @@ namespace oa
             }
             
             uint wavelength = ((DataSampleRateHz / frequency_));
-            uint wavelengthEigth = wavelength / 8;
             int sampleIndex = 0;
 
             while (sampleIndex < sampleCount) 

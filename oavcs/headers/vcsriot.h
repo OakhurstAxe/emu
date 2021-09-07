@@ -1,7 +1,7 @@
-#ifndef VCS_RIOT_H
-#define VCS_RIOT_H
+#ifndef _OA_VCS_RIOT_H
+#define _OA_VCS_RIOT_H
 
-#include "../oaemumemory/headers/memoryram.h"
+#include "oaemumemory/headers/memoryram.h"
 
 namespace oa
 {

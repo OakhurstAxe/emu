@@ -1,7 +1,7 @@
 #ifndef _OA_NES_APUNOISECHANNEL_H
 #define _OA_NES_APUNOISECHANNEL_H
 
-#include "headers/nesapuchannel.h"
+#include "nesapuchannel.h"
 
 namespace oa
 {

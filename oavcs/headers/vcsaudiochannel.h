@@ -1,4 +1,3 @@
-
 #ifndef _OA_VCS_AUDIOCHANNEL_H
 #define _OA_VCS_AUDIOCHANNEL_H
 
@@ -32,6 +31,9 @@ namespace oa
             float *GenerateBufferData(int sampleCount);
         protected:
             void ShiftRegisters();
+            void ShiftFourRegister();
+            void ShiftFiveRegister();
+            void ShiftNineRegister();
             uint64_t totalSample_ = 0;
             qreal    volume_ = 0;
             uint16_t frequency_ = 0;
@@ -40,9 +42,7 @@ namespace oa
                                        0.535, 0.602, 0.669, 0.736, 0.803, 0.870, 0.937, 1.000};
             float m_buffer_[BufferSize];
             PaStream *stream_;
-            uint16_t audioPatternPosition_ = 0;
             
-            uint8_t *audioPattern_;
             ShiftRegister shiftRegister_ = four;
             bool applyThird_ = false;
             uint8_t thirdCount_ = 0;

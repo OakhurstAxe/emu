@@ -1,14 +1,14 @@
 #ifndef _OA_VCS_MEMORY_H
 #define _OA_VCS_MEMORY_H
 
-#include "../oaemumemory/headers/memoryram.h"
-#include "../oaemumemory/headers/memoryramflagged.h"
-#include "../oaemumemory/headers/memoryrom.h"
-#include "../oaemumemory/headers/memorymapper.h"
-#include "../oaemucpu/headers/m6502.h"
-#include "headers/vcscartridge.h"
-#include "headers/vcstia.h"
-#include "headers/vcsriot.h"
+#include "oaemumemory/headers/memoryram.h"
+#include "oaemumemory/headers/memoryramflagged.h"
+#include "oaemumemory/headers/memoryrom.h"
+#include "oaemumemory/headers/memorymapper.h"
+#include "oaemucpu/headers/m6502.h"
+#include "vcscartridge.h"
+#include "vcstia.h"
+#include "vcsriot.h"
 
 namespace oa
 {

@@ -1,11 +1,11 @@
 #ifndef _OA_NES_NESMEMORY_H
 #define _OA_NES_NESMEMORY_H
 
-#include "../oaemumemory/headers/memoryram.h"
-#include "../oaemumemory/headers/memoryramflagged.h"
-#include "../oaemumemory/headers/memoryrom.h"
-#include "../oaemumemory/headers/memorymapper.h"
-#include "../oanesmapper/headers/nescartridge.h"
+#include "oaemumemory/headers/memoryram.h"
+#include "oaemumemory/headers/memoryramflagged.h"
+#include "oaemumemory/headers/memoryrom.h"
+#include "oaemumemory/headers/memorymapper.h"
+#include "oanes/oanesmapper/headers/nescartridge.h"
 #include "r2a03.h"
 
 namespace oa

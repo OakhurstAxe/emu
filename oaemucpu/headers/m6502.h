@@ -3,7 +3,7 @@
 
 #include "basecpu.h"
 
-#include "../oaemumemory/headers/memorymapper.h"
+#include "oaemumemory/headers/memorymapper.h"
 
 #define CallAddressMethod(methodName) std::__invoke(methodName, this)
 #define CallOpMethod(methodNane, addressMethod) std::__invoke(methodNane, this, addressMethod);

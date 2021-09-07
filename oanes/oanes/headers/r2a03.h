@@ -1,8 +1,8 @@
 #ifndef _OA_NES_R2A02
 #define _OA_NES_R2A02
 
-#include "../oaemucpu/headers/m6502.h"
-#include "../oaemumemory/headers/memorymapper.h"
+#include "oaemucpu/headers/m6502.h"
+#include "oaemumemory/headers/memorymapper.h"
 
 namespace oa
 {

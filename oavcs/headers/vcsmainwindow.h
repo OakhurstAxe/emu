@@ -9,6 +9,7 @@
 
 #include "vcspalette.h"
 #include "vcsinput.h"
+#include "vcsconsoletype.h"
 
 QT_BEGIN_NAMESPACE
 class QGamepad;
@@ -18,7 +19,6 @@ namespace oa
 {
     namespace vcs
     {
-
         class VcsConsole;
         
         class VcsMainWindow : public QWidget
@@ -26,7 +26,7 @@ namespace oa
             Q_OBJECT
             
         public:
-            VcsMainWindow();
+            VcsMainWindow(ConsoleType consoleType);
             ~VcsMainWindow();
             void DrawFrame(uint8_t *screen);
         public slots:
@@ -39,7 +39,8 @@ namespace oa
             void paintEvent(QPaintEvent *event);
             void ReadGamepad();
         private:
-            VcsPalette vcsPalette_;
+            VcsConsoleType *vcsConsoleType_;
+            VcsPalette *vcsPalette_;
             VcsConsole *vcsConsole_;
             uint8_t *screen_;
             bool inFrame_ = false;

@@ -8,17 +8,19 @@
 #include <QMessageBox>
 #include <QDebug>
 
-#define TICKS_PER_FRAME 59736
+#define TICKS_PER_SECOND 3584160
 
 namespace oa
 {
     namespace vcs
     {
-        VcsConsole::VcsConsole(VcsMainWindow* vcsMainWindow)
+        VcsConsole::VcsConsole(VcsMainWindow* vcsMainWindow, VcsConsoleType* vcsConsoleType)
         {
             vcsMainWindow_ = vcsMainWindow;
-
-            vcsTia_ = new VcsTia();
+            vcsConsoleType_ = vcsConsoleType;
+            ticksPerFrame_ = TICKS_PER_SECOND / vcsConsoleType_->GetFramesPerSecond();
+            
+            vcsTia_ = new VcsTia(vcsConsoleType_);
             ram_ = new emu::MemoryRam(0x80, "VCS Ram");
             vscRiot_ = new VcsRiot();
             vcsCartridge_ = new VcsCartridge();
@@ -46,7 +48,6 @@ namespace oa
         void VcsConsole::StartUp()
         {
             VcsFile vcsFile;
-           
             //vcsFile.LoadFile("vcsroms/ROMS/Adventure (1980) (Atari, Warren Robinett - Sears) (CX2613 - 49-75154) ~.bin");
             vcsFile.LoadFile("vcsroms/ROMS/Combat - Tank-Plus (Tank) (1977) (Atari, Joe Decuir, Larry Kaplan, Steve Mayer, Larry Wagner - Sears) (CX2601 - 99801, 6-99801, 49-75101, 49-75124) ~.bin");
 
@@ -55,7 +56,7 @@ namespace oa
             cpu_->Reset();
             vscRiot_->Reset();
             vcsTia_->Reset();
-            
+
             connect(cpuTimer_, SIGNAL(timeout()), SLOT(StartNextFrame()));
             cpuTimer_->setTimerType(Qt::PreciseTimer);
             cpuTimer_->setInterval(16);
@@ -71,9 +72,9 @@ namespace oa
         {
             //qDebug() << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
             ReadInput();
-            int ticks = 0;
+            uint32_t ticks = 0;
             vcsAudio_->ExecuteTick();
-            while (ticks < TICKS_PER_FRAME)
+            while (ticks < ticksPerFrame_)
             {
                 vscRiot_->ExecuteTick();
                 vcsTia_->ExecuteTick();

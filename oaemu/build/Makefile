@@ -17,7 +17,7 @@ CXX           = g++
 DEFINES       = -DQT_WIDGETS_LIB -DQT_GAMEPAD_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../../oaemu -I. -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGamepad -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -Ibuild -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
+INCPATH       = -I../../oaemu -I. -I../../../oaemu -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGamepad -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -Ibuild -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
 QMAKE         = /usr/lib/qt5/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -40,7 +40,7 @@ DISTNAME      = oaemu1.0.0
 DISTDIR = /home/dmax/projects/oaemu/oaemu/build/build/oaemu1.0.0
 LINK          = g++
 LFLAGS        = 
-LIBS          = $(SUBLIBS) -L/home/dmax/projects/oaemu/oaemu/../oaemumemory/build -loaemumemory -L/home/dmax/projects/oaemu/oaemu/../oaemucpu/build -loaemucpu -L/home/dmax/projects/oaemu/oaemu/../oanesmapper/build -loanesmapper -L/home/dmax/projects/oaemu/oaemu/../oanes/build -loanes -L/home/dmax/projects/oaemu/oaemu/../oavcs/build -loavcs /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gamepad.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Core.so /usr/lib/x86_64-linux-gnu/libGL.so -lpthread   
+LIBS          = $(SUBLIBS) -L/home/dmax/projects/oaemu/oaemu/../oaemumemory/build -loaemumemory -L/home/dmax/projects/oaemu/oaemu/../oaemucpu/build -loaemucpu -L/home/dmax/projects/oaemu/oaemu/../oanes/oanesmapper/build -loanesmapper -L/home/dmax/projects/oaemu/oaemu/../oanes/oanes/build -loanes -L/home/dmax/projects/oaemu/oaemu/../oavcs/build -loavcs /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gamepad.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Core.so /usr/lib/x86_64-linux-gnu/libGL.so -lpthread   
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -397,24 +397,33 @@ compiler_clean: compiler_moc_predefs_clean
 
 ####### Compile
 
-build/main.o: ../main.cc ../../oanes/headers/nesmainwindow.h \
-		../../oanes/headers/nespalette.h \
-		../../oanes/headers/r2a03.h \
+build/main.o: ../main.cc ../../oanes/oanes/headers/nesmainwindow.h \
+		../../oanes/oanes/headers/nespalette.h \
+		../../oanes/oanes/headers/r2a03.h \
 		../../oaemucpu/headers/m6502.h \
 		../../oaemucpu/headers/basecpu.h \
 		../../oaemumemory/headers/memorymapper.h \
-		../../oanes/headers/nesppu.h \
-		../../oanes/headers/nesmemory.h \
+		../../oanes/oanes/headers/nesppu.h \
+		../../oanes/oanes/headers/nesmemory.h \
 		../../oaemumemory/headers/memoryram.h \
 		../../oaemumemory/headers/basememory.h \
 		../../oaemumemory/headers/memoryramflagged.h \
 		../../oaemumemory/headers/memoryrom.h \
-		../../oanesmapper/headers/nescartridge.h \
-		../../oanes/headers/nesapu.h \
-		../../oanes/headers/nesapuchannel.h \
+		../../oanes/oanesmapper/headers/nescartridge.h \
+		../../oanes/oanes/headers/nesapu.h \
+		../../oanes/oanes/headers/nesapuchannel.h \
 		../../oavcs/headers/vcsmainwindow.h \
-		../../oavcs/headers/vcspalette.h \
-		../../oavcs/headers/vcsinput.h
+		../../oavcs/headers/vcsconsole.h \
+		../../oavcs/headers/vcsmemory.h \
+		../../oavcs/headers/vcscartridge.h \
+		../../oavcs/headers/vcstia.h \
+		../../oavcs/headers/vcsconsoletype.h \
+		../../oavcs/headers/vcsriot.h \
+		../../oavcs/headers/m6507.h \
+		../../oavcs/headers/vcsinput.h \
+		../../oavcs/headers/vcsaudio.h \
+		../../oavcs/headers/vcsaudiochannel.h \
+		../../oavcs/headers/vcspalette.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/main.o ../main.cc
 
 ####### Install

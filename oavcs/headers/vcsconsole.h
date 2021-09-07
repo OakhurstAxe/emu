@@ -4,30 +4,30 @@
 #include <memory>
 #include <QTimer>
 
-#include "../oaemumemory/headers/memoryram.h"
-#include "../oaemumemory/headers/memoryrom.h"
-#include "../oanesmapper/headers/nescartridge.h"
-#include "../oaemucpu/headers/m6502.h"
-#include "headers/vcsmainwindow.h"
-#include "headers/vcsmemory.h"
-#include "headers/vcscartridge.h"
-#include "headers/vcstia.h"
-#include "headers/m6507.h"
-#include "headers/vcsriot.h"
-#include "headers/vcsinput.h"
-#include "headers/vcsaudio.h"
+#include "oaemumemory/headers/memoryram.h"
+#include "oaemumemory/headers/memoryrom.h"
+#include "oaemucpu/headers/m6502.h"
+#include "vcsmainwindow.h"
+#include "vcsmemory.h"
+#include "vcscartridge.h"
+#include "vcstia.h"
+#include "m6507.h"
+#include "vcsriot.h"
+#include "vcsinput.h"
+#include "vcsaudio.h"
 
 namespace oa
 {
     namespace vcs
     {
+        class VcsMainWindow; 
  
         class VcsConsole : public QObject
         {
             Q_OBJECT
             
         public:
-            VcsConsole(VcsMainWindow* vcsMainWindow);
+            VcsConsole(VcsMainWindow* vcsMainWindow, VcsConsoleType* vcsConsoleType);
             virtual ~VcsConsole();
             void StartUp();
             VcsInput *GetVcsInput();
@@ -36,6 +36,7 @@ namespace oa
         private:
             void ReadInput();
             
+            VcsConsoleType *vcsConsoleType_;
             VcsTia *vcsTia_;
             emu::MemoryRam *ram_;
             VcsRiot *vscRiot_;
@@ -47,6 +48,7 @@ namespace oa
             
             VcsMainWindow *vcsMainWindow_;
             QTimer *cpuTimer_;
+            uint32_t ticksPerFrame_;
         };
         
     }

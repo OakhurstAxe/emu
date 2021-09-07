@@ -1,5 +1,5 @@
-#ifndef _VCS_FILE_H
-#define _VCS_FILE_H
+#ifndef _OA__VCS_FILE_H
+#define _OA_VCS_FILE_H
 
 #include <stdint.h>
 #include <QString>

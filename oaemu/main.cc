@@ -1,8 +1,9 @@
 #include <QApplication>
 #include <QMainWindow>
 
-#include "../oanes/headers/nesmainwindow.h"
-#include "../oavcs/headers/vcsmainwindow.h"
+#include "oanes/oanes/headers/nesmainwindow.h"
+#include "oavcs/headers/vcsmainwindow.h"
+#include "oavcs/headers/vcsconsoletype.h"
 
 int main(int argc, char** argv)
 {
@@ -12,8 +13,7 @@ int main(int argc, char** argv)
     //nes.resize(1024, 768);
     //nes.show();
     
-    oa::vcs::VcsMainWindow vcs;
-    vcs.resize(640,768);
+    oa::vcs::VcsMainWindow vcs(oa::vcs::ConsoleType::NTSC);
     vcs.show();
 
     return app.exec();

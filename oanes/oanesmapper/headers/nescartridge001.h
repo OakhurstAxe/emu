@@ -1,20 +1,19 @@
-#ifndef _OA_NES_CARTRIDGE000_H
-#define _OA_NES_CARTRIDGE000_H
+#ifndef _OA_NES_CARTRIDGE001_H
+#define _OA_NES_CARTRIDGE001_H
 
-#include "../oaemumemory/headers/memoryram.h"
-#include "../oaemumemory/headers/memoryrom.h"
-#include "headers/nescartridge.h"
+#include "oaemumemory/headers/memoryrom.h"
+#include "nescartridge.h"
 
 namespace oa
 {
     namespace nes
     {
         
-        class NesCartridge000 : public NesCartridge
+        class NesCartridge001 : public NesCartridge
         {
         public:
-            NesCartridge000();
-            virtual ~NesCartridge000();
+            NesCartridge001();
+            virtual ~NesCartridge001();
             
             uint8_t CpuRead(uint16_t location) override;
             void CpuWrite(uint16_t location, uint8_t byte) override;
@@ -24,12 +23,19 @@ namespace oa
             void LoadCharRom(uint8_t* data, uint8_t size) override;
             uint16_t GetMapper() override;
         private:
-            emu::MemoryRom* cpuPrgRom_[2];
+            emu::MemoryRom* cpuPrgRom_[16];
             emu::MemoryRom* ppuCharRom_[2];
+            
+            uint16_t cpuProgRomBlockCount_;
+            uint8_t cpuProgRomBufferCounter_;
+            uint8_t cpuProgRomBufferRegister_;
+            uint8_t cpuProgRomLowerBlock_ = 0;
+            uint8_t cpuProgRomUpperBlock_ = 0;
         };
         
     }
 }
 
 #endif
+
 

@@ -10,14 +10,5 @@ namespace oa
             overflowTicks_ = 0;
         }
 
-        bool BaseCpu::IsOverflowed()
-        {
-            if (overflowTicks_ > 0)
-            {
-                return true;
-            }
-            return false;
-        }
-
     }
 }

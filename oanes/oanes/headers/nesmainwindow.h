@@ -6,10 +6,10 @@
 #include <QTimer>
 #include <QImage>
 
-#include "../headers/nespalette.h"
-#include "../oanes/headers/r2a03.h"
-#include "../oanes/headers/nesppu.h"
-#include "../oanes/headers/nesapu.h"
+#include "nespalette.h"
+#include "r2a03.h"
+#include "nesppu.h"
+#include "nesapu.h"
 
 
 QT_BEGIN_NAMESPACE

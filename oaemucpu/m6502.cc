@@ -319,6 +319,7 @@ namespace oa
 
         void M6502::SetOverflowForOperation()
         {
+            // If branch operaion takes a branch it causes extra tick
             if ((operation_.operation_ == &M6502::OpBCC && statusRegister_.carryFlag == false)
                 || (operation_.operation_ == &M6502::OpBCS && statusRegister_.carryFlag == true)
                 || (operation_.operation_ == &M6502::OpBEQ && statusRegister_.zeroFlag == true)
@@ -345,6 +346,7 @@ namespace oa
                 {
                     programCounter_ -= 2;
                 }
+                // If branch operation jumps a page boundary requires extra clock cycle
                 if (((programCounter_ & 0x00FF) + relativeAddress) > 0x00FF)
                 {
                     overflowTicks_++;
@@ -354,40 +356,39 @@ namespace oa
         
         void M6502::SetOverflowForAddressAccess()
         {
+            uint16_t carry = 0;
+            
+            // overflow on address lookup ONLY if low byte carrys to 
+            // high byte by adding X or Y register
             if (operation_.addressMethod_ == &M6502::AbsoluteXAddress)
             {
                 uint8_t loadl = memory_->CpuRead(programCounter_);
-                uint16_t carry = loadl + registerX_;
-                if (carry > 0x00FF)
-                {
-                    overflowTicks_ += 1;
-                }
+                carry = loadl + registerX_;
             }
             else if (operation_.addressMethod_ == &M6502::AbsoluteYAddress)
             {
                 uint8_t loadl = memory_->CpuRead(programCounter_);
-                uint16_t carry = loadl + registerY_;
-                if (carry > 0x00FF)
-                {
-                    overflowTicks_ += 1;
-                }
+                carry = loadl + registerY_;
             }
             else if (operation_.addressMethod_ == &M6502::IndirectYAddress)
             {
                 uint16_t indirect = memory_->CpuRead(programCounter_);
                 uint8_t loadl = memory_->CpuRead(indirect & 0xff);
-                uint16_t carry = loadl + registerY_;
-                if (carry > 0x00FF)
-                {
-                    overflowTicks_ += 1;
-                }
-            }            
+                carry = loadl + registerY_;
+            }
+            
+            // Carry goes into high byte, so requires extra clock cycle
+            if (carry > 0x00FF)
+            {
+                overflowTicks_ += 1;
+            }
         }
 
         void M6502::PushStack(uint8_t byte)
         {
             if (stackPointer_ < stackPointerMin_)
             {
+                // Atari VCS games use stack in strange ways, this check cannot be used there
                 throw std::out_of_range(QString("Stack overflow").toLocal8Bit().data());
             }
             memory_->CpuWrite(stackPointer_, byte);
@@ -398,6 +399,7 @@ namespace oa
         {
             if (stackPointer_ >= stackPointerMax_)
             {
+                // Atari VCS games use stack in strange ways, this check cannot be used there
                 throw std::out_of_range(QString("Stack underflow").toLocal8Bit().data());
             }
             stackPointer_++;

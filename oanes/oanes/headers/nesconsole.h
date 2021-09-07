@@ -4,9 +4,9 @@
 #include <memory>
 #include <QTimer>
 
-#include "../oaemumemory/headers/memoryram.h"
-#include "../oaemumemory/headers/memoryrom.h"
-#include "../oanesmapper/headers/nescartridge.h"
+#include "oaemumemory/headers/memoryram.h"
+#include "oaemumemory/headers/memoryrom.h"
+#include "oanes/oanesmapper/headers/nescartridge.h"
 #include "headers/r2a03.h"
 #include "headers/nesppu.h"
 #include "headers/nesapu.h"

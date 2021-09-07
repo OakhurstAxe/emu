@@ -69,13 +69,16 @@ namespace oa
     namespace vcs
     {
  
-        VcsTia::VcsTia() : MemoryRam(0x7F, "TIA Registers")
+        VcsTia::VcsTia(VcsConsoleType *vcsConsoleType) : MemoryRam(0x7F, "TIA Registers")
         {
+            vcsConsoleType_ = vcsConsoleType;
+            screen_ = new uint8_t[vcsConsoleType_->GetXResolution() * vcsConsoleType_->GetYResolution()];
             Reset();
         }
         
         VcsTia::~VcsTia()
         {
+            delete screen_;
         }
         
         void VcsTia::Reset()
@@ -92,18 +95,18 @@ namespace oa
         void VcsTia::ExecuteTick()
         {
             cycle_++;
-            if (cycle_ > 68 + RESOLUTION_X)
+            if (cycle_ > 68 + vcsConsoleType_->GetXResolution())
             {
                 // Set rendering registers for when scrolling happens
                 cycle_ = 1;
                 scanLine_++;
-                if (scanLine_ > 40 + RESOLUTION_Y)
+                if (scanLine_ > 40 + vcsConsoleType_->GetYResolution())
                 {
                     scanLine_ = 1;
                 }
             }
             
-            if ((scanLine_ > 40) && (scanLine_ < 40 + RESOLUTION_Y) && (cycle_ > 68))
+            if ((scanLine_ > 40) && (scanLine_ < 40 + vcsConsoleType_->GetYResolution()) && (cycle_ > 68))
             {
                 RenderPixel();
             }
@@ -164,7 +167,7 @@ namespace oa
         {
             int16_t result = -1;
             
-            if ((playerCycle) <= cycle_ && (playerCycle + 24) >= cycle_)
+            if ((playerCycle) <= cycle_ && (playerCycle + 30) >= cycle_)
             {
                 uint8_t spriteData = Read(graphicsPlayerReg);
                 uint16_t position2Cycle_ = playerCycle;
@@ -305,7 +308,7 @@ namespace oa
                     result  = playfieldColor;
                 }
             }
-            else if (screenX < 160)
+            else if (screenX < vcsConsoleType_->GetXResolution())
             {
                 byte = Read(REG_PF0);
                 if ((controlPlayfield & 0x01) > 0)
@@ -425,13 +428,13 @@ namespace oa
             uint8_t background = Read(REG_COLUBK);
             
             // Background
-            screen_[screenY * RESOLUTION_X + screenX] = background;
+            screen_[screenY * vcsConsoleType_->GetXResolution() + screenX] = background;
             
             // Playfield
             int16_t playfieldPixel = GetPlayfieldPixel();
             if (playfieldPixel >= 0)
             {
-                screen_[screenY * 160 + screenX]  = (uint8_t)playfieldPixel;
+                screen_[screenY * vcsConsoleType_->GetXResolution() + screenX]  = (uint8_t)playfieldPixel;
             }
             bool pfAbove = false;
             if ((Read(REG_CTRLPF) & 0x04) > 0)
@@ -452,30 +455,40 @@ namespace oa
                 // Sprites
                 if (p0Pixel >= 0)
                 {
-                    screen_[screenY * 160 + screenX]  = (uint8_t)p0Pixel;
+                    screen_[screenY * vcsConsoleType_->GetXResolution() + screenX]  = (uint8_t)p0Pixel;
                 }
                 if (p1Pixel >= 0)
                 {
-                    screen_[screenY * 160 + screenX]  = (uint8_t)p1Pixel;
+                    screen_[screenY * vcsConsoleType_->GetXResolution() + screenX]  = (uint8_t)p1Pixel;
                 }
                 
                 // Missiles
                 if (m0Pixel >= 0)
                 {
-                    screen_[screenY * 160 + screenX]  = (uint8_t)m0Pixel;
+                    screen_[screenY * vcsConsoleType_->GetXResolution() + screenX]  = (uint8_t)m0Pixel;
                 }
                 if (m1Pixel >= 0)
                 {
-                    screen_[screenY * 160 + screenX]  = (uint8_t)m1Pixel;
+                    screen_[screenY * vcsConsoleType_->GetXResolution() + screenX]  = (uint8_t)m1Pixel;
                 }
 
                 // Ball
                 if (ballPixel >= 0)
                 {
-                    screen_[screenY * 160 + screenX]  = (uint8_t)ballPixel;
-                }                
-            }            
+                    screen_[screenY * vcsConsoleType_->GetXResolution() + screenX]  = (uint8_t)ballPixel;
+                }
+            }
             
+            CheckCollisions(playfieldPixel,
+                p0Pixel, p1Pixel, m0Pixel, m1Pixel,
+                ballPixel);
+        }
+        
+        void VcsTia::CheckCollisions(int16_t playfieldPixel,
+                int16_t p0Pixel, int16_t p1Pixel,
+                int16_t m0Pixel, int16_t m1Pixel,
+                int16_t ballPixel)
+        {
             // Collisions
             uint8_t collision = MemoryRam::Read(REG_CXM0P);
             if (m0Pixel >= 0 && p1Pixel >= 0)
@@ -574,11 +587,6 @@ namespace oa
             return result;
         }
         
-        uint8_t VcsTia::Read(uint16_t location)
-        {
-            return MemoryRam::Read(location);
-        }
-
         void VcsTia::Write(uint16_t location, uint8_t byte)
         {
             if (location == REG_VBLANK && (byte & 0x02) == 0)
