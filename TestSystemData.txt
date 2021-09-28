@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OaEmu>
+    <ScreenTypes>
+        <Name>NTSC</Name>
+        <Name>PAL</Name>
+        <Name>SECAM</Name>
+    </ScreenTypes>
+    <VCS>
+        <RomZipFile>file.zip</RomZipFile>
+        <ControllerTypes>
+            <Name>Joystick</Name>
+            <Name>Paddle</Name>
+            <Name>Wheel</Name>
+            <Name>Lightgun</Name>
+            <Name>Keyboard</Name>
+        </ControllerTypes>
+        <Companies>
+            <Name>Atari</Name>
+            <Name>Activision</Name>
+            <Name>Sega</Name>
+        </Companies>
+        <RomFiles>
+            <Game>
+                <Name>Adventure</Name>
+                <Controller>joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>adventure.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Combat</Name>
+                <Controller>joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>comabat.bin</RomFile>
+            </Game>
+        </RomFiles>
+    </VCS>
+</OaEmu>
