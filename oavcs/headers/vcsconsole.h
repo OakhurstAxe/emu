@@ -29,7 +29,7 @@ namespace oa
         public:
             VcsConsole(VcsMainWindow* vcsMainWindow, VcsConsoleType* vcsConsoleType);
             virtual ~VcsConsole();
-            void StartUp();
+            void StartUp(uint8_t* cartData, uint cartSize);
             VcsInput *GetVcsInput();
         public slots:
             void StartNextFrame();

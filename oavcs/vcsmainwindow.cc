@@ -10,8 +10,8 @@ namespace oa
 {
     namespace vcs
     {
-        VcsMainWindow::VcsMainWindow(ConsoleType consoleType)
-        {            
+        VcsMainWindow::VcsMainWindow(ConsoleType consoleType, uint8_t* cartData, uint cartSize)
+        {
             vcsConsoleType_ = new VcsConsoleType(consoleType);
             this->resize(vcsConsoleType_->GetXResolution() * 4, vcsConsoleType_->GetYResolution() * 4);
             
@@ -21,7 +21,7 @@ namespace oa
 
             vcsPalette_ = new VcsPalette(vcsConsoleType_);
             vcsConsole_ = new VcsConsole(this, vcsConsoleType_);
-            vcsConsole_->StartUp();
+            vcsConsole_->StartUp(cartData, cartSize);
             vcsInput = vcsConsole_->GetVcsInput();
             
             auto gamepads = QGamepadManager::instance()->connectedGamepads();
@@ -47,12 +47,11 @@ namespace oa
             delete vcsPalette_;
         }
 
-        void VcsMainWindow::DrawFrame(uint8_t *screen)
+        void VcsMainWindow::SetScreen(uint8_t *screen)
         {
             screen_ = screen;
-            repaint();
         }
-        
+
         void VcsMainWindow::LeftControllerA(bool value)
         {
             //qDebug() << "A" << value;

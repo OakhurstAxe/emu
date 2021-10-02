@@ -13,8 +13,8 @@ int main(int argc, char** argv)
     //nes.resize(1024, 768);
     //nes.show();
     
-    oa::vcs::VcsMainWindow vcs(oa::vcs::ConsoleType::NTSC);
-    vcs.show();
+    //oa::vcs::VcsMainWindow vcs(oa::vcs::ConsoleType::NTSC);
+    //vcs.show();
 
     return app.exec();
 }

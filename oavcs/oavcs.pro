@@ -5,8 +5,6 @@ QT += widgets core gui gamepad
 
 CONFIG += debug
 
-FORMS += vcsmainwindow.ui
-
 INCLUDEPATH += ..
 
 HEADERS += headers/vcscartridge.h headers/vcsconsole.h headers/vcsmainwindow.h headers/vcsmemory.h 

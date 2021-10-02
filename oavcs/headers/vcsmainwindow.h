@@ -26,9 +26,9 @@ namespace oa
             Q_OBJECT
             
         public:
-            VcsMainWindow(ConsoleType consoleType);
-            ~VcsMainWindow();
-            void DrawFrame(uint8_t *screen);
+            VcsMainWindow(ConsoleType consoleType, uint8_t* cartData, uint cartSize);
+            virtual ~VcsMainWindow();
+            void SetScreen(uint8_t *screen);
         public slots:
             void LeftControllerA(bool value);
             void LeftControllerReset(bool value);

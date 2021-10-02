@@ -13,6 +13,11 @@ SOURCES += oaemuvcsgame.cc oaemuvcssystem.cc oaemuscreentypes.cc
 SOURCES += oaemusystemdata.cc oaemumainwindow.cc
 
 LIBS += -lminizip
+LIBS += -L"$$_PRO_FILE_PWD_/../oaemumemory/build" -loaemumemory 
+LIBS += -L"$$_PRO_FILE_PWD_/../oaemucpu/build" -loaemucpu 
+LIBS += -L"$$_PRO_FILE_PWD_/../oavcs/build" -loavcs
+
+INCLUDEPATH += ..
 
 MOC_DIR = build
 OBJECTS_DIR = build

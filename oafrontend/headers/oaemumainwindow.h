@@ -4,6 +4,8 @@
 
 #include "ui_oaemumainwindow.h"
 #include "headers/oaemusystemdata.h"
+#include "oavcs/headers/vcsmainwindow.h"
+#include "oavcs/headers/vcsconsoletype.h"
 
 namespace oa
 {
@@ -16,6 +18,7 @@ namespace oa
             
         public:
             MainWindow(QWidget *parent = 0);
+            virtual ~MainWindow();
         private slots:
             void VcsGameNameEdit(const QString &text);
             void VcsGameControllerEdit(const QString &text);
@@ -28,7 +31,9 @@ namespace oa
             void AddClicked(bool checked);
             void RunClicked(bool checked);
         private:
-            bool isEdit = false;
+            vcs::VcsMainWindow* vcs = NULL;
+            unsigned char* buffer = NULL;
+            bool isEdit = true;
             Ui::MainWindow ui;
             SystemData systemData;
             QStringListModel *vcsGameList;

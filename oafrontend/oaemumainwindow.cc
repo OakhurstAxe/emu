@@ -25,8 +25,7 @@ namespace oa
             }
             vcsGameList->setStringList(list);
             
-            ui.gbViewVcs->setVisible(true);
-            ui.gbEditVcs->setVisible(false);
+            EditClicked(false);
             ui.lstGameView->setModel(vcsGameList);
             connect(ui.lstGameView, SIGNAL(clicked(QModelIndex)), this, SLOT(VcsGameSelected(QModelIndex)));
             connect(ui.btnEdit, SIGNAL(clicked(bool)), this, SLOT(EditClicked(bool)));
@@ -38,6 +37,17 @@ namespace oa
             connect(ui.leCompany, SIGNAL(textEdited(QString)), this, SLOT(VcsGameCompanyEdit(QString)));
             connect(ui.leScreen, SIGNAL(textEdited(QString)), this, SLOT(VcsGameScreenEdit(QString)));
             connect(ui.leRomFile, SIGNAL(textEdited(QString)), this, SLOT(VcsGameRomFileEdit(QString)));
+            
+            buffer = (unsigned char*)malloc(1);
+        }
+        
+        MainWindow::~MainWindow()
+        {
+            if (vcs != NULL)
+            {
+                delete vcs;
+            }
+            free(buffer);
         }
         
         void MainWindow::VcsGameSelected(const QModelIndex &index)
@@ -65,18 +75,29 @@ namespace oa
         
         void MainWindow::EditClicked(bool checked)
         {
+            Q_UNUSED(checked);
             isEdit = !isEdit;
-            ui.gbViewVcs->setVisible(!isEdit);
-            ui.gbEditVcs->setVisible(isEdit);
+            ui.leName->setVisible(isEdit);
+            ui.leController->setVisible(isEdit);
+            ui.leCompany->setVisible(isEdit);
+            ui.leScreen->setVisible(isEdit);
+            ui.leRomFile->setVisible(isEdit);
+            ui.lblNameValue->setVisible(!isEdit);
+            ui.lblControllerValue->setVisible(!isEdit);
+            ui.lblCompanyValue->setVisible(!isEdit);
+            ui.lblScreenValue->setVisible(!isEdit);
+            ui.lblRomValue->setVisible(!isEdit);
         }
         
         void MainWindow::SaveClicked(bool checked)
         {
+            Q_UNUSED(checked);
             systemData.SaveFile("/home/dmax/projects/oaemu/SystemData.txt");
         }
         
         void MainWindow::AddClicked(bool checked)
         {
+            Q_UNUSED(checked);
             VcsGame* game = new VcsGame();
             game->SetName("1234");
             systemData.GetVcsSystem()->AppendVcsGame(game);
@@ -163,6 +184,7 @@ namespace oa
 
         void MainWindow::RunClicked(bool checked)
         {
+            Q_UNUSED(checked);
             QString romFile = systemData.GetVcsSystem()->GetRomZipFile();
             QString gameName = vcsGameList->stringList().at(ui.lstGameView->currentIndex().row());
             QString gameRom = "";
@@ -175,17 +197,40 @@ namespace oa
                 }
             }
             
+            int result;
             unz_file_info fileInfo;
+            memset(&fileInfo, 0, sizeof(unz_file_info));
+            
             char* zipFile = romFile.toUtf8().data();
             char* fileName = QString("ROMS/" + gameRom).toUtf8().data();
             unzFile zip = unzOpen(zipFile);
-            int result = unzLocateFile(zip, fileName, 0);
+            result = unzLocateFile(zip, fileName, 0);
             result = unzGetCurrentFileInfo(zip, &fileInfo, fileName, strlen(fileName) + 1, NULL, 0, NULL, 0);
-            unsigned char buffer[fileInfo.uncompressed_size];
+            
+            free(buffer);
+            int bufferSize = fileInfo.uncompressed_size;            
+            buffer = (unsigned char*)malloc(bufferSize);
             result = unzOpenCurrentFile(zip);
-            result = unzReadCurrentFile(zip, buffer, fileInfo.uncompressed_size);
+            result = unzReadCurrentFile(zip, buffer, bufferSize);
             result = unzCloseCurrentFile(zip);
+
             result = unzClose(zip);
+
+            vcs::ConsoleType consoleType;
+            if (ui.lblScreenValue->text() == "NTSC")
+            {
+                consoleType = vcs::ConsoleType::NTSC;
+            }
+            else if (ui.lblScreenValue->text() == "PAL")
+            {
+                consoleType = vcs::ConsoleType::PAL;
+            }
+            else
+            {
+                consoleType = vcs::ConsoleType::SECAM;
+            }
+            vcs = new vcs::VcsMainWindow(consoleType, (uint8_t*)buffer, bufferSize);
+            vcs->show();            
         }
 
     }

@@ -21,6 +21,7 @@ namespace oa
             ticksPerFrame_ = TICKS_PER_SECOND / vcsConsoleType_->GetFramesPerSecond();
             
             vcsTia_ = new VcsTia(vcsConsoleType_);
+            vcsMainWindow_->SetScreen(vcsTia_->GetScreen());
             ram_ = new emu::MemoryRam(0x80, "VCS Ram");
             vscRiot_ = new VcsRiot();
             vcsCartridge_ = new VcsCartridge();
@@ -45,13 +46,9 @@ namespace oa
             delete vcsInput_;
         }
        
-        void VcsConsole::StartUp()
+        void VcsConsole::StartUp(uint8_t* cartData, uint cartSize)
         {
-            VcsFile vcsFile;
-            //vcsFile.LoadFile("vcsroms/ROMS/Adventure (1980) (Atari, Warren Robinett - Sears) (CX2613 - 49-75154) ~.bin");
-            vcsFile.LoadFile("vcsroms/ROMS/Combat - Tank-Plus (Tank) (1977) (Atari, Joe Decuir, Larry Kaplan, Steve Mayer, Larry Wagner - Sears) (CX2601 - 99801, 6-99801, 49-75101, 49-75124) ~.bin");
-
-            vcsCartridge_->LoadData(vcsFile.GetProgRomData(), vcsFile.GetProgRomSize());
+            vcsCartridge_->LoadData(cartData, cartSize);
 
             cpu_->Reset();
             vscRiot_->Reset();
@@ -84,7 +81,7 @@ namespace oa
                 }
                 ticks++;
             }
-            vcsMainWindow_->DrawFrame(vcsTia_->GetScreen());
+            vcsMainWindow_->repaint();
         }
         
         void VcsConsole::ReadInput()

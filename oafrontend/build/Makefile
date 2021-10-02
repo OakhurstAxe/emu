@@ -17,7 +17,7 @@ CXX           = g++
 DEFINES       = -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_XML_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../../oafrontend -I. -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtXml -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -Ibuild -Ibuild -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
+INCPATH       = -I../../oafrontend -I. -I../../../oaemu -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtXml -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -Ibuild -Ibuild -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
 QMAKE         = /usr/lib/qt5/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -40,7 +40,7 @@ DISTNAME      = oafrontend1.0.0
 DISTDIR = /home/dmax/projects/oaemu/oafrontend/build/build/oafrontend1.0.0
 LINK          = g++
 LFLAGS        = 
-LIBS          = $(SUBLIBS) -lminizip /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Xml.so /usr/lib/x86_64-linux-gnu/libQt5Core.so /usr/lib/x86_64-linux-gnu/libGL.so -lpthread   
+LIBS          = $(SUBLIBS) -lminizip -L/home/dmax/projects/oaemu/oafrontend/../oaemumemory/build -loaemumemory -L/home/dmax/projects/oaemu/oafrontend/../oaemucpu/build -loaemucpu -L/home/dmax/projects/oaemu/oafrontend/../oavcs/build -loavcs /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Xml.so /usr/lib/x86_64-linux-gnu/libQt5Core.so /usr/lib/x86_64-linux-gnu/libGL.so -lpthread   
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -411,9 +411,13 @@ build/moc_oaemumainwindow.cpp: ../headers/oaemumainwindow.h \
 		../headers/oaemuscreentypes.h \
 		../headers/oaemuvcssystem.h \
 		../headers/oaemuvcsgame.h \
+		../../oavcs/headers/vcsmainwindow.h \
+		../../oavcs/headers/vcspalette.h \
+		../../oavcs/headers/vcsconsoletype.h \
+		../../oavcs/headers/vcsinput.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/dmax/projects/oaemu/oafrontend/build/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/dmax/projects/oaemu/oafrontend -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtXml -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../headers/oaemumainwindow.h -o build/moc_oaemumainwindow.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/dmax/projects/oaemu/oafrontend/build/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/dmax/projects/oaemu/oafrontend -I/home/dmax/projects/oaemu -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtXml -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../headers/oaemumainwindow.h -o build/moc_oaemumainwindow.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -441,7 +445,11 @@ build/main.o: ../main.cc ../headers/oaemusystemdata.h \
 		../headers/oaemuvcssystem.h \
 		../headers/oaemuvcsgame.h \
 		../headers/oaemumainwindow.h \
-		build/ui_oaemumainwindow.h
+		build/ui_oaemumainwindow.h \
+		../../oavcs/headers/vcsmainwindow.h \
+		../../oavcs/headers/vcspalette.h \
+		../../oavcs/headers/vcsconsoletype.h \
+		../../oavcs/headers/vcsinput.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/main.o ../main.cc
 
 build/oaemuvcsgame.o: ../oaemuvcsgame.cc ../headers/oaemuvcsgame.h
@@ -465,7 +473,11 @@ build/oaemumainwindow.o: ../oaemumainwindow.cc ../headers/oaemumainwindow.h \
 		../headers/oaemusystemdata.h \
 		../headers/oaemuscreentypes.h \
 		../headers/oaemuvcssystem.h \
-		../headers/oaemuvcsgame.h
+		../headers/oaemuvcsgame.h \
+		../../oavcs/headers/vcsmainwindow.h \
+		../../oavcs/headers/vcspalette.h \
+		../../oavcs/headers/vcsconsoletype.h \
+		../../oavcs/headers/vcsinput.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/oaemumainwindow.o ../oaemumainwindow.cc
 
 build/moc_oaemumainwindow.o: build/moc_oaemumainwindow.cpp 
