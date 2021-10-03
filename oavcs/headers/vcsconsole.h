@@ -37,17 +37,17 @@ namespace oa
             void ReadInput();
             
             VcsConsoleType *vcsConsoleType_;
-            VcsTia *vcsTia_;
-            emu::MemoryRam *ram_;
-            VcsRiot *vscRiot_;
-            VcsCartridge *vcsCartridge_;
-            M6507 *cpu_;
-            VcsMemory *vcsMemory_;
-            VcsInput *vcsInput_;
-            VcsAudio *vcsAudio_;
+            VcsTia vcsTia_;
+            emu::MemoryRam ram_;
+            VcsRiot vscRiot_;
+            VcsCartridge vcsCartridge_;
+            M6507 cpu_;
+            VcsMemory vcsMemory_;
+            VcsInput vcsInput_;
+            VcsAudio vcsAudio_;
             
             VcsMainWindow *vcsMainWindow_;
-            QTimer *cpuTimer_;
+            QTimer cpuTimer_;
             uint32_t ticksPerFrame_;
         };
         

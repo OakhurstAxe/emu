@@ -7,10 +7,6 @@
 int main(int argc, char** argv)
 {
     QApplication app(argc, argv);
-
-    //oa::emu::SystemData systemData;
-    //systemData.LoadFile("/home/dmax/projects/oaemu/SystemData.txt");
-    //systemData.SaveFile("/home/dmax/projects/oaemu/TestSystemData.txt");
     
     oa::emu::MainWindow widget;
     widget.show();

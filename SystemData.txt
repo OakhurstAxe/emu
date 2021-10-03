@@ -28,7 +28,7 @@
                 <RomFile>Adventure (1980) (Atari, Warren Robinett - Sears) (CX2613 - 49-75154) ~.bin</RomFile>
             </Game>
             <Game>
-                <Name>Combat</Name>
+                <Name>Combat2</Name>
                 <Controller>joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>

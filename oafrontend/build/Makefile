@@ -415,6 +415,7 @@ build/moc_oaemumainwindow.cpp: ../headers/oaemumainwindow.h \
 		../../oavcs/headers/vcspalette.h \
 		../../oavcs/headers/vcsconsoletype.h \
 		../../oavcs/headers/vcsinput.h \
+		../../oavcs/headers/vcsparameters.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/dmax/projects/oaemu/oafrontend/build/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/dmax/projects/oaemu/oafrontend -I/home/dmax/projects/oaemu -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtXml -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../headers/oaemumainwindow.h -o build/moc_oaemumainwindow.cpp
@@ -449,7 +450,8 @@ build/main.o: ../main.cc ../headers/oaemusystemdata.h \
 		../../oavcs/headers/vcsmainwindow.h \
 		../../oavcs/headers/vcspalette.h \
 		../../oavcs/headers/vcsconsoletype.h \
-		../../oavcs/headers/vcsinput.h
+		../../oavcs/headers/vcsinput.h \
+		../../oavcs/headers/vcsparameters.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/main.o ../main.cc
 
 build/oaemuvcsgame.o: ../oaemuvcsgame.cc ../headers/oaemuvcsgame.h
@@ -477,7 +479,8 @@ build/oaemumainwindow.o: ../oaemumainwindow.cc ../headers/oaemumainwindow.h \
 		../../oavcs/headers/vcsmainwindow.h \
 		../../oavcs/headers/vcspalette.h \
 		../../oavcs/headers/vcsconsoletype.h \
-		../../oavcs/headers/vcsinput.h
+		../../oavcs/headers/vcsinput.h \
+		../../oavcs/headers/vcsparameters.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/oaemumainwindow.o ../oaemumainwindow.cc
 
 build/moc_oaemumainwindow.o: build/moc_oaemumainwindow.cpp 

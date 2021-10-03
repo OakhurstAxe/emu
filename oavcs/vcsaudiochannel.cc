@@ -9,12 +9,18 @@ namespace oa
         
         VcsAudioChannel::VcsAudioChannel()
         {
-            PaError err = Pa_Initialize();
-            if (err != paNoError)
+            PaError err;
+            
+            if (isInitalized_ == false)
             {
-                qDebug() << "Error starting port audio";
+                err = Pa_Initialize();
+                if (err != paNoError)
+                {
+                    qDebug() << "Error starting port audio";
+                }
+                isInitalized_ = true;
             }
-
+            
             err = Pa_OpenDefaultStream(&stream_,
                 0,
                 1,
@@ -38,16 +44,21 @@ namespace oa
 
         VcsAudioChannel::~VcsAudioChannel()
         {
+            isShutdown_ = true;
             PaError err = Pa_StopStream(stream_);
             if (err != paNoError)
             {
                 qDebug() << "Error stopping stream for port audio";
             }
 
-            err = Pa_Terminate();
-            if (err != paNoError)
+            if (isInitalized_ == true)
             {
-                qDebug() << "Error terminating port audio";
+                isInitalized_ = false;
+                err = Pa_Terminate();
+                if (err != paNoError)
+                {
+                    qDebug() << "Error terminating port audio";
+                }
             }
         }
         
@@ -336,8 +347,13 @@ namespace oa
             Q_UNUSED(input);
             Q_UNUSED(timeInfo);
             
-            if(auto self = reinterpret_cast<VcsAudioChannel*>(userData))
+            if (auto self = reinterpret_cast<VcsAudioChannel*>(userData))
             {
+                if (self->isShutdown_)
+                {
+                    return 0;
+                }
+
                 if (statusFlags == 4)
                     qDebug() << "Audio underflow";
                 //qDebug() << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();

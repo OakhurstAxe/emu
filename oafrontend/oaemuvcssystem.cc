@@ -12,6 +12,7 @@ namespace oa
         
         VcsSystem::~VcsSystem()
         {
+            vcsGames_.clear();
         }    
         
         QString VcsSystem::GetRomZipFile()

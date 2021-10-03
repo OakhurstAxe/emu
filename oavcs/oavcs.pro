@@ -11,13 +11,13 @@ HEADERS += headers/vcscartridge.h headers/vcsconsole.h headers/vcsmainwindow.h h
 HEADERS += headers/vcsfile.h headers/vcstia.h headers/m6507.h headers/vcspalette.h
 HEADERS += headers/vcsriot.h headers/vcsinput.h
 HEADERS += headers/vcsaudio.h headers/vcsaudiochannel.h
-HEADERS += headers/vcsconsoletype.h
+HEADERS += headers/vcsconsoletype.h headers/vcsparameters.h
 
 SOURCES += vcscartridge.cc vcsconsole.cc vcsmainwindow.cc vcsmemory.cc 
 SOURCES += vcsfile.cc vcstia.cc m6507.cc vcspalette.cc
 SOURCES += vcsriot.cc vcsinput.cc
 SOURCES += vcsaudio.cc vcsaudiochannel.cc
-SOURCES += vcsconsoletype.cc
+SOURCES += vcsconsoletype.cc vcsparameters.cc
 
 LIBS += -L"$$_PRO_FILE_PWD_/../oaemumemory/build" -loaemumemory
 LIBS += -L"$$_PRO_FILE_PWD_/../oaemucpu/build" -loaemucpu 

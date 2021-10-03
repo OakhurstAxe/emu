@@ -18,14 +18,10 @@ namespace oa
         VcsAudio::VcsAudio(VcsMemory *memory)
         {
             memory_ = memory;
-            channels[0] = new VcsAudioChannel();
-            channels[1] = new VcsAudioChannel();    
         }
 
         VcsAudio::~VcsAudio()
         {
-            delete channels[0];
-            delete channels[1];
         }
 
         void VcsAudio::ExecuteTick()
@@ -36,7 +32,7 @@ namespace oa
                 uint8_t register2 = memory_->CpuRead(REG_AUDF0 + i);
                 uint8_t register3 = memory_->CpuRead(REG_AUDC0 + i);
 
-                channels[i]->SetChannelSettings(register1, register2, register3);
+                channels[i].SetChannelSettings(register1, register2, register3);
             }
         }
 

@@ -6,14 +6,12 @@
 #include <QMainWindow>
 #include <QTimer>
 #include <QImage>
+#include <QtGamepad/QGamepad>
 
 #include "vcspalette.h"
 #include "vcsinput.h"
 #include "vcsconsoletype.h"
-
-QT_BEGIN_NAMESPACE
-class QGamepad;
-QT_END_NAMESPACE
+#include "vcsparameters.h"
 
 namespace oa
 {
@@ -26,7 +24,7 @@ namespace oa
             Q_OBJECT
             
         public:
-            VcsMainWindow(ConsoleType consoleType, uint8_t* cartData, uint cartSize);
+            VcsMainWindow(VcsParameters vcsParameters);
             virtual ~VcsMainWindow();
             void SetScreen(uint8_t *screen);
         public slots:
@@ -39,12 +37,12 @@ namespace oa
             void paintEvent(QPaintEvent *event);
             void ReadGamepad();
         private:
-            VcsConsoleType *vcsConsoleType_;
-            VcsPalette *vcsPalette_;
+            VcsConsoleType vcsConsoleType_;
+            VcsPalette vcsPalette_;
             VcsConsole *vcsConsole_;
             uint8_t *screen_;
             bool inFrame_ = false;
-            QGamepad *m_gamepad_;
+            QGamepad m_gamepad_;
             QImage *qImage_;
             VcsInput *vcsInput;
         };

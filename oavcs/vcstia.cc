@@ -72,13 +72,13 @@ namespace oa
         VcsTia::VcsTia(VcsConsoleType *vcsConsoleType) : MemoryRam(0x7F, "TIA Registers")
         {
             vcsConsoleType_ = vcsConsoleType;
-            screen_ = new uint8_t[vcsConsoleType_->GetXResolution() * vcsConsoleType_->GetYResolution()];
+            screen_ = (uint8_t*)malloc(vcsConsoleType_->GetXResolution() * vcsConsoleType_->GetYResolution());
             Reset();
         }
         
         VcsTia::~VcsTia()
         {
-            delete screen_;
+            free(screen_);
         }
         
         void VcsTia::Reset()

@@ -10,12 +10,12 @@ namespace oa
         {
             name_ = name;
             memorySize_ = size;
-            memory_ = new uint8_t[memorySize_];
+            memory_ = (uint8_t*)malloc(memorySize_);
         }
 
         BaseMemory::~BaseMemory()
         {
-            delete memory_;
+            free(memory_);
         }
         
         void BaseMemory::LoadData(uint8_t* data, uint16_t size)

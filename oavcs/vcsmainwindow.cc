@@ -2,7 +2,7 @@
 
 #include <QPainter>
 #include <QDebug>
-#include <QtGamepad/QGamepad>
+
 
 #include "headers/vcsconsole.h"
 
@@ -10,41 +10,32 @@ namespace oa
 {
     namespace vcs
     {
-        VcsMainWindow::VcsMainWindow(ConsoleType consoleType, uint8_t* cartData, uint cartSize)
+        VcsMainWindow::VcsMainWindow(VcsParameters vcsParameters) :
+        vcsConsoleType_(vcsParameters.GetConsoleType()),
+        vcsPalette_(&vcsConsoleType_),
+        m_gamepad_(*QGamepadManager::instance()->connectedGamepads().begin(), this)
         {
-            vcsConsoleType_ = new VcsConsoleType(consoleType);
-            this->resize(vcsConsoleType_->GetXResolution() * 4, vcsConsoleType_->GetYResolution() * 4);
+            this->resize(vcsConsoleType_.GetXResolution() * 4, vcsConsoleType_.GetYResolution() * 4);
             
-            qImage_ = new QImage(vcsConsoleType_->GetXResolution(), 
-                                 vcsConsoleType_->GetYResolution(), 
+            qImage_ = new QImage(vcsConsoleType_.GetXResolution(),
+                                 vcsConsoleType_.GetYResolution(),
                                  QImage::Format_RGB32);
 
-            vcsPalette_ = new VcsPalette(vcsConsoleType_);
-            vcsConsole_ = new VcsConsole(this, vcsConsoleType_);
-            vcsConsole_->StartUp(cartData, cartSize);
+            vcsConsole_ = new VcsConsole(this, &vcsConsoleType_);
+            vcsConsole_->StartUp(vcsParameters.GetCartData(), vcsParameters.GetCartSize());
             vcsInput = vcsConsole_->GetVcsInput();
             
-            auto gamepads = QGamepadManager::instance()->connectedGamepads();
-            if (gamepads.isEmpty()) {
-                qDebug() << "Did not find any connected gamepads";
-                return;
-            }
-            
-            m_gamepad_ = new QGamepad(*gamepads.begin(), this);
-            
-            connect(m_gamepad_, SIGNAL(buttonAChanged(bool)), this, SLOT(LeftControllerA(bool)));
-            connect(m_gamepad_, SIGNAL(buttonXChanged(bool)), this, SLOT(LeftControllerReset(bool)));
-            connect(m_gamepad_, SIGNAL(buttonYChanged(bool)), this, SLOT(LeftControllerSelect(bool)));
-            connect(m_gamepad_, SIGNAL(axisLeftXChanged(double)), this, SLOT(LeftControllerLeftRight(double)));
-            connect(m_gamepad_, SIGNAL(axisLeftYChanged(double)), this, SLOT(LeftControllerUpDown(double)));
+            connect(&m_gamepad_, SIGNAL(buttonAChanged(bool)), this, SLOT(LeftControllerA(bool)));
+            connect(&m_gamepad_, SIGNAL(buttonXChanged(bool)), this, SLOT(LeftControllerReset(bool)));
+            connect(&m_gamepad_, SIGNAL(buttonYChanged(bool)), this, SLOT(LeftControllerSelect(bool)));
+            connect(&m_gamepad_, SIGNAL(axisLeftXChanged(double)), this, SLOT(LeftControllerLeftRight(double)));
+            connect(&m_gamepad_, SIGNAL(axisLeftYChanged(double)), this, SLOT(LeftControllerUpDown(double)));
         }
 
         VcsMainWindow::~VcsMainWindow()
         {
-            delete m_gamepad_;
             delete vcsConsole_;
             delete qImage_;
-            delete vcsPalette_;
         }
 
         void VcsMainWindow::SetScreen(uint8_t *screen)
@@ -129,16 +120,16 @@ namespace oa
         {
             Q_UNUSED(event);
             
-            QRect rect(0,0,vcsConsoleType_->GetXResolution()*4,vcsConsoleType_->GetYResolution()*4);
+            QRect rect(0,0,vcsConsoleType_.GetXResolution()*4, vcsConsoleType_.GetYResolution()*4);
             QPainter painter(this);
             
-            for (int y=0; y<vcsConsoleType_->GetYResolution(); y++)
+            for (int y=0; y<vcsConsoleType_.GetYResolution(); y++)
             {
                 QRgb *rowData = (QRgb*)qImage_->scanLine(y);
-                for (int x=0; x<vcsConsoleType_->GetXResolution(); x++)
+                for (int x=0; x<vcsConsoleType_.GetXResolution(); x++)
                 {
-                    uint8_t value = screen_[y*vcsConsoleType_->GetXResolution()+x];
-                    QColor color = vcsPalette_->GetColor(value);
+                    uint8_t value = screen_[y*vcsConsoleType_.GetXResolution()+x];
+                    QColor color = vcsPalette_.GetColor(value);
                     rowData[x] = color.rgb();
                 }
             }

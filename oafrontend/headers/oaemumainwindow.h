@@ -6,6 +6,7 @@
 #include "headers/oaemusystemdata.h"
 #include "oavcs/headers/vcsmainwindow.h"
 #include "oavcs/headers/vcsconsoletype.h"
+#include "oavcs/headers/vcsparameters.h"
 
 namespace oa
 {
@@ -31,12 +32,12 @@ namespace oa
             void AddClicked(bool checked);
             void RunClicked(bool checked);
         private:
-            vcs::VcsMainWindow* vcs = NULL;
-            unsigned char* buffer = NULL;
-            bool isEdit = true;
-            Ui::MainWindow ui;
-            SystemData systemData;
-            QStringListModel *vcsGameList;
+            vcs::VcsMainWindow* vcs_ = NULL;
+            vcs::VcsParameters vcsParameters_;
+            bool isEdit_ = true;
+            Ui::MainWindow ui_;
+            SystemData systemData_;
+            QStringListModel *vcsGameList_;
         };
         
     }

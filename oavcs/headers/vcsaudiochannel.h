@@ -14,7 +14,8 @@ namespace oa
     namespace vcs
     {
         enum ShiftRegister { four, five, nine, fiveToFour, div2, div31, div31four };
-        
+
+
         class VcsAudioChannel
         {
         public:
@@ -30,6 +31,7 @@ namespace oa
             void SetChannelSettings(uint8_t volumeReg, uint8_t frequencyReg, uint8_t noiseReg);
             float *GenerateBufferData(int sampleCount);
         protected:
+            inline static bool isInitalized_ = false;
             void ShiftRegisters();
             void ShiftFourRegister();
             void ShiftFiveRegister();
@@ -42,6 +44,7 @@ namespace oa
                                        0.535, 0.602, 0.669, 0.736, 0.803, 0.870, 0.937, 1.000};
             float m_buffer_[BufferSize];
             PaStream *stream_;
+            bool isShutdown_ = false;
             
             ShiftRegister shiftRegister_ = four;
             bool applyThird_ = false;
