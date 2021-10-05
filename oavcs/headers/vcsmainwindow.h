@@ -12,6 +12,7 @@
 #include "vcsinput.h"
 #include "vcsconsoletype.h"
 #include "vcsparameters.h"
+#include "vcscartridge.h"
 
 namespace oa
 {
@@ -45,6 +46,8 @@ namespace oa
             QGamepad m_gamepad_;
             QImage *qImage_;
             VcsInput *vcsInput;
+            VcsCartridge *vcsCartridge_;
+            
         };
 
     }

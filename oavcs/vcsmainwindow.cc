@@ -21,8 +21,9 @@ namespace oa
                                  vcsConsoleType_.GetYResolution(),
                                  QImage::Format_RGB32);
 
-            vcsConsole_ = new VcsConsole(this, &vcsConsoleType_);
-            vcsConsole_->StartUp(vcsParameters.GetCartData(), vcsParameters.GetCartSize());
+            vcsCartridge_ = VcsCartridge::GetCartridge(&vcsParameters);
+            vcsConsole_ = new VcsConsole(this, &vcsParameters, vcsCartridge_);
+            vcsConsole_->StartUp();
             vcsInput = vcsConsole_->GetVcsInput();
             
             connect(&m_gamepad_, SIGNAL(buttonAChanged(bool)), this, SLOT(LeftControllerA(bool)));
@@ -34,6 +35,7 @@ namespace oa
 
         VcsMainWindow::~VcsMainWindow()
         {
+            delete vcsCartridge_;
             delete vcsConsole_;
             delete qImage_;
         }

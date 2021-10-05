@@ -27,20 +27,20 @@ namespace oa
             Q_OBJECT
             
         public:
-            VcsConsole(VcsMainWindow* vcsMainWindow, VcsConsoleType* vcsConsoleType);
+            VcsConsole(VcsMainWindow* vcsMainWindow, VcsParameters* vcsParameters, VcsCartridge *vcsCartridge);
             virtual ~VcsConsole();
-            void StartUp(uint8_t* cartData, uint cartSize);
+            void StartUp();
             VcsInput *GetVcsInput();
         public slots:
             void StartNextFrame();
         private:
             void ReadInput();
             
-            VcsConsoleType *vcsConsoleType_;
+            VcsConsoleType vcsConsoleType_;
             VcsTia vcsTia_;
             emu::MemoryRam ram_;
-            VcsRiot vscRiot_;
-            VcsCartridge vcsCartridge_;
+            VcsRiot vcsRiot_;
+            VcsCartridge *vcsCartridge_;
             M6507 cpu_;
             VcsMemory vcsMemory_;
             VcsInput vcsInput_;

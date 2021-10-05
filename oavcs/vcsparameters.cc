@@ -56,5 +56,15 @@ namespace oa
             return cartSize_;
         }
         
+        void VcsParameters::SetMapper(QString mapper)
+        {
+            mapper_ = mapper;
+        }
+        
+        QString VcsParameters::GetMapper()
+        {
+            return mapper_;
+        }
+        
     }
 }

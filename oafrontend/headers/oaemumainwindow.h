@@ -22,6 +22,7 @@ namespace oa
             virtual ~MainWindow();
         private slots:
             void VcsGameNameEdit(const QString &text);
+            void VcsGameMapperEdit(const QString &text);
             void VcsGameControllerEdit(const QString &text);
             void VcsGameCompanyEdit(const QString &text);
             void VcsGameScreenEdit(const QString &text);
@@ -38,6 +39,7 @@ namespace oa
             Ui::MainWindow ui_;
             SystemData systemData_;
             QStringListModel *vcsGameList_;
+            VcsGame* vcsGameSelected_;
         };
         
     }

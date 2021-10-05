@@ -19,6 +19,8 @@ namespace oa
             void SetRomZipFile(QString fileName);
             QList<VcsGame*> GetVcsGames();
             void AppendVcsGame(VcsGame* vcsGame);
+            QList<QString> GetMappers();
+            void AppendMapper(QString mapper);
             QList<QString> GetCompanies();
             void AppendCompany(QString company);
             QList<QString> GetControllerTypes();
@@ -26,6 +28,7 @@ namespace oa
         private:
             QString romZipFile_;
             QList<VcsGame*> vcsGames_;
+            QList<QString> mappers_;
             QList<QString> companies_;
             QList<QString> controllerTypes_;            
         };

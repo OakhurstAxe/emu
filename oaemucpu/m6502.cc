@@ -306,10 +306,15 @@ namespace oa
             overflowTicks_--;
 
             CallOpMethod(operation_.operation_, operation_.addressMethod_);
-
+            
             uint8_t instruction = memory_->CpuRead(programCounter_);
             programCounter_++;
             operation_ = opCodeLookup_[instruction];
+            prevInst5 = prevInst4;
+            prevInst4 = prevInst3;
+            prevInst3 = prevInst2;
+            prevInst2 = prevInst1;
+            prevInst1 = instruction;
             
             // Add ticks for next instruction
             overflowTicks_ += operation_.ticks;
@@ -914,9 +919,6 @@ namespace oa
             int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.carryFlag == false)
             {
-                //overflowTicks_++;
-                //if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
-                    //overflowTicks_++;
                 programCounter_ += relativeAddress;
             }
         }
@@ -925,9 +927,6 @@ namespace oa
             int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.carryFlag == true)
             {
-                //overflowTicks_++;
-                //if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
-                    //overflowTicks_++;
                 programCounter_ += relativeAddress;
             }
         }
@@ -936,9 +935,6 @@ namespace oa
             int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.zeroFlag == true)
             {
-                //overflowTicks_++;
-                //if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
-                    //overflowTicks_++;
                 programCounter_ += relativeAddress;
             }
         }
@@ -947,9 +943,6 @@ namespace oa
             int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.negativeFlag == true)
             {
-                //overflowTicks_++;
-                //if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
-                    //overflowTicks_++;
                 programCounter_ += relativeAddress;
             }
         }    
@@ -958,9 +951,6 @@ namespace oa
             int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.zeroFlag == false)
             {
-                //overflowTicks_++;
-                //if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
-                    //overflowTicks_++;
                 programCounter_ += relativeAddress;
             }
         }
@@ -969,9 +959,6 @@ namespace oa
             int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.negativeFlag == false)
             {
-                //overflowTicks_++;
-                //if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
-                    //overflowTicks_++;
                 programCounter_ += relativeAddress;
             }
         }
@@ -980,9 +967,6 @@ namespace oa
             int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.overflowFlag == false)
             {
-                //overflowTicks_++;
-                //if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
-                    //overflowTicks_++;
                 programCounter_ += relativeAddress;
             }
         }
@@ -991,9 +975,6 @@ namespace oa
             int8_t relativeAddress = memory_->CpuRead(CallAddressMethod(addressMethod));
             if (statusRegister_.overflowFlag == true)
             {
-                //overflowTicks_++;
-                //if (((programCounter_ + relativeAddress) & 0xff00) != (programCounter_ & 0xff00))
-                    //overflowTicks_++;
                 programCounter_ += relativeAddress;
             }
         }

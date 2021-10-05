@@ -14,31 +14,30 @@ namespace oa
 {
     namespace vcs
     {
-        VcsConsole::VcsConsole(VcsMainWindow* vcsMainWindow, VcsConsoleType* vcsConsoleType) :
-            vcsTia_(vcsConsoleType), 
+        VcsConsole::VcsConsole(VcsMainWindow* vcsMainWindow, VcsParameters* vcsParameters, VcsCartridge *vcsCartridge) :
             ram_(0x80, "VCS Ram"),
-            vcsMemory_(&vcsTia_, &ram_, &vscRiot_, &vcsCartridge_),
+            vcsConsoleType_(vcsParameters->GetConsoleType()),
+            vcsTia_(&vcsConsoleType_),
+            vcsMemory_(&vcsTia_, &ram_, &vcsRiot_, vcsCartridge),
             vcsAudio_(&vcsMemory_),
             cpu_(&vcsMemory_)
         {
+            vcsCartridge_ = vcsCartridge;
+            
             vcsMainWindow_ = vcsMainWindow;
-            vcsConsoleType_ = vcsConsoleType;
-            ticksPerFrame_ = TICKS_PER_SECOND / vcsConsoleType_->GetFramesPerSecond();
+            ticksPerFrame_ = TICKS_PER_SECOND / vcsConsoleType_.GetFramesPerSecond();
             
             vcsMainWindow_->SetScreen(vcsTia_.GetScreen());
         }
         
         VcsConsole::~VcsConsole()
         {
-            int x = 10;
         }
        
-        void VcsConsole::StartUp(uint8_t* cartData, uint cartSize)
+        void VcsConsole::StartUp()
         {
-            vcsCartridge_.LoadData(cartData, cartSize);
-
             cpu_.Reset();
-            vscRiot_.Reset();
+            vcsRiot_.Reset();
             vcsTia_.Reset();
 
             connect(&cpuTimer_, SIGNAL(timeout()), SLOT(StartNextFrame()));
@@ -60,7 +59,7 @@ namespace oa
             vcsAudio_.ExecuteTick();
             while (ticks < ticksPerFrame_)
             {
-                vscRiot_.ExecuteTick();
+                vcsRiot_.ExecuteTick();
                 vcsTia_.ExecuteTick();
                 if ((ticks % 3) == 0)
                 {

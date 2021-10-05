@@ -33,6 +33,11 @@ namespace oa
             };
             OperationStruct opCodeLookup_[0x100];
             OperationStruct operation_;            
+            uint8_t prevInst1;
+            uint8_t prevInst2;
+            uint8_t prevInst3;
+            uint8_t prevInst4;
+            uint8_t prevInst5;
             
             virtual void SetOpCodes();
             virtual void PushStack(uint8_t byte);

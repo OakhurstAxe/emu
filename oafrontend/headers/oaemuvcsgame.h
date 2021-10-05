@@ -13,6 +13,8 @@ namespace oa
         public:
             QString GetName();
             void SetName(QString name);
+            QString GetMapper();
+            void SetMapper(QString mapper);
             QString GetController();
             void SetController(QString controller);
             QString GetCompany();
@@ -23,6 +25,7 @@ namespace oa
             void SetRomFile(QString romFile);
         private:
             QString name_;
+            QString mapper_;
             QString controller_;
             QString company_;
             QString screenType_;

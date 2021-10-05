@@ -61,6 +61,16 @@ namespace oa
                                 {
                                     vcsSystem_->SetRomZipFile(xml.readElementText());
                                 }
+                                if (xml.name() == "MapperTypes")
+                                {
+                                    while (xml.readNextStartElement())
+                                    {
+                                        if (xml.name() == "Name")
+                                        {
+                                            vcsSystem_->AppendMapper(xml.readElementText());
+                                        }
+                                    }
+                                }
                                 if (xml.name() == "ControllerTypes")
                                 {
                                     while (xml.readNextStartElement())
@@ -93,6 +103,10 @@ namespace oa
                                                 if (xml.name() == "Name")
                                                 {
                                                     game->SetName(xml.readElementText());
+                                                }
+                                                if (xml.name() == "Mapper")
+                                                {
+                                                    game->SetMapper(xml.readElementText());
                                                 }
                                                 if (xml.name() == "Controller")
                                                 {
@@ -156,6 +170,14 @@ namespace oa
             // Rom zip file
             xml.writeTextElement("RomZipFile", vcsSystem_->GetRomZipFile());
             
+            // Mapper types
+            xml.writeStartElement("MapperTypes");
+            foreach (QString mapperType, vcsSystem_->GetMappers())
+            {
+                xml.writeTextElement("Name", mapperType);
+            }        
+            xml.writeEndElement();
+
             // Controller types
             xml.writeStartElement("ControllerTypes");
             foreach (QString controllerType, vcsSystem_->GetControllerTypes())
@@ -178,6 +200,7 @@ namespace oa
             {
                 xml.writeStartElement("Game");
                 xml.writeTextElement("Name", vcsGame->GetName());
+                xml.writeTextElement("Mapper", vcsGame->GetMapper());
                 xml.writeTextElement("Controller", vcsGame->GetController());
                 xml.writeTextElement("Company", vcsGame->GetCompany());
                 xml.writeTextElement("ScreenType", vcsGame->GetScreenType());

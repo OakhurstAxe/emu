@@ -65,7 +65,10 @@ SOURCES       = ../vcscartridge.cc \
 		../vcsaudio.cc \
 		../vcsaudiochannel.cc \
 		../vcsconsoletype.cc \
-		../vcsparameters.cc build/moc_vcsconsole.cpp \
+		../vcsparameters.cc \
+		../vcscartridge2k.cc \
+		../vcscartridge4k.cc \
+		../vcscartridgesc.cc build/moc_vcsconsole.cpp \
 		build/moc_vcsmainwindow.cpp
 OBJECTS       = build/vcscartridge.o \
 		build/vcsconsole.o \
@@ -81,6 +84,9 @@ OBJECTS       = build/vcscartridge.o \
 		build/vcsaudiochannel.o \
 		build/vcsconsoletype.o \
 		build/vcsparameters.o \
+		build/vcscartridge2k.o \
+		build/vcscartridge4k.o \
+		build/vcscartridgesc.o \
 		build/moc_vcsconsole.o \
 		build/moc_vcsmainwindow.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
@@ -184,7 +190,10 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		../headers/vcsaudio.h \
 		../headers/vcsaudiochannel.h \
 		../headers/vcsconsoletype.h \
-		../headers/vcsparameters.h ../vcscartridge.cc \
+		../headers/vcsparameters.h \
+		../headers/vcscartridge2k.h \
+		../headers/vcscartridge4k.h \
+		../headers/vcscartridgesc.h ../vcscartridge.cc \
 		../vcsconsole.cc \
 		../vcsmainwindow.cc \
 		../vcsmemory.cc \
@@ -197,7 +206,10 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		../vcsaudio.cc \
 		../vcsaudiochannel.cc \
 		../vcsconsoletype.cc \
-		../vcsparameters.cc
+		../vcsparameters.cc \
+		../vcscartridge2k.cc \
+		../vcscartridge4k.cc \
+		../vcscartridgesc.cc
 QMAKE_TARGET  = oavcs
 DESTDIR       = 
 TARGET        = liboavcs.so.1.0.0
@@ -420,8 +432,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../headers/vcscartridge.h ../headers/vcsconsole.h ../headers/vcsmainwindow.h ../headers/vcsmemory.h ../headers/vcsfile.h ../headers/vcstia.h ../headers/m6507.h ../headers/vcspalette.h ../headers/vcsriot.h ../headers/vcsinput.h ../headers/vcsaudio.h ../headers/vcsaudiochannel.h ../headers/vcsconsoletype.h ../headers/vcsparameters.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../vcscartridge.cc ../vcsconsole.cc ../vcsmainwindow.cc ../vcsmemory.cc ../vcsfile.cc ../vcstia.cc ../m6507.cc ../vcspalette.cc ../vcsriot.cc ../vcsinput.cc ../vcsaudio.cc ../vcsaudiochannel.cc ../vcsconsoletype.cc ../vcsparameters.cc $(DISTDIR)/
+	$(COPY_FILE) --parents ../headers/vcscartridge.h ../headers/vcsconsole.h ../headers/vcsmainwindow.h ../headers/vcsmemory.h ../headers/vcsfile.h ../headers/vcstia.h ../headers/m6507.h ../headers/vcspalette.h ../headers/vcsriot.h ../headers/vcsinput.h ../headers/vcsaudio.h ../headers/vcsaudiochannel.h ../headers/vcsconsoletype.h ../headers/vcsparameters.h ../headers/vcscartridge2k.h ../headers/vcscartridge4k.h ../headers/vcscartridgesc.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../vcscartridge.cc ../vcsconsole.cc ../vcsmainwindow.cc ../vcsmemory.cc ../vcsfile.cc ../vcstia.cc ../m6507.cc ../vcspalette.cc ../vcsriot.cc ../vcsinput.cc ../vcsaudio.cc ../vcsaudiochannel.cc ../vcsconsoletype.cc ../vcsparameters.cc ../vcscartridge2k.cc ../vcscartridge4k.cc ../vcscartridgesc.cc $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -622,6 +634,15 @@ build/vcsconsoletype.o: ../vcsconsoletype.cc ../headers/vcsconsoletype.h
 build/vcsparameters.o: ../vcsparameters.cc ../headers/vcsparameters.h \
 		../headers/vcsconsoletype.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/vcsparameters.o ../vcsparameters.cc
+
+build/vcscartridge2k.o: ../vcscartridge2k.cc 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/vcscartridge2k.o ../vcscartridge2k.cc
+
+build/vcscartridge4k.o: ../vcscartridge4k.cc 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/vcscartridge4k.o ../vcscartridge4k.cc
+
+build/vcscartridgesc.o: ../vcscartridgesc.cc 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/vcscartridgesc.o ../vcscartridgesc.cc
 
 build/moc_vcsconsole.o: build/moc_vcsconsole.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/moc_vcsconsole.o build/moc_vcsconsole.cpp

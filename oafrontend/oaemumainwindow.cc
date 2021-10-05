@@ -25,6 +25,26 @@ namespace oa
             }
             vcsGameList_->setStringList(list);
             
+            for (QString mapper : systemData_.GetVcsSystem()->GetMappers())
+            {
+                ui_.cmbMapper->addItem(mapper);
+            }
+
+            for (QString controller : systemData_.GetVcsSystem()->GetControllerTypes())
+            {
+                ui_.cmbController->addItem(controller);
+            }
+
+            for (QString screen : systemData_.GetVcsSystem()->GetCompanies())
+            {
+                ui_.cmbCompany->addItem(screen);
+            }
+
+            for (QString screen : systemData_.GetScreenTypes()->GetScreenTypes())
+            {
+                ui_.cmbScreen->addItem(screen);
+            }
+            
             EditClicked(false);
             ui_.lstGameView->setModel(vcsGameList_);
             connect(ui_.lstGameView, SIGNAL(clicked(QModelIndex)), this, SLOT(VcsGameSelected(QModelIndex)));
@@ -33,9 +53,10 @@ namespace oa
             connect(ui_.btnAdd, SIGNAL(clicked(bool)), this, SLOT(AddClicked(bool)));
             connect(ui_.btnRun, SIGNAL(clicked(bool)), this, SLOT(RunClicked(bool)));
             connect(ui_.leName, SIGNAL(textEdited(QString)), this, SLOT(VcsGameNameEdit(QString)));
-            connect(ui_.leController, SIGNAL(textEdited(QString)), this, SLOT(VcsGameControllerEdit(QString)));
-            connect(ui_.leCompany, SIGNAL(textEdited(QString)), this, SLOT(VcsGameCompanyEdit(QString)));
-            connect(ui_.leScreen, SIGNAL(textEdited(QString)), this, SLOT(VcsGameScreenEdit(QString)));
+            connect(ui_.cmbMapper, SIGNAL(currentTextChanged(QString)), this, SLOT(VcsGameMapperEdit(QString)));
+            connect(ui_.cmbController, SIGNAL(currentTextChanged(QString)), this, SLOT(VcsGameControllerEdit(QString)));
+            connect(ui_.cmbCompany, SIGNAL(currentTextChanged(QString)), this, SLOT(VcsGameCompanyEdit(QString)));
+            connect(ui_.cmbScreen, SIGNAL(currentTextChanged(QString)), this, SLOT(VcsGameScreenEdit(QString)));
             connect(ui_.leRomFile, SIGNAL(textEdited(QString)), this, SLOT(VcsGameRomFileEdit(QString)));
         }
         
@@ -55,16 +76,20 @@ namespace oa
             {
                 if (game->GetName() == gameName)
                 {
+                    vcsGameSelected_= game;
+                    
                     ui_.lblNameValue->setText(game->GetName());
+                    ui_.lblMapperValue->setText(game->GetMapper());
                     ui_.lblControllerValue->setText(game->GetController());
                     ui_.lblCompanyValue->setText(game->GetCompany());
                     ui_.lblScreenValue->setText(game->GetScreenType());
                     ui_.lblRomValue->setText(game->GetRomFile());
                     
                     ui_.leName->setText(game->GetName());
-                    ui_.leController->setText(game->GetController());
-                    ui_.leCompany->setText(game->GetCompany());
-                    ui_.leScreen->setText(game->GetScreenType());
+                    ui_.cmbMapper->setCurrentText(game->GetMapper());
+                    ui_.cmbController->setCurrentText(game->GetController());
+                    ui_.cmbCompany->setCurrentText(game->GetCompany());
+                    ui_.cmbScreen->setCurrentText(game->GetScreenType());
                     ui_.leRomFile->setText(game->GetRomFile());
                     break;
                 }
@@ -76,11 +101,13 @@ namespace oa
             Q_UNUSED(checked);
             isEdit_ = !isEdit_;
             ui_.leName->setVisible(isEdit_);
-            ui_.leController->setVisible(isEdit_);
-            ui_.leCompany->setVisible(isEdit_);
-            ui_.leScreen->setVisible(isEdit_);
+            ui_.cmbMapper->setVisible(isEdit_);
+            ui_.cmbController->setVisible(isEdit_);
+            ui_.cmbCompany->setVisible(isEdit_);
+            ui_.cmbScreen->setVisible(isEdit_);
             ui_.leRomFile->setVisible(isEdit_);
             ui_.lblNameValue->setVisible(!isEdit_);
+            ui_.lblMapperValue->setVisible(!isEdit_);
             ui_.lblControllerValue->setVisible(!isEdit_);
             ui_.lblCompanyValue->setVisible(!isEdit_);
             ui_.lblScreenValue->setVisible(!isEdit_);
@@ -110,16 +137,9 @@ namespace oa
 
         void MainWindow::VcsGameNameEdit(const QString &text)
         {
-            QString gameName = vcsGameList_->stringList().at(ui_.lstGameView->currentIndex().row());
-            for (VcsGame* game : systemData_.GetVcsSystem()->GetVcsGames())
-            {
-                if (game->GetName() == gameName)
-                {
-                    game->SetName(text);
-                    ui_.lblNameValue->setText(game->GetName());
-                    break;
-                }
-            }
+            vcsGameSelected_->SetName(text);
+            ui_.lblNameValue->setText(vcsGameSelected_->GetName());
+
             QStringList list;
             for (VcsGame* game : systemData_.GetVcsSystem()->GetVcsGames())
             {
@@ -128,60 +148,34 @@ namespace oa
             vcsGameList_->setStringList(list);
         }
         
-        void MainWindow::VcsGameControllerEdit(const QString &text)
+        void MainWindow::VcsGameMapperEdit(const QString &text)
         {
-            QString gameName = vcsGameList_->stringList().at(ui_.lstGameView->currentIndex().row());
-            for (VcsGame* game : systemData_.GetVcsSystem()->GetVcsGames())
-            {
-                if (game->GetName() == gameName)
-                {
-                    game->SetController(text);
-                    ui_.lblController->setText(game->GetController());
-                    break;
-                }
-            }
+            vcsGameSelected_->SetMapper(text);
+            ui_.lblMapperValue->setText(vcsGameSelected_->GetMapper());
         }
         
+        void MainWindow::VcsGameControllerEdit(const QString &text)
+        {
+            vcsGameSelected_->SetController(text);
+            ui_.lblControllerValue->setText(vcsGameSelected_->GetController());
+        }
+
         void MainWindow::VcsGameCompanyEdit(const QString &text)
         {
-            QString gameName = vcsGameList_->stringList().at(ui_.lstGameView->currentIndex().row());
-            for (VcsGame* game : systemData_.GetVcsSystem()->GetVcsGames())
-            {
-                if (game->GetName() == gameName)
-                {
-                    game->SetCompany(text);
-                    ui_.lblCompany->setText(game->GetCompany());
-                    break;
-                }
-            }
+            vcsGameSelected_->SetCompany(text);
+            ui_.lblCompanyValue->setText(vcsGameSelected_->GetCompany());
         }
         
         void MainWindow::VcsGameScreenEdit(const QString &text)
         {
-            QString gameName = vcsGameList_->stringList().at(ui_.lstGameView->currentIndex().row());
-            for (VcsGame* game : systemData_.GetVcsSystem()->GetVcsGames())
-            {
-                if (game->GetName() == gameName)
-                {
-                    game->SetScreenType(text);
-                    ui_.lblScreen->setText(game->GetScreenType());
-                    break;
-                }
-            }
+            vcsGameSelected_->SetScreenType(text);
+            ui_.lblScreenValue->setText(vcsGameSelected_->GetScreenType());
         }
         
         void MainWindow::VcsGameRomFileEdit(const QString &text)
         {
-            QString gameName = vcsGameList_->stringList().at(ui_.lstGameView->currentIndex().row());
-            for (VcsGame* game : systemData_.GetVcsSystem()->GetVcsGames())
-            {
-                if (game->GetName() == gameName)
-                {
-                    game->SetRomFile(text);
-                    ui_.lblRomValue->setText(game->GetRomFile());
-                    break;
-                }
-            }
+            vcsGameSelected_->SetRomFile(text);
+            ui_.lblRomValue->setText(vcsGameSelected_->GetRomFile());
         }
 
         void MainWindow::RunClicked(bool checked)
@@ -203,19 +197,42 @@ namespace oa
             unz_file_info fileInfo;
             memset(&fileInfo, 0, sizeof(unz_file_info));
             
-            char* zipFile = romFile.toUtf8().data();
+            unzFile zip = unzOpen(romFile.toUtf8().data());
             char* fileName = QString("ROMS/" + gameRom).toUtf8().data();
-            unzFile zip = unzOpen(zipFile);
             result = unzLocateFile(zip, fileName, 0);
+            if (result != 0)
+            {
+                throw std::runtime_error(QString("Error calling unzLocateFile [%1]").arg(result).toLocal8Bit().data());
+            }
             result = unzGetCurrentFileInfo(zip, &fileInfo, fileName, strlen(fileName) + 1, NULL, 0, NULL, 0);
+            if (result != 0)
+            {
+                throw std::runtime_error(QString("Error calling unzGetCurrentFileInfo [%1]").arg(result).toLocal8Bit().data());
+            }
             
             int bufferSize = fileInfo.uncompressed_size;            
             uint8_t* buffer = (uint8_t*)malloc(bufferSize);
             result = unzOpenCurrentFile(zip);
+            if (result != 0)
+            {
+                throw std::runtime_error(QString("Error calling unzOpenCurrentFile [%1]").arg(result).toLocal8Bit().data());
+            }
             result = unzReadCurrentFile(zip, buffer, bufferSize);
+            if (result != bufferSize)
+            {
+                throw std::runtime_error(QString("Error calling unzReadCurrentFile [%1]").arg(result).toLocal8Bit().data());
+            }
             result = unzCloseCurrentFile(zip);
+            if (result != 0)
+            {
+                throw std::runtime_error(QString("Error calling unzCloseCurrentFile [%1]").arg(result).toLocal8Bit().data());
+            }
 
             result = unzClose(zip);
+            if (result != 0)
+            {
+                throw std::runtime_error(QString("Error calling unzClose [%1]").arg(result).toLocal8Bit().data());
+            }
 
             vcs::ConsoleType consoleType;
             if (ui_.lblScreenValue->text() == "NTSC")
@@ -232,6 +249,8 @@ namespace oa
             }
             vcsParameters_.SetConsoleType(consoleType);
             vcsParameters_.SetCartData(buffer, bufferSize);
+            vcsParameters_.SetMapper(ui_.lblMapperValue->text());
+            
             free(buffer);
 
             if (vcs_ != NULL)

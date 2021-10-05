@@ -7,6 +7,11 @@
     </ScreenTypes>
     <VCS>
         <RomZipFile>/home/dmax/projects/oaemu/vcsroms/ROMS.zip</RomZipFile>
+        <MapperTypes>
+            <Name>2K</Name>
+            <Name>4K</Name>
+            <Name>SC</Name>
+        </MapperTypes>
         <ControllerTypes>
             <Name>Joystick</Name>
             <Name>Paddle</Name>
@@ -15,31 +20,35 @@
             <Name>Keyboard</Name>
         </ControllerTypes>
         <Companies>
-            <Name>Atari</Name>
             <Name>Activision</Name>
+            <Name>Atari</Name>
+            <Name>Sirius Software</Name>
             <Name>Sega</Name>
         </Companies>
         <RomFiles>
             <Game>
                 <Name>Adventure</Name>
+                <Mapper>4K</Mapper>
                 <Controller>joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
                 <RomFile>Adventure (1980) (Atari, Warren Robinett - Sears) (CX2613 - 49-75154) ~.bin</RomFile>
             </Game>
             <Game>
-                <Name>Combat2</Name>
-                <Controller>joystick</Controller>
+                <Name>Combat</Name>
+                <Mapper>2K</Mapper>
+                <Controller>Joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
-                <RomFile>comabat.bin</RomFile>
+                <RomFile>Combat - Tank-Plus (Tank) (1977) (Atari, Joe Decuir, Larry Kaplan, Steve Mayer, Larry Wagner - Sears) (CX2601 - 99801, 6-99801, 49-75101, 49-75124) ~.bin</RomFile>
             </Game>
             <Game>
-                <Name>1234</Name>
-                <Controller></Controller>
-                <Company></Company>
-                <ScreenType></ScreenType>
-                <RomFile>rom</RomFile>
+                <Name>Worm War I</Name>
+                <Mapper>SC</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Sirius Software</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Worm War I (1983) (CCE) (C-843).bin</RomFile>
             </Game>
         </RomFiles>
     </VCS>

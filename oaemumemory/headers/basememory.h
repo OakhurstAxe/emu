@@ -14,7 +14,7 @@ namespace oa
         public:
             BaseMemory(uint16_t size, QString name);
             virtual ~BaseMemory();
-            void LoadData(uint8_t* data, uint16_t size);
+            virtual void LoadData(uint8_t* data, uint16_t size);
             virtual uint8_t Read(uint16_t location);
             virtual void Write(uint16_t location, uint8_t byte);
         protected:

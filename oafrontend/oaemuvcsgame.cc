@@ -18,6 +18,14 @@ namespace oa
         {
             return controller_;
         }
+        void VcsGame::SetMapper(QString mapper)
+        {
+            mapper_ = mapper;
+        }
+        QString VcsGame::GetMapper()
+        {
+            return mapper_;
+        }
         void VcsGame::SetController(QString controller)
         {
             controller_ = controller;

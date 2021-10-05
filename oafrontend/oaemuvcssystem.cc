@@ -32,6 +32,16 @@ namespace oa
         {
             vcsGames_.append(vcsGame);
         }
+
+        QList<QString> VcsSystem::GetMappers()
+        {
+            return mappers_;
+        }
+        void VcsSystem::AppendMapper(QString mapper)
+        {
+            mappers_.append(mapper);
+        }
+        
         QList<QString> VcsSystem::GetCompanies()
         {
             return companies_;
