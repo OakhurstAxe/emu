@@ -25,6 +25,11 @@ namespace oa
             // Only 13 bit address
             location = location & 0x1FFF;
             
+            if (location == 0x3C)
+            {
+                int x = 10;
+            }
+            
             // TIA
             if (location < 0x80)
             {

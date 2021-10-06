@@ -44,11 +44,19 @@
             </Game>
             <Game>
                 <Name>Worm War I</Name>
-                <Mapper>SC</Mapper>
+                <Mapper>4K</Mapper>
                 <Controller>Joystick</Controller>
                 <Company>Sirius Software</Company>
                 <ScreenType>NTSC</ScreenType>
                 <RomFile>Worm War I (1983) (CCE) (C-843).bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Atlantis</Name>
+                <Mapper>4K</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Atlantis (1983) (CCE) (C-832).bin</RomFile>
             </Game>
         </RomFiles>
     </VCS>

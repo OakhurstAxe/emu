@@ -12,19 +12,27 @@ namespace oa
 
         VcsCartridge* VcsCartridge::GetCartridge(VcsParameters *vcsParameters)
         {
+            VcsCartridge *cart;
+            
             if (vcsParameters->GetMapper() == "2K")
             {
-                VcsCartridge *cart = new VcsCartridge2K();
-                cart->LoadData(vcsParameters->GetCartData(), vcsParameters->GetCartSize());
-                return cart;
+                cart = new VcsCartridge2K();
             }
             else if (vcsParameters->GetMapper() == "4K")
             {
-                VcsCartridge *cart = new VcsCartridge4K();
-                cart->LoadData(vcsParameters->GetCartData(), vcsParameters->GetCartSize());
-                return cart;
+                cart = new VcsCartridge4K();
             }
-            throw std::out_of_range(QString("Invalid VCS memory mapper %1").arg(vcsParameters->GetMapper()).toLocal8Bit().data());
+            else if (vcsParameters->GetMapper() == "SC")
+            {
+                cart = new VcsCartridgeSC();
+            }
+            else
+            {
+                throw std::out_of_range(QString("Invalid VCS memory mapper %1").arg(vcsParameters->GetMapper()).toLocal8Bit().data());
+            }
+
+            cart->LoadData(vcsParameters->GetCartData(), vcsParameters->GetCartSize());
+            return cart;
         }
     }
 }

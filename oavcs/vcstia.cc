@@ -112,7 +112,7 @@ namespace oa
             }
             
             // WSYNC 
-            if (cycle_ == 6) // Not sure this should be 6, but works pretty good
+            if (cycle_ == 8) // Not sure this should be 6, but works pretty good
             {
                 wSyncSet_ = false;
             }
@@ -280,46 +280,73 @@ namespace oa
                     result  = playfieldColor;
                 }
             }
-            else if (screenX < 112)
+            if ((controlPlayfield & 0x01) > 0)
             {
-                byte = Read(REG_PF2);
-                if ((controlPlayfield & 0x01) > 0)
+                if (screenX < 112)
                 {
+                    byte = Read(REG_PF2);
                     byte = ReverseBits(byte);
+                    uint8_t shift = (screenX - 80) >> 2;
+                    byte = (byte >> shift) & 0x01;
+                    if (byte > 0)
+                    {
+                        result  = playfieldColor;
+                    }
                 }
-                uint8_t shift = (screenX - 80) >> 2;
-                byte = (byte >> shift) & 0x01;
-                if (byte > 0)
+                else if (screenX < 144)
                 {
-                    result  = playfieldColor;
+                    byte = Read(REG_PF1);
+                    uint8_t shift = (screenX - 112) >> 2;
+                    byte = (byte >> shift) & 0x01;
+                    if (byte > 0)
+                    {
+                        result  = playfieldColor;
+                    }
+                }
+                else if (screenX < vcsConsoleType_->GetXResolution())
+                {
+                    byte = ((Read(REG_PF0) >> 4) & 0x0f);
+                    byte = ReverseBits(byte) >> 4;
+                    uint8_t shift = (screenX - 144) >> 2;
+                    byte = (byte >> shift) & 0x01;
+                    if (byte > 0)
+                    {
+                        result  = playfieldColor;
+                    }
                 }
             }
-            else if (screenX < 144)
+            else
             {
-                byte = Read(REG_PF1);
-                if ((controlPlayfield & 0x01) == 0)
+                if (screenX < 96)
                 {
+                    byte = ((Read(REG_PF0) >> 4) & 0x0f);
+                    uint8_t shift = (screenX - 80) >> 2;
+                    byte = (byte >> shift) & 0x01;
+                    if (byte > 0)
+                    {
+                        result  = playfieldColor;
+                    }
+                }
+                else if (screenX < 128)
+                {
+                    byte = Read(REG_PF1);
                     byte = ReverseBits(byte);
+                    uint8_t shift = (screenX - 96) >> 2;
+                    byte = (byte >> shift) & 0x01;
+                    if (byte > 0)
+                    {
+                        result  = playfieldColor;
+                    }
                 }
-                uint8_t shift = (screenX - 112) >> 2;
-                byte = (byte >> shift) & 0x01;
-                if (byte > 0)
+                else if (screenX < vcsConsoleType_->GetXResolution())
                 {
-                    result  = playfieldColor;
-                }
-            }
-            else if (screenX < vcsConsoleType_->GetXResolution())
-            {
-                byte = Read(REG_PF0);
-                if ((controlPlayfield & 0x01) > 0)
-                {
-                    byte = ReverseBits(byte);
-                }
-                uint8_t shift = (screenX - 144) >> 2;
-                byte = (byte >> shift) & 0x01;
-                if (byte > 0)
-                {
-                    result  = playfieldColor;
+                    byte = Read(REG_PF2);
+                    uint8_t shift = (screenX - 128) >> 2;
+                    byte = (byte >> shift) & 0x01;
+                    if (byte > 0)
+                    {
+                        result  = playfieldColor;
+                    }                
                 }
             }
             
