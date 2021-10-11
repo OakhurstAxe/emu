@@ -56,7 +56,7 @@ namespace oa
             //qDebug() << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
             ReadInput();
             uint32_t ticks = 0;
-            //vcsAudio_.ExecuteTick();
+            vcsAudio_.ExecuteTick();
             while (ticks < ticksPerFrame_)
             {
                 vcsRiot_.ExecuteTick();

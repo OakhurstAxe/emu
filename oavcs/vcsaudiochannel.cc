@@ -13,7 +13,7 @@ namespace oa
             
             if (isInitalized_ == false)
             {
-                err = Pa_Initialize();
+//                err = Pa_Initialize();
                 if (err != paNoError)
                 {
                     qDebug() << "Error starting port audio";

@@ -25,14 +25,10 @@ namespace oa
             // Only 13 bit address
             location = location & 0x1FFF;
             
-            if (location == 0x3C)
+            // TIA - If A12=0, A7=0 Mirroring
+            if ((location & 0x1080) == 0)
             {
-                int x = 10;
-            }
-            
-            // TIA
-            if (location < 0x80)
-            {
+                location &= 0x7F;
                 return vcsTia_->Read(location);
             }
             
@@ -43,11 +39,18 @@ namespace oa
                 return ram_->Read(location);
             }
             
-            // Riot
-            else if (location >= 0x200 && location < 0x300)
+            // PIA RAM Mirrors - A12=0, A9=0, A7=1  //111* 11*1 *111 1111
+            else if ((location & 0x1280) == 0x0080)
             {
-                location -= 0x200;
+                location &= 0x00FF;
                 return vcsRiot_->Read(location);                
+            }
+
+            // PIA I/O Mirrors - A12=0, A9=1, A7=1  //111* 11*1 *111 1111
+            else if ((location & 0x1280) == 0x0280)
+            {
+                location &= 0x00FF;
+                return vcsRiot_->Read(location);
             }
             
             // Cartridge ROM
@@ -67,11 +70,11 @@ namespace oa
             // Only 13 bit address
             location = location & 0x1FFF;
 
-            // TIA
-            if (location < 0x80)
+            // TIA - If A12=0, A7=0 Mirroring
+            if ((location & 0x1080) == 0)
             {
-                vcsTia_->Write(location, byte);
-                return;
+                location &= 0x7F;
+                return vcsTia_->Write(location, byte);
             }
             
             // Working RAM
@@ -81,12 +84,18 @@ namespace oa
                 return ram_->Write(location, byte);
             }
             
-            // Riot
-            else if (location >= 0x200 && location < 0x300)
+            // PIA RAM Mirrors - A12=0, A9=0, A7=1  //111* 11*1 *111 1111
+            else if ((location & 0x1280) == 0x0080)
             {
-                location -= 0x200;
-                vcsRiot_->Write(location, byte);
-                return;
+                location &= 0x00FF;
+                return vcsRiot_->Write(location, byte);
+            }
+            
+            // PIA I/O Mirrors - A12=0, A9=1, A7=1  //111* 11*1 *111 1111
+            else if ((location & 0x1280) == 0x0280)
+            {
+                location &= 0x00FF;
+                return vcsRiot_->Write(location, byte);
             }
 
             // Cartridge ROM

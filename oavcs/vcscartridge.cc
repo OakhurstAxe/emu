@@ -3,6 +3,8 @@
 
 #include "headers/vcscartridge2k.h"
 #include "headers/vcscartridge4k.h"
+#include "headers/vcscartridgef6.h"
+#include "headers/vcscartridgee7.h"
 #include "headers/vcscartridgesc.h"
 
 namespace oa
@@ -21,6 +23,14 @@ namespace oa
             else if (vcsParameters->GetMapper() == "4K")
             {
                 cart = new VcsCartridge4K();
+            }
+            else if (vcsParameters->GetMapper() == "E7")
+            {
+                cart = new VcsCartridgeE7();
+            }
+            else if (vcsParameters->GetMapper() == "F6")
+            {
+                cart = new VcsCartridgeF6();
             }
             else if (vcsParameters->GetMapper() == "SC")
             {

@@ -100,10 +100,6 @@ namespace oa
                 // Set rendering registers for when scrolling happens
                 cycle_ = 1;
                 scanLine_++;
-                if (scanLine_ > 40 + vcsConsoleType_->GetYResolution())
-                {
-                    scanLine_ = 1;
-                }
             }
             
             if ((scanLine_ > 40) && (scanLine_ < 40 + vcsConsoleType_->GetYResolution()) && (cycle_ > 68))
@@ -112,7 +108,7 @@ namespace oa
             }
             
             // WSYNC 
-            if (cycle_ == 8) // Not sure this should be 6, but works pretty good
+            if (cycle_ == 8) // Not sure this should be 8, but works pretty good
             {
                 wSyncSet_ = false;
             }
@@ -441,7 +437,7 @@ namespace oa
                 }
                 if ((resBLCycle_) <= cycle_ && (resBLCycle_ + size) >= cycle_)
                 {
-                    result  = Read(REG_COLUPF);
+                    result = Read(REG_COLUPF);
                 }
             }
             

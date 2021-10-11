@@ -10,6 +10,8 @@
         <MapperTypes>
             <Name>2K</Name>
             <Name>4K</Name>
+            <Name>E7</Name>
+            <Name>F6</Name>
             <Name>SC</Name>
         </MapperTypes>
         <ControllerTypes>
@@ -22,8 +24,9 @@
         <Companies>
             <Name>Activision</Name>
             <Name>Atari</Name>
-            <Name>Sirius Software</Name>
+            <Name>Salu</Name>
             <Name>Sega</Name>
+            <Name>Sirius Software</Name>
         </Companies>
         <RomFiles>
             <Game>
@@ -57,6 +60,14 @@
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
                 <RomFile>Atlantis (1983) (CCE) (C-832).bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Acid Drop</Name>
+                <Mapper>F6</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Salu</Company>
+                <ScreenType>PAL</ScreenType>
+                <RomFile>Acid Drop (1992) (Salu, Dennis M. Kiss) (460758) (PAL) ~.bin</RomFile>
             </Game>
         </RomFiles>
     </VCS>
