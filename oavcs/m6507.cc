@@ -14,14 +14,6 @@ namespace oa
             stackPointerMin_ = 0x80;
         }
         
-        void M6507::ExecuteTick(bool isCpuBlocked)
-        {
-            if (!isCpuBlocked)
-            {
-                emu::M6502::ExecuteTick();
-            }
-        }
-        
         void M6507::PushStack(uint8_t byte)
         {
             memory_->CpuWrite(stackPointer_, byte);

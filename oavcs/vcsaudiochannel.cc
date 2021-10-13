@@ -10,17 +10,6 @@ namespace oa
         VcsAudioChannel::VcsAudioChannel()
         {
             PaError err;
-            
-            if (isInitalized_ == false)
-            {
-//                err = Pa_Initialize();
-                if (err != paNoError)
-                {
-                    qDebug() << "Error starting port audio";
-                }
-                isInitalized_ = true;
-            }
-            
             err = Pa_OpenDefaultStream(&stream_,
                 0,
                 1,
@@ -49,16 +38,6 @@ namespace oa
             if (err != paNoError)
             {
                 qDebug() << "Error stopping stream for port audio";
-            }
-
-            if (isInitalized_ == true)
-            {
-                isInitalized_ = false;
-                err = Pa_Terminate();
-                if (err != paNoError)
-                {
-                    qDebug() << "Error terminating port audio";
-                }
             }
         }
         

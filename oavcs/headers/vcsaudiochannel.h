@@ -31,7 +31,6 @@ namespace oa
             void SetChannelSettings(uint8_t volumeReg, uint8_t frequencyReg, uint8_t noiseReg);
             float *GenerateBufferData(int sampleCount);
         protected:
-            inline static bool isInitalized_ = false;
             void ShiftRegisters();
             void ShiftFourRegister();
             void ShiftFiveRegister();

@@ -18,10 +18,26 @@ namespace oa
         VcsAudio::VcsAudio(VcsMemory *memory)
         {
             memory_ = memory;
+            
+            PaError err = Pa_Initialize();
+            if (err != paNoError)
+            {
+                qDebug() << "Error starting port audio";
+            }
+            channels_[0] = new VcsAudioChannel();
+            channels_[1] = new VcsAudioChannel();
         }
 
         VcsAudio::~VcsAudio()
         {
+            delete channels_[0];
+            delete channels_[1];
+
+            PaError err = Pa_Terminate();
+            if (err != paNoError)
+            {
+                qDebug() << "Error terminating port audio";
+            }
         }
 
         void VcsAudio::ExecuteTick()
@@ -32,7 +48,7 @@ namespace oa
                 uint8_t register2 = memory_->CpuRead(REG_AUDF0 + i);
                 uint8_t register3 = memory_->CpuRead(REG_AUDC0 + i);
 
-                channels[i].SetChannelSettings(register1, register2, register3);
+                channels_[i]->SetChannelSettings(register1, register2, register3);
             }
         }
 

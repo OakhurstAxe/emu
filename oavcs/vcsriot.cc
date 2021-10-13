@@ -10,15 +10,11 @@ namespace oa
         {
         }
         
-        VcsRiot::~VcsRiot()
-        {
-        }
-        
         void VcsRiot::Reset()
         {
             step_ = 1;
-            underflowFlag1_ = false;
-            underflowFlag2_ = false;
+            prevStep_ = 1;
+            MemoryRam::Write(0x85, 0);
         }
         
         void VcsRiot::ExecuteTick()
@@ -29,15 +25,12 @@ namespace oa
                 return;
             }
 
+            stepCount_ = 0;
             uint8_t timer = MemoryRam::Read(0x84);
             timer--;
-            if (timer == 0)
-            {
-                step_ = 1;
-            }
-            
             if (timer == 0xFF)
             {
+                step_ = 1;
                 MemoryRam::Write(0x85, 0xC0);
             }
             MemoryRam::Write(0x84, timer);
@@ -47,9 +40,7 @@ namespace oa
         {
             if (location == 0x84)
             {
-                uint8_t byte = MemoryRam::Read(0x85);
-                byte = byte & 0x7F;
-                MemoryRam::Write(0x85, byte);
+                step_ = prevStep_;
             }
             if (location == 0x85)
             {
@@ -64,35 +55,53 @@ namespace oa
         {
             if (location == 0x94)
             {
+                uint8_t byte = MemoryRam::Read(0x85);
+                byte = byte & 0xEF;
+                MemoryRam::Write(0x85, byte);
+
                 MemoryRam::Write(0x84, byte - 1);
                 step_ = 1;
+                prevStep_ = step_;
                 stepCount_ = 0;
                 return;
             }
             if (location == 0x95)
             {
+                uint8_t byte = MemoryRam::Read(0x85);
+                byte = byte & 0xEF;
+                MemoryRam::Write(0x85, byte);
+
                 MemoryRam::Write(0x84, byte - 1);
                 step_ = 8;
+                prevStep_ = step_;
                 stepCount_ = 0;
                 return;
             }
             if (location == 0x96)
             {
+                uint8_t byte = MemoryRam::Read(0x85);
+                byte = byte & 0xEF;
+                MemoryRam::Write(0x85, byte);
+
                 MemoryRam::Write(0x84, byte - 1);
                 step_ = 64;
+                prevStep_ = step_;
                 stepCount_ = 0;
                 return;
             }
             if (location == 0x97)
             {
+                uint8_t byte = MemoryRam::Read(0x85);
+                byte = byte & 0xEF;
+                MemoryRam::Write(0x85, byte);
+
                 MemoryRam::Write(0x84, byte - 1);
                 step_ = 1024;
+                prevStep_ = step_;
                 stepCount_ = 0;
                 return;
             }
-
-            MemoryRam::Write(location, byte);
-            
+            MemoryRam::Write(location, byte);            
         }
         
     }

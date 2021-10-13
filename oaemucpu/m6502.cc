@@ -703,6 +703,7 @@ namespace oa
             uint16_t value = tmpAccumulator + byte + statusRegister_.carryFlag;
             if (statusRegister_.decimalMode)
             {
+                value = value & 0xff;
                 value = ((value / 10) << 4) + (value % 10);
             }
             statusRegister_.carryFlag = (value & 0xff00) != 0;

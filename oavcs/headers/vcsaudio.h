@@ -17,7 +17,7 @@ namespace oa
             void ExecuteTick();
         private:
             VcsMemory *memory_;
-            VcsAudioChannel channels[2];
+            VcsAudioChannel *channels_[2];
         };
 
     }

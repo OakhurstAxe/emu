@@ -17,6 +17,8 @@ namespace oa
             uint8_t GetXResolution();
             uint8_t GetYResolution();
             uint8_t GetFramesPerSecond();
+            uint8_t GetVBlankLines();
+            uint32_t TicksPerSecond();
             ConsoleType GetVideoType();
         private:
             ConsoleType consoleType_;            

@@ -25,7 +25,7 @@ namespace oa
             vcsCartridge_ = vcsCartridge;
             
             vcsMainWindow_ = vcsMainWindow;
-            ticksPerFrame_ = TICKS_PER_SECOND / vcsConsoleType_.GetFramesPerSecond();
+            ticksPerFrame_ = vcsConsoleType_.TicksPerSecond() / vcsConsoleType_.GetFramesPerSecond();
             
             vcsMainWindow_->SetScreen(vcsTia_.GetScreen());
         }
@@ -61,9 +61,9 @@ namespace oa
             {
                 vcsRiot_.ExecuteTick();
                 vcsTia_.ExecuteTick();
-                if ((ticks % 3) == 0)
+                if ((ticks % 3) == 0 && !vcsTia_.IsCpuBlocked())
                 {
-                    cpu_.ExecuteTick(vcsTia_.IsCpuBlocked());
+                    cpu_.ExecuteTick();
                 }
                 ticks++;
             }

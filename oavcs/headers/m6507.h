@@ -13,7 +13,6 @@ namespace oa
         {
         public:
             M6507(emu::MemoryMapper *memory);
-            virtual void ExecuteTick(bool isCpuBlocked);
         protected:
             // Override stack methods, Atari programmers 
             // corrupt stack to save space

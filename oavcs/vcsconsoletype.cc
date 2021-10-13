@@ -33,6 +33,24 @@ namespace oa
             return 50;
         }
         
+        uint8_t VcsConsoleType::GetVBlankLines()
+        {
+            if (consoleType_ == NTSC)
+            {
+                return 37;
+            }
+            return 45;
+        }
+        
+        uint32_t VcsConsoleType::TicksPerSecond()
+        {
+            if (consoleType_ == NTSC)
+            {
+                return 3579545;
+            }
+            return 3546894;
+        }
+        
         ConsoleType VcsConsoleType::GetVideoType()
         {
             return consoleType_;

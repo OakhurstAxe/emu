@@ -102,7 +102,7 @@ namespace oa
                 scanLine_++;
             }
             
-            if ((scanLine_ > 40) && (scanLine_ < 40 + vcsConsoleType_->GetYResolution()) && (cycle_ > 68))
+            if ((scanLine_ > 3 + vcsConsoleType_->GetVBlankLines()) && (scanLine_ < 3 + vcsConsoleType_->GetVBlankLines() + vcsConsoleType_->GetYResolution()) && (cycle_ > 68) && (cycle_ <= 68 + vcsConsoleType_->GetXResolution()))
             {
                 RenderPixel();
             }
@@ -447,7 +447,7 @@ namespace oa
         void VcsTia::RenderPixel()
         {
             uint16_t screenX = cycle_ - 69;
-            uint16_t screenY = scanLine_ - 41;
+            uint16_t screenY = scanLine_ - (4 + vcsConsoleType_->GetVBlankLines());
             uint8_t background = Read(REG_COLUBK);
             
             // Background
@@ -595,7 +595,7 @@ namespace oa
             {
                 collision |= 0x40;
             }
-            MemoryRam::Write(REG_CXPPMM, collision);            
+            MemoryRam::Write(REG_CXPPMM, collision);
         }
         
         bool VcsTia::IsCpuBlocked()
@@ -603,6 +603,8 @@ namespace oa
             bool result = false;
             
             if (wSyncSet_)
+                //&& scanLine_ > 3 + vcsConsoleType_->GetVBlankLines())
+                //&& scanLine_ < 3 + vcsConsoleType_->GetVBlankLines() + vcsConsoleType_->GetYResolution())
             {
                 result = true;
             }
@@ -615,7 +617,7 @@ namespace oa
             if (location == REG_VBLANK && (byte & 0x02) == 0)
             {
                 cycle_ = 0;
-                scanLine_ = 40;
+                scanLine_ = 3 + vcsConsoleType_->GetVBlankLines();
             }
             if (location == REG_VSYNC && (byte & 0x02) > 0)
             {
