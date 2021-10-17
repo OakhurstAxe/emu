@@ -12,11 +12,11 @@ namespace oa
         class VcsAudio
         {
         public:
-            VcsAudio(VcsMemory *memory);
+            VcsAudio(VcsTia *vcsTia);
             virtual ~VcsAudio();
             void ExecuteTick();
         private:
-            VcsMemory *memory_;
+            VcsTia *vcsTia_;
             VcsAudioChannel *channels_[2];
         };
 

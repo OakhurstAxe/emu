@@ -9,8 +9,8 @@
 #define REG_RSYNC   0x03
 #define REG_NUSIZ0  0x04
 #define REG_NUSIZ1  0x05
-#define REG_COLIP0  0x06
-#define REG_COLIP1  0x07
+#define REG_COLUP0  0x06
+#define REG_COLUP1  0x07
 #define REG_COLUPF  0x08
 #define REG_COLUBK  0x09
 #define REG_CTRLPF  0x0A
@@ -25,6 +25,14 @@
 #define REG_RESM0   0x12
 #define REG_RESM1   0x13
 #define REG_RESBL   0x14
+
+#define REG_AUDC0   0x15
+#define REG_AUDC1   0x16
+#define REG_AUDF0   0x17
+#define REG_AUDF1   0x18
+#define REG_AUDV0   0x19
+#define REG_AUDV1   0x1A
+
 #define REG_GRP0    0x1B
 #define REG_GRP1    0x1C
 #define REG_ENAM0   0x1D
@@ -60,9 +68,11 @@
 #define REG_INPT4   0x3C
 #define REG_INPT5   0x3D
 
-#define CLOSE       16
-#define MEDIUM      (CLOSE * 2)
-#define WIDE        (CLOSE * 4)
+#define CLOSE       14
+#define MEDIUM      (CLOSE + 16)
+#define WIDE        (CLOSE + 32)
+
+#define SPRITEOFFSET 5
 
 namespace oa
 {
@@ -95,34 +105,42 @@ namespace oa
         void VcsTia::ExecuteTick()
         {
             cycle_++;
-            if (cycle_ > 68 + vcsConsoleType_->GetXResolution())
+            if (cycle_ > 67 + vcsConsoleType_->GetXResolution())
             {
                 // Set rendering registers for when scrolling happens
-                cycle_ = 1;
+                cycle_ = 0;
                 scanLine_++;
             }
             
-            if ((scanLine_ > 3 + vcsConsoleType_->GetVBlankLines()) && (scanLine_ < 3 + vcsConsoleType_->GetVBlankLines() + vcsConsoleType_->GetYResolution()) && (cycle_ > 68) && (cycle_ <= 68 + vcsConsoleType_->GetXResolution()))
+            if ((scanLine_ > 2 + vcsConsoleType_->GetVBlankLines()) && (scanLine_ <= 2 + vcsConsoleType_->GetVBlankLines() + vcsConsoleType_->GetYResolution()) && (cycle_ > 67))// && (cycle_ <= 69 + vcsConsoleType_->GetXResolution()))
             {
                 RenderPixel();
             }
             
             // WSYNC 
-            if (cycle_ == 8) // Not sure this should be 8, but works pretty good
+            if (cycle_ == 3) // Not sure this should be 8, but works pretty good
             {
                 wSyncSet_ = false;
             }
-
         }
         
+        bool VcsTia::Repaint()
+        {
+            return (cycle_ == 0 && scanLine_ == 3);
+        }
+        
+        bool VcsTia::IsCycleZero()
+        {
+            return (cycle_ == 0);
+        }
+                    
         uint8_t* VcsTia::GetScreen()
         {
             return screen_;
         }
         
-        void VcsTia::MoveObject(uint16_t moveRegister, uint16_t *objectCycle)
+        void VcsTia::MoveObject(uint8_t move, uint16_t *objectCycle)
         {
-            uint8_t move = Read(moveRegister);
             int8_t moveValue = (move & 0x70) >> 4;
             if (move & 0x80)
             {
@@ -130,108 +148,115 @@ namespace oa
                 moveValue = moveValue | 0xF8;
             }
             *objectCycle -= moveValue;
-            if (*objectCycle < 69)
+            if (*objectCycle < 68)
             {
-                *objectCycle = 228;
+                *objectCycle = 225;
             }
             if (*objectCycle > 228)
             {
-                *objectCycle = 69 + 3;
+                *objectCycle = 68 + 3;
             }
         }
         
         void VcsTia::ApplyMovement()
         {
-            MoveObject(REG_HMP0, &resP0Cycle_);
-            MoveObject(REG_HMP1, &resP1Cycle_);
-            MoveObject(REG_HMM0, &resM0Cycle_);
-            MoveObject(REG_HMM1, &resM1Cycle_);
-            MoveObject(REG_HMBL, &resBLCycle_);
+            MoveObject(HMP0, &resP0Cycle_);
+            MoveObject(HMP1, &resP1Cycle_);
+            MoveObject(HMM0, &resM0Cycle_);
+            MoveObject(HMM1, &resM1Cycle_);
+            MoveObject(HMBL, &resBLCycle_);
         }
         
         void VcsTia::ClearMoveRegisters()
         {
-            Write(REG_HMP0, 0);
-            Write(REG_HMP1, 0);
-            Write(REG_HMM0, 0);
-            Write(REG_HMM1, 0);
-            Write(REG_HMBL, 0);
+            HMP0 = 0;
+            HMP1 = 0;
+            HMM0 = 0;
+            HMM1 = 0;
+            HMBL = 0;
         }
-        
-        int16_t VcsTia::GetPlayerPixel(uint8_t graphicsPlayerReg, uint8_t playerSizeReg,
-            uint8_t reflectPlayerReg, uint8_t colorReg, uint16_t playerCycle)
+
+        int16_t VcsTia::GetPlayerPixel(uint8_t graphicsPlayer, uint8_t playerSize,
+            uint8_t reflectPlayer, uint8_t color, uint16_t playerCycle)
         {
             int16_t result = -1;
             
-            if ((playerCycle) <= cycle_ && (playerCycle + 30) >= cycle_)
+            uint8_t spriteData = graphicsPlayer;
+            if (spriteData == 0)
             {
-                uint8_t spriteData = Read(graphicsPlayerReg);
-                uint16_t position2Cycle_ = playerCycle;
-                uint16_t position3Cycle_ = playerCycle;
-                uint8_t sizeMultiple = 1;
-                uint8_t size = Read(playerSizeReg);
-                if ((size & 0x07) == 0)
-                {
-                    sizeMultiple = 1;
-                }
-                else if ((size & 0x07) == 1)
-                {
-                    position2Cycle_ = playerCycle + CLOSE;
-                }
-                else if ((size & 0x07) == 2)
-                {
-                    position2Cycle_ = playerCycle + MEDIUM;
-                }
-                else if ((size & 0x07) == 3)
-                {
-                    position2Cycle_ = playerCycle + CLOSE;
-                    position3Cycle_ = playerCycle + MEDIUM;
-                }
-                else if ((size & 0x07) == 4)
-                {
-                    position2Cycle_ = playerCycle + WIDE;
-                }
-                else if ((size & 0x07) == 5)
-                {
-                    sizeMultiple = 2;
-                }
-                else if ((size & 0x07) == 6)
-                {
-                    position2Cycle_ = playerCycle + MEDIUM;
-                    position3Cycle_ = playerCycle + WIDE;
-                }
-                else if ((size & 0x07) == 7)
-                {
-                    sizeMultiple = 4;
-                }
-                if (spriteData != 0)
-                {
-                    if ((Read(reflectPlayerReg) & 0x08) == 0)
-                    {
-                        spriteData = ReverseBits(spriteData);
-                    }
-                    if (((spriteData) >> (((cycle_ - playerCycle))/ sizeMultiple) & 0x01) > 0)
-                    {
-                        result = Read(colorReg);
-                    }
-                    if (((spriteData) >> (((cycle_ - position2Cycle_))/ sizeMultiple) & 0x01) > 0)
-                    {
-                        result = Read(colorReg);
-                    }
-                    if (((spriteData) >> (((cycle_ - position3Cycle_))/ sizeMultiple) & 0x01) > 0)
-                    {
-                        result = Read(colorReg);
-                    }                    
-                }
+                return result;
             }
+            if ((reflectPlayer & 0x08) == 0)
+            {
+                spriteData = ReverseBits(spriteData);
+            }
+            
+            uint16_t position2Cycle = playerCycle;
+            uint16_t position3Cycle = playerCycle;
+            uint8_t sizeMultiple = 1;
+            uint8_t size = playerSize;
+            if ((size & 0x07) == 0)
+            {
+                sizeMultiple = 1;
+            }
+            else if ((size & 0x07) == 1)
+            {
+                position2Cycle = playerCycle + CLOSE;
+            }
+            else if ((size & 0x07) == 2)
+            {
+                position2Cycle = playerCycle + MEDIUM;
+            }
+            else if ((size & 0x07) == 3)
+            {
+                position2Cycle = playerCycle + CLOSE;
+                position3Cycle = playerCycle + MEDIUM;
+            }
+            else if ((size & 0x07) == 4)
+            {
+                position2Cycle = playerCycle + WIDE;
+            }
+            else if ((size & 0x07) == 5)
+            {
+                sizeMultiple = 2;
+            }
+            else if ((size & 0x07) == 6)
+            {
+                position2Cycle = playerCycle + MEDIUM;
+                position3Cycle = playerCycle + WIDE;
+            }
+            else if ((size & 0x07) == 7)
+            {
+                sizeMultiple = 4;
+            }
+
+            uint32_t shift = (cycle_ - playerCycle)/ sizeMultiple;
+            if (shift < 8 && (((spriteData >> shift) & 0x01) > 0))
+            {
+                result = color;
+                return result;
+            }
+            shift = (cycle_ - position2Cycle)/ sizeMultiple;
+            if (shift < 8 && (((spriteData >> shift) & 0x01) > 0))
+            {
+                result = color;
+                return result;
+            }
+            shift = (cycle_ - position3Cycle)/ sizeMultiple;
+            if (shift < 8 && (((spriteData >> shift) & 0x01) > 0))
+            {
+                result = color;
+                return result;
+            }                    
+
             return result;
         }
  
         int16_t VcsTia::GetPlayfieldPixel()
         {
-            uint16_t screenX = cycle_ - 69;
-            uint8_t controlPlayfield = Read(REG_CTRLPF);
-            uint8_t playfieldColor = Read(REG_COLUPF);
+            uint16_t screenX = cycle_ - 68;
+            uint8_t controlPlayfield = CTRLPF;
+            uint8_t playfieldColor = COLUPF;
             uint8_t byte;
             int16_t result = -1;
             
@@ -239,126 +264,129 @@ namespace oa
             {
                 if (screenX < 80)
                 {
-                    playfieldColor = Read(REG_COLIP0);
+                    playfieldColor = COLUP0;
                 }
                 else
                 {
-                    playfieldColor = Read(REG_COLIP1);
+                    playfieldColor = COLUP1;
                 }
             }
             if (screenX < 16)
             {
-                byte = ((Read(REG_PF0) >> 4) & 0x0f);
+                byte = ((PF0 >> 4) & 0x0f);
                 byte = (byte >> (screenX >> 2)) & 0x01;
                 if (byte > 0)
                 {
-                    result  = playfieldColor;
+                    result = playfieldColor;
                 }
             }
             else if (screenX < 48)
             {
-                byte = Read(REG_PF1);
+                byte = PF1;
                 byte = ReverseBits(byte);
                 uint8_t shift = (screenX - 16) >> 2;
                 byte = (byte >> shift) & 0x01;
                 if (byte > 0)
                 {
-                    result  = playfieldColor;
+                    result = playfieldColor;
                 }
             }
             else if (screenX < 80)
             {
-                byte = Read(REG_PF2);
+                byte = PF2;
                 uint8_t shift = (screenX - 48) >> 2;
                 byte = (byte >> shift) & 0x01;
                 if (byte > 0)
                 {
-                    result  = playfieldColor;
+                    result = playfieldColor;
                 }
             }
-            if ((controlPlayfield & 0x01) > 0)
+            if (screenX >= 80)
             {
-                if (screenX < 112)
+                if ((controlPlayfield & 0x01) > 0)
                 {
-                    byte = Read(REG_PF2);
-                    byte = ReverseBits(byte);
-                    uint8_t shift = (screenX - 80) >> 2;
-                    byte = (byte >> shift) & 0x01;
-                    if (byte > 0)
+                    if (screenX < 112)
                     {
-                        result  = playfieldColor;
+                        byte = PF2;
+                        byte = ReverseBits(byte);
+                        uint8_t shift = (screenX - 80) >> 2;
+                        byte = (byte >> shift) & 0x01;
+                        if (byte > 0)
+                        {
+                            result  = playfieldColor;
+                        }
+                    }
+                    else if (screenX < 144)
+                    {
+                        byte = PF1;
+                        uint8_t shift = (screenX - 112) >> 2;
+                        byte = (byte >> shift) & 0x01;
+                        if (byte > 0)
+                        {
+                            result  = playfieldColor;
+                        }
+                    }
+                    else if (screenX <= vcsConsoleType_->GetXResolution())
+                    {
+                        byte = ((PF0 >> 4) & 0x0f);
+                        byte = ReverseBits(byte) >> 4;
+                        uint8_t shift = (screenX - 144) >> 2;
+                        byte = (byte >> shift) & 0x01;
+                        if (byte > 0)
+                        {
+                            result  = playfieldColor;
+                        }
                     }
                 }
-                else if (screenX < 144)
+                else
                 {
-                    byte = Read(REG_PF1);
-                    uint8_t shift = (screenX - 112) >> 2;
-                    byte = (byte >> shift) & 0x01;
-                    if (byte > 0)
+                    if (screenX < 96)
                     {
-                        result  = playfieldColor;
+                        byte = ((PF0 >> 4) & 0x0f);
+                        uint8_t shift = (screenX - 80) >> 2;
+                        byte = (byte >> shift) & 0x01;
+                        if (byte > 0)
+                        {
+                            result  = playfieldColor;
+                        }
                     }
-                }
-                else if (screenX < vcsConsoleType_->GetXResolution())
-                {
-                    byte = ((Read(REG_PF0) >> 4) & 0x0f);
-                    byte = ReverseBits(byte) >> 4;
-                    uint8_t shift = (screenX - 144) >> 2;
-                    byte = (byte >> shift) & 0x01;
-                    if (byte > 0)
+                    else if (screenX < 128)
                     {
-                        result  = playfieldColor;
+                        byte = PF1;
+                        byte = ReverseBits(byte);
+                        uint8_t shift = (screenX - 96) >> 2;
+                        byte = (byte >> shift) & 0x01;
+                        if (byte > 0)
+                        {
+                            result  = playfieldColor;
+                        }
                     }
-                }
-            }
-            else
-            {
-                if (screenX < 96)
-                {
-                    byte = ((Read(REG_PF0) >> 4) & 0x0f);
-                    uint8_t shift = (screenX - 80) >> 2;
-                    byte = (byte >> shift) & 0x01;
-                    if (byte > 0)
+                    else if (screenX < vcsConsoleType_->GetXResolution())
                     {
-                        result  = playfieldColor;
+                        byte = PF2;
+                        uint8_t shift = (screenX - 128) >> 2;
+                        byte = (byte >> shift) & 0x01;
+                        if (byte > 0)
+                        {
+                            result  = playfieldColor;
+                        }                
                     }
-                }
-                else if (screenX < 128)
-                {
-                    byte = Read(REG_PF1);
-                    byte = ReverseBits(byte);
-                    uint8_t shift = (screenX - 96) >> 2;
-                    byte = (byte >> shift) & 0x01;
-                    if (byte > 0)
-                    {
-                        result  = playfieldColor;
-                    }
-                }
-                else if (screenX < vcsConsoleType_->GetXResolution())
-                {
-                    byte = Read(REG_PF2);
-                    uint8_t shift = (screenX - 128) >> 2;
-                    byte = (byte >> shift) & 0x01;
-                    if (byte > 0)
-                    {
-                        result  = playfieldColor;
-                    }                
                 }
             }
             
             return result;
         }
         
-        int16_t VcsTia::GetMisslePixel(uint8_t enableReg, uint8_t missleResetReg, uint8_t missleSizeReg,
-            uint8_t missleColorReg, uint16_t missleCycle)
+        int16_t VcsTia::GetMisslePixel(uint8_t enable, uint8_t missleReset, uint8_t missleSize,
+            uint8_t missleColor, uint16_t missleCycle)
         {
             int16_t result = -1;
                         
-            if ((Read(enableReg) & 0x02) > 0 && (Read(missleResetReg) & 0x01) == 0)
+            if ((enable & 0x02) > 0 && (missleReset & 0x01) == 0)
             {
                 uint16_t position2Cycle_ = missleCycle;
                 uint16_t position3Cycle_ = missleCycle;
-                uint8_t size = Read(missleSizeReg);
+                uint8_t size = missleSize;
                 if ((size & 0x07) == 1)
                 {
                     position2Cycle_ = missleCycle + CLOSE;
@@ -399,15 +427,15 @@ namespace oa
                 }
                 if ((missleCycle) <= cycle_ && (missleCycle + size) > cycle_)
                 {
-                    result  = Read(missleColorReg);
+                    result  = missleColor;
                 }
                 if ((position2Cycle_) <= cycle_ && (position2Cycle_ + size) > cycle_)
                 {
-                    result  = Read(missleColorReg);
+                    result  = missleColor;
                 }
                 if ((position3Cycle_) <= cycle_ && (position3Cycle_ + size) > cycle_)
                 {
-                    result  = Read(missleColorReg);
+                    result  = missleColor;
                 }
             }
             return result;
@@ -416,9 +444,9 @@ namespace oa
         {
             int16_t result = -1;
             
-            if ((Read(REG_ENABL) & 0x02) > 0)
+            if ((ENABL & 0x02) > 0)
             {
-                uint8_t size = Read(REG_CTRLPF);
+                uint8_t size = CTRLPF;
                 size = ((size & 0x30) >> 4);
                 switch (size)
                 {
@@ -437,7 +465,7 @@ namespace oa
                 }
                 if ((resBLCycle_) <= cycle_ && (resBLCycle_ + size) >= cycle_)
                 {
-                    result = Read(REG_COLUPF);
+                    result = COLUPF;
                 }
             }
             
@@ -446,9 +474,9 @@ namespace oa
 
         void VcsTia::RenderPixel()
         {
-            uint16_t screenX = cycle_ - 69;
-            uint16_t screenY = scanLine_ - (4 + vcsConsoleType_->GetVBlankLines());
-            uint8_t background = Read(REG_COLUBK);
+            uint16_t screenX = cycle_ - 68;
+            uint16_t screenY = scanLine_ - (3 + vcsConsoleType_->GetVBlankLines());
+            uint8_t background = COLUBK;
             
             // Background
             screen_[screenY * vcsConsoleType_->GetXResolution() + screenX] = background;
@@ -460,16 +488,16 @@ namespace oa
                 screen_[screenY * vcsConsoleType_->GetXResolution() + screenX]  = (uint8_t)playfieldPixel;
             }
             bool pfAbove = false;
-            if ((Read(REG_CTRLPF) & 0x04) > 0)
+            if ((CTRLPF & 0x04) > 0)
             {
                 pfAbove = true;
             }
             
             // Get each pixel for collision detection
-            int16_t p0Pixel = GetPlayerPixel(REG_GRP0, REG_NUSIZ0, REG_REFP0, REG_COLIP0, resP0Cycle_);
-            int16_t p1Pixel = GetPlayerPixel(REG_GRP1, REG_NUSIZ1, REG_REFP1, REG_COLIP1, resP1Cycle_);
-            int16_t m0Pixel = GetMisslePixel(REG_ENAM0, REG_RESMP0, REG_NUSIZ0, REG_COLIP0, resM0Cycle_);
-            int16_t m1Pixel = GetMisslePixel(REG_ENAM1, REG_RESMP1, REG_NUSIZ1, REG_COLIP1, resM1Cycle_);
+            int16_t p0Pixel = GetPlayerPixel(GRP0, NUSIZ0, REFP0, COLUP0, resP0Cycle_);
+            int16_t p1Pixel = GetPlayerPixel(GRP1, NUSIZ1, REFP1, COLUP1, resP1Cycle_);
+            int16_t m0Pixel = GetMisslePixel(ENAM0, RESMP0, NUSIZ0, COLUP0, resM0Cycle_);
+            int16_t m1Pixel = GetMisslePixel(ENAM1, RESMP1, NUSIZ1, COLUP1, resM1Cycle_);
             int16_t ballPixel = GetBallPixel();
             
             // Don't display pixel if PF has priority and is set
@@ -603,8 +631,7 @@ namespace oa
             bool result = false;
             
             if (wSyncSet_)
-                //&& scanLine_ > 3 + vcsConsoleType_->GetVBlankLines())
-                //&& scanLine_ < 3 + vcsConsoleType_->GetVBlankLines() + vcsConsoleType_->GetYResolution())
+
             {
                 result = true;
             }
@@ -614,15 +641,148 @@ namespace oa
         
         void VcsTia::Write(uint16_t location, uint8_t byte)
         {
-            if (location == REG_VBLANK && (byte & 0x02) == 0)
+            if (location == REG_NUSIZ0)
             {
-                cycle_ = 0;
-                scanLine_ = 3 + vcsConsoleType_->GetVBlankLines();
+                NUSIZ0 = byte;
             }
+            else if (location == REG_NUSIZ1)
+            {
+                NUSIZ1 = byte;
+            }
+            else if (location == REG_COLUP0)
+            {
+                COLUP0 = byte;
+            }
+            else if (location == REG_COLUP1)
+            {
+                COLUP1 = byte;
+            }
+            else if (location == REG_COLUPF)
+            {
+                COLUPF = byte;
+            }
+            else if (location == REG_COLUBK)
+            {
+                COLUBK = byte;
+            }
+            else if (location == REG_CTRLPF)
+            {
+                CTRLPF = byte;
+            }
+            else if (location == REG_REFP0)
+            {
+                REFP0 = byte;
+            }
+            else if (location == REG_REFP1)
+            {
+                REFP1 = byte;
+            }
+            else if (location == REG_PF0)
+            {
+                PF0 = byte;
+            }
+            else if (location == REG_PF1)
+            {
+                PF1 = byte;
+            }
+            else if (location == REG_PF2)
+            {
+                PF2 = byte;
+            }
+            else if (location == REG_AUDC0)
+            {
+                AUDC0 = byte;
+            }
+            else if (location == REG_AUDC1)
+            {
+                AUDC1 = byte;
+            }
+            else if (location == REG_AUDF0)
+            {
+                AUDF0 = byte;
+            }
+            else if (location == REG_AUDF1)
+            {
+                AUDF1 = byte;
+            }
+            else if (location == REG_AUDV0)
+            {
+                AUDV0 = byte;
+            }
+            else if (location == REG_AUDV1)
+            {
+                AUDV1 = byte;
+            }
+            else if (location == REG_GRP0)
+            {
+                GRP0 = byte;
+            }
+            else if (location == REG_GRP1)
+            {
+                GRP1 = byte;
+            }
+            else if (location == REG_ENAM0)
+            {
+                ENAM0 = byte;
+            }
+            else if (location == REG_ENAM1)
+            {
+                ENAM1 = byte;
+            }
+            else if (location == REG_ENABL)
+            {
+                ENABL = byte;
+            }
+            else if (location == REG_HMP0)
+            {
+                HMP0 = byte;
+            }
+            else if (location == REG_HMP1)
+            {
+                HMP1 = byte;
+            }
+            else if (location == REG_HMM0)
+            {
+                HMM0 = byte;
+            }
+            else if (location == REG_HMM1)
+            {
+                HMM1 = byte;
+            }
+            else if (location == REG_HMBL)
+            {
+                HMBL = byte;
+            }
+            else if (location == REG_VDELP0)
+            {
+                VDELP0 = byte;
+            }
+            else if (location == REG_VDELP1)
+            {
+                VDELP1 = byte;
+            }
+            else if (location == REG_VDELBL)
+            {
+                VDELBL = byte;
+            }
+            else if (location == REG_RESMP0)
+            {
+                RESMP0 = byte;
+            }
+            else if (location == REG_RESMP1)
+            {
+                RESMP1 = byte;
+            }
+
             if (location == REG_VSYNC && (byte & 0x02) > 0)
             {
                 cycle_ = 0;
                 scanLine_ = 0;
+            }
+            if (location == REG_VBLANK && (byte & 0x02) == 0)
+            {
+                cycle_ = 0;
+                scanLine_ = 2 + vcsConsoleType_->GetVBlankLines();
             }
             if (location == REG_WSYNC)
             {
@@ -635,40 +795,40 @@ namespace oa
             }
             if (location == REG_RESP0)
             {
-                resP0Cycle_ = cycle_;
-                if (resP0Cycle_ < 69)
+                resP0Cycle_ = cycle_ + SPRITEOFFSET;
+                if (resP0Cycle_ < 68)
                 {
-                    resP0Cycle_ = 72;
+                    resP0Cycle_ = 71;
                 }
             }
             if (location == REG_RESP1)
             {
-                resP1Cycle_ = cycle_;
-                if (resP1Cycle_ < 69)
+                resP1Cycle_ = cycle_ + SPRITEOFFSET;
+                if (resP1Cycle_ < 68)
                 {
-                    resP1Cycle_ = 72;
+                    resP1Cycle_ = 71;
                 }
             }
             if (location == REG_RESM0)
             {
-                resM0Cycle_ = cycle_;
-                if (resM0Cycle_ < 69)
+                resM0Cycle_ = cycle_ + SPRITEOFFSET;
+                if (resM0Cycle_ < 68)
                 {
                     resM0Cycle_ = 71;
                 }
             }
             if (location == REG_RESM1)
             {
-                resM1Cycle_ = cycle_;
-                if (resM1Cycle_ < 69)
+                resM1Cycle_ = cycle_ + SPRITEOFFSET;
+                if (resM1Cycle_ < 68)
                 {
                     resM1Cycle_ = 71;
                 }
             }
             if (location == REG_RESBL)
             {
-                resBLCycle_ = cycle_;
-                if (resBLCycle_ < 69)
+                resBLCycle_ = cycle_ + SPRITEOFFSET;
+                if (resBLCycle_ < 68)
                 {
                     resBLCycle_ = 71;
                 }
@@ -762,6 +922,31 @@ namespace oa
             }
             
             MemoryRam::Write(location, byte);
+        }
+
+        uint8_t VcsTia::GetAudioC0()
+        {
+            return AUDC0;
+        }
+        uint8_t VcsTia::GetAudioC1()
+        {
+            return AUDC1;
+        }
+        uint8_t VcsTia::GetAudioF0()
+        {
+            return AUDF0;
+        }
+        uint8_t VcsTia::GetAudioF1()
+        {
+            return AUDF1;
+        }
+        uint8_t VcsTia::GetAudioV0()
+        {
+            return AUDV0;
+        }
+        uint8_t VcsTia::GetAudioV1()
+        {
+            return AUDV1;
         }
 
         uint8_t VcsTia::ReverseBits(uint8_t n) 

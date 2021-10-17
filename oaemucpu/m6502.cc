@@ -54,7 +54,7 @@ namespace oa
             opCodeLookup_[0x1b] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0x1c] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0x1d] = {&M6502::OpORA, &M6502::AbsoluteXAddress, 4};
-            opCodeLookup_[0x1e] = {&M6502::OpASL, &M6502::AbsoluteXAddress, 7};
+            opCodeLookup_[0x1e] = {&M6502::OpASL, &M6502::AbsoluteXAddressNoOverflow, 7};
             opCodeLookup_[0x1f] = {&M6502::OpBRK, &M6502::NullAddress, 7};
 
             opCodeLookup_[0x20] = {&M6502::OpJSR, &M6502::AbsoluteAddress, 6};
@@ -88,7 +88,7 @@ namespace oa
             opCodeLookup_[0x3b] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0x3c] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0x3d] = {&M6502::OpAND, &M6502::AbsoluteXAddress, 4};
-            opCodeLookup_[0x3e] = {&M6502::OpROL, &M6502::AbsoluteXAddress, 7};
+            opCodeLookup_[0x3e] = {&M6502::OpROL, &M6502::AbsoluteXAddressNoOverflow, 7};
             opCodeLookup_[0x3f] = {&M6502::OpBRK, &M6502::NullAddress, 7};
 
             opCodeLookup_[0x40] = {&M6502::OpRTI, &M6502::NullAddress, 6};
@@ -122,7 +122,7 @@ namespace oa
             opCodeLookup_[0x5b] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0x5c] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0x5d] = {&M6502::OpEOR, &M6502::AbsoluteXAddress, 4};
-            opCodeLookup_[0x5e] = {&M6502::OpLSR, &M6502::AbsoluteXAddress, 7};
+            opCodeLookup_[0x5e] = {&M6502::OpLSR, &M6502::AbsoluteXAddressNoOverflow, 7};
             opCodeLookup_[0x5f] = {&M6502::OpBRK, &M6502::NullAddress, 7};
 
             opCodeLookup_[0x60] = {&M6502::OpRTS, &M6502::NullAddress, 6};
@@ -156,7 +156,7 @@ namespace oa
             opCodeLookup_[0x7b] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0x7c] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0x7d] = {&M6502::OpADC, &M6502::AbsoluteXAddress, 4};
-            opCodeLookup_[0x7e] = {&M6502::OpROR, &M6502::AbsoluteXAddress, 7};
+            opCodeLookup_[0x7e] = {&M6502::OpROR, &M6502::AbsoluteXAddressNoOverflow, 7};
             opCodeLookup_[0x7f] = {&M6502::OpBRK, &M6502::NullAddress, 7};
 
             opCodeLookup_[0x80] = {&M6502::OpBRK, &M6502::NullAddress, 7};
@@ -177,7 +177,7 @@ namespace oa
             opCodeLookup_[0x8f] = {&M6502::OpBRK, &M6502::NullAddress, 7};
 
             opCodeLookup_[0x90] = {&M6502::OpBCC, &M6502::ImmediateAddress, 2};
-            opCodeLookup_[0x91] = {&M6502::OpSTA, &M6502::IndirectYAddress, 6};
+            opCodeLookup_[0x91] = {&M6502::OpSTA, &M6502::IndirectYAddressNoOverflow, 6};
             opCodeLookup_[0x92] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0x93] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0x94] = {&M6502::OpSTY, &M6502::ZeroXAddress, 4};
@@ -185,11 +185,11 @@ namespace oa
             opCodeLookup_[0x96] = {&M6502::OpSTX, &M6502::ZeroYAddress, 4};
             opCodeLookup_[0x97] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0x98] = {&M6502::OpTYA, &M6502::NullAddress, 2};
-            opCodeLookup_[0x99] = {&M6502::OpSTA, &M6502::AbsoluteYAddress, 5};
+            opCodeLookup_[0x99] = {&M6502::OpSTA, &M6502::AbsoluteYAddressNoOverflow, 5};
             opCodeLookup_[0x9a] = {&M6502::OpTXS, &M6502::NullAddress, 2};
             opCodeLookup_[0x9b] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0x9c] = {&M6502::OpBRK, &M6502::NullAddress, 7};
-            opCodeLookup_[0x9d] = {&M6502::OpSTA, &M6502::AbsoluteXAddress, 5};
+            opCodeLookup_[0x9d] = {&M6502::OpSTA, &M6502::AbsoluteXAddressNoOverflow, 5};
             opCodeLookup_[0x9e] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0x9f] = {&M6502::OpBRK, &M6502::NullAddress, 7};
 
@@ -258,7 +258,7 @@ namespace oa
             opCodeLookup_[0xdb] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0xdc] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0xdd] = {&M6502::OpCMP, &M6502::AbsoluteXAddress, 4};
-            opCodeLookup_[0xde] = {&M6502::OpDEC, &M6502::AbsoluteXAddress, 7};
+            opCodeLookup_[0xde] = {&M6502::OpDEC, &M6502::AbsoluteXAddressNoOverflow, 7};
             opCodeLookup_[0xdf] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             
             opCodeLookup_[0xe0] = {&M6502::OpCPX, &M6502::ImmediateAddress, 2};
@@ -292,7 +292,7 @@ namespace oa
             opCodeLookup_[0xfb] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0xfc] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0xfd] = {&M6502::OpSBC, &M6502::AbsoluteXAddress, 4};
-            opCodeLookup_[0xfe] = {&M6502::OpINC, &M6502::AbsoluteXAddress, 7};
+            opCodeLookup_[0xfe] = {&M6502::OpINC, &M6502::AbsoluteXAddressNoOverflow, 7};
             opCodeLookup_[0xff] = {&M6502::OpBRK, &M6502::NullAddress, 7};
         }
         
@@ -336,26 +336,11 @@ namespace oa
             {
                 overflowTicks_++;
                 int8_t relativeAddress = CallAddressMethod(operation_.addressMethod_);
-                if (operation_.addressMethod_ == &M6502::ImmediateAddress
-                    || operation_.addressMethod_ == &M6502::ZeroAddress
-                    || operation_.addressMethod_ == &M6502::ZeroYAddress
-                    || operation_.addressMethod_ == &M6502::IndirectXAddress
-                    || operation_.addressMethod_ == &M6502::IndirectYAddress)
-                {
-                    programCounter_--;
-                }
-                else if (operation_.addressMethod_ == &M6502::AbsoluteAddress
-                    || operation_.addressMethod_ == &M6502::AbsoluteXAddress
-                    || operation_.addressMethod_ == &M6502::AbsoluteYAddress
-                    || operation_.addressMethod_ == &M6502::IndirectAddress)
-                {
-                    programCounter_ -= 2;
-                }
-                // If branch operation jumps a page boundary requires extra clock cycle
                 if (((programCounter_ & 0x00FF) + relativeAddress) > 0x00FF)
                 {
                     overflowTicks_++;
                 }
+                programCounter_--;
             }
         }
         
@@ -473,11 +458,11 @@ namespace oa
             uint8_t loadh = memory_->CpuRead(programCounter_);
             programCounter_++;
             uint16_t address = (loadh << 8) + loadl + registerX_;
-            if ((address & 0xff00) != (programCounter_ & 0xff00))
-            {
-                //overflowTicks_ += 1;
-            }
             return address;
+        }
+        uint16_t M6502::AbsoluteXAddressNoOverflow()
+        {
+            return AbsoluteXAddress();
         }
         uint16_t M6502::AbsoluteYAddress()
         {
@@ -486,11 +471,11 @@ namespace oa
             uint8_t loadh = memory_->CpuRead(programCounter_);
             programCounter_++;
             uint16_t address = (loadh << 8) + loadl + registerY_;
-            if ((address & 0xff00) != (programCounter_ & 0xff00))
-            {
-                //overflowTicks_ += 1;
-            }
             return address;
+        }
+        uint16_t M6502::AbsoluteYAddressNoOverflow()
+        {
+            return AbsoluteYAddress();
         }
         uint16_t M6502::IndirectAddress()
         {
@@ -531,11 +516,11 @@ namespace oa
             uint8_t loadh = memory_->CpuRead(indirect & 0xff);
             uint16_t address = (loadh << 8) + loadl;
             address += registerY_;
-            if ((address & 0xff00) != (programCounter_ & 0xff00))
-            {
-                //overflowTicks_ += 1;
-            }
             return address;            
+        }
+        uint16_t M6502::IndirectYAddressNoOverflow()
+        {
+            return IndirectYAddress();
         }
 
         // Load Store operations

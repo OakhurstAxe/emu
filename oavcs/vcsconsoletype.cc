@@ -46,6 +46,7 @@ namespace oa
         {
             if (consoleType_ == NTSC)
             {
+                //return 3584160;
                 return 3579545;
             }
             return 3546894;

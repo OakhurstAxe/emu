@@ -18,18 +18,62 @@ namespace oa
             bool IsCpuBlocked();
             uint8_t* GetScreen();
             virtual void Write(uint16_t location, uint8_t byte) override;
+            bool Repaint();
+            bool IsCycleZero();
+            
+            uint8_t GetAudioC0();
+            uint8_t GetAudioC1();
+            uint8_t GetAudioF0();
+            uint8_t GetAudioF1();
+            uint8_t GetAudioV0();
+            uint8_t GetAudioV1();
+            
         private:
-            int16_t GetPlayerPixel(uint8_t graphicsPlayerReg, uint8_t playerSizeReg, 
-                uint8_t reflectPlayerReg, uint8_t colorReg, uint16_t playerCycle);
+            uint8_t NUSIZ0;
+            uint8_t NUSIZ1;
+            uint8_t COLUP0;
+            uint8_t COLUP1;
+            uint8_t COLUPF;
+            uint8_t COLUBK;
+            uint8_t CTRLPF;
+            uint8_t REFP0;
+            uint8_t REFP1;
+            uint8_t PF0;
+            uint8_t PF1;
+            uint8_t PF2;
+            uint8_t AUDC0;
+            uint8_t AUDC1;
+            uint8_t AUDF0;
+            uint8_t AUDF1;
+            uint8_t AUDV0;
+            uint8_t AUDV1;
+            uint8_t GRP0;
+            uint8_t GRP1;
+            uint8_t ENAM0;
+            uint8_t ENAM1;
+            uint8_t ENABL;
+            uint8_t HMP0;
+            uint8_t HMP1;
+            uint8_t HMM0;
+            uint8_t HMM1;
+            uint8_t HMBL;
+            uint8_t VDELP0;
+            uint8_t VDELP1;
+            uint8_t VDELBL;
+            uint8_t RESMP0;
+            uint8_t RESMP1;
+            
+            int16_t GetPlayerPixel(uint8_t graphicsPlayer, uint8_t playerSize,
+                uint8_t reflectPlayer, uint8_t color, uint16_t playerCycle);
             int16_t GetPlayfieldPixel();
-            int16_t GetMisslePixel(uint8_t enableReg, uint8_t missleResetReg, uint8_t missleSizeReg,
-                uint8_t missleColorReg, uint16_t missleCycle);
+            int16_t GetMisslePixel(uint8_t enable, uint8_t missleReset, uint8_t missleSize,
+                uint8_t missleColor, uint16_t missleCycle);
             int16_t GetBallPixel();
             void CheckCollisions(int16_t playfieldPixel,
                 int16_t p0Pixel, int16_t p1Pixel,
                 int16_t m0Pixel, int16_t m1Pixel,
                 int16_t ballPixel);
-            void MoveObject(uint16_t moveRegister, uint16_t *objectCycle);
+            void MoveObject(uint8_t move, uint16_t *objectCycle);
             void ApplyMovement();
             void ClearMoveRegisters();
             void RenderPixel();

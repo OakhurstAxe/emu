@@ -15,9 +15,9 @@ namespace oa
     namespace vcs
     {
         
-        VcsAudio::VcsAudio(VcsMemory *memory)
+        VcsAudio::VcsAudio(VcsTia *vcsTia)
         {
-            memory_ = memory;
+            vcsTia_ = vcsTia;
             
             PaError err = Pa_Initialize();
             if (err != paNoError)
@@ -42,14 +42,16 @@ namespace oa
 
         void VcsAudio::ExecuteTick()
         {
-            for (int i=0; i<2; i++)
-            {
-                uint8_t register1 = memory_->CpuRead(REG_AUDV0 + i);
-                uint8_t register2 = memory_->CpuRead(REG_AUDF0 + i);
-                uint8_t register3 = memory_->CpuRead(REG_AUDC0 + i);
+            uint8_t register1 = vcsTia_->GetAudioV0();
+            uint8_t register2 = vcsTia_->GetAudioF0();
+            uint8_t register3 = vcsTia_->GetAudioC0();
+            channels_[0]->SetChannelSettings(register1, register2, register3);
 
-                channels_[i]->SetChannelSettings(register1, register2, register3);
-            }
+            register1 = vcsTia_->GetAudioV1();
+            register2 = vcsTia_->GetAudioF1();
+            register3 = vcsTia_->GetAudioC1();
+            channels_[1]->SetChannelSettings(register1, register2, register3);
+            
         }
 
     }

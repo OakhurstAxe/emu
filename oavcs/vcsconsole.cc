@@ -19,7 +19,7 @@ namespace oa
             vcsConsoleType_(vcsParameters->GetConsoleType()),
             vcsTia_(&vcsConsoleType_),
             vcsMemory_(&vcsTia_, &ram_, &vcsRiot_, vcsCartridge),
-            vcsAudio_(&vcsMemory_),
+            vcsAudio_(&vcsTia_),
             cpu_(&vcsMemory_)
         {
             vcsCartridge_ = vcsCartridge;
@@ -60,14 +60,24 @@ namespace oa
             while (ticks < ticksPerFrame_)
             {
                 vcsRiot_.ExecuteTick();
-                vcsTia_.ExecuteTick();
+                if (vcsTia_.IsCycleZero())
+                {
+                    while (ticks % 3 != 0)
+                    {
+                        ticks ++;
+                    }
+                }
                 if ((ticks % 3) == 0 && !vcsTia_.IsCpuBlocked())
                 {
                     cpu_.ExecuteTick();
                 }
+                vcsTia_.ExecuteTick();
+                if (vcsTia_.Repaint())
+                {
+                    vcsMainWindow_->repaint();
+                }
                 ticks++;
             }
-            vcsMainWindow_->repaint();
         }
         
         void VcsConsole::ReadInput()

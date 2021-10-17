@@ -79,10 +79,13 @@ namespace oa
             uint16_t ZeroYAddress();
             uint16_t AbsoluteAddress();
             uint16_t AbsoluteXAddress();
+            uint16_t AbsoluteXAddressNoOverflow();
             uint16_t AbsoluteYAddress();
+            uint16_t AbsoluteYAddressNoOverflow();
             uint16_t IndirectAddress();
             uint16_t IndirectXAddress();
             uint16_t IndirectYAddress();
+            uint16_t IndirectYAddressNoOverflow();
             
             // Load Store operations
             virtual void OpLDA(AddressMethod addressMethod);
