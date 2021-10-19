@@ -164,6 +164,11 @@ namespace oa
             virtual void OpBRK(AddressMethod addressMethod);
             virtual void OpNOP(AddressMethod addressMethod);
             virtual void OpRTI(AddressMethod addressMethod);
+            
+            // "Illegal" operations
+            virtual void OpSAX(AddressMethod addressMethod);
+            virtual void OpSLO(AddressMethod addressMethod);
+            
         };
 
     }

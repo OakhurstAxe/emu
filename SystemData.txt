@@ -30,6 +30,14 @@
         </Companies>
         <RomFiles>
             <Game>
+                <Name>Acid Drop</Name>
+                <Mapper>F6</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Salu</Company>
+                <ScreenType>PAL</ScreenType>
+                <RomFile>Acid Drop (1992) (Salu, Dennis M. Kiss) (460758) (PAL) ~.bin</RomFile>
+            </Game>
+            <Game>
                 <Name>Adventure</Name>
                 <Mapper>4K</Mapper>
                 <Controller>joystick</Controller>
@@ -38,20 +46,28 @@
                 <RomFile>Adventure (1980) (Atari, Warren Robinett - Sears) (CX2613 - 49-75154) ~.bin</RomFile>
             </Game>
             <Game>
-                <Name>Combat</Name>
+                <Name>Air-Sea Battle</Name>
                 <Mapper>2K</Mapper>
                 <Controller>Joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
-                <RomFile>Combat - Tank-Plus (Tank) (1977) (Atari, Joe Decuir, Larry Kaplan, Steve Mayer, Larry Wagner - Sears) (CX2601 - 99801, 6-99801, 49-75101, 49-75124) ~.bin</RomFile>
+                <RomFile>Air-Sea Battle - Air Sea Battle - Target Fun (Anti-Aircraft) (1977) (Atari, Larry Kaplan - Sears) (CX2602 - 99802, 6-99802, 49-75102) ~.bin</RomFile>
             </Game>
             <Game>
-                <Name>Worm War I</Name>
+                <Name>Airlock</Name>
                 <Mapper>4K</Mapper>
                 <Controller>Joystick</Controller>
-                <Company>Sirius Software</Company>
+                <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
-                <RomFile>Worm War I (1983) (CCE) (C-843).bin</RomFile>
+                <RomFile>Airlock (1982) (Data Age) (DA1004) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Alices Abenteuer</Name>
+                <Mapper>SC</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>PAL</ScreenType>
+                <RomFile>Alices Abenteuer - Lilly Adventure (1983) (Quelle - Otto Versand) (732.273 8 - 600273, 781644) (PAL).bin</RomFile>
             </Game>
             <Game>
                 <Name>Atlantis</Name>
@@ -62,12 +78,12 @@
                 <RomFile>Atlantis (1983) (CCE) (C-832).bin</RomFile>
             </Game>
             <Game>
-                <Name>Acid Drop</Name>
-                <Mapper>F6</Mapper>
+                <Name>Combat</Name>
+                <Mapper>2K</Mapper>
                 <Controller>Joystick</Controller>
-                <Company>Salu</Company>
-                <ScreenType>PAL</ScreenType>
-                <RomFile>Acid Drop (1992) (Salu, Dennis M. Kiss) (460758) (PAL) ~.bin</RomFile>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Combat - Tank-Plus (Tank) (1977) (Atari, Joe Decuir, Larry Kaplan, Steve Mayer, Larry Wagner - Sears) (CX2601 - 99801, 6-99801, 49-75101, 49-75124) ~.bin</RomFile>
             </Game>
             <Game>
                 <Name>TRON</Name>
@@ -78,12 +94,12 @@
                 <RomFile>Adventures of TRON (TRON Joystick) (1983) (M Network - INTV - APh Technological Consulting, Hal Finney, Glenn Hightower, Peter Kaminski) (MT4317) ~.bin</RomFile>
             </Game>
             <Game>
-                <Name>Air-Sea Battle</Name>
-                <Mapper>2K</Mapper>
+                <Name>Worm War I</Name>
+                <Mapper>4K</Mapper>
                 <Controller>Joystick</Controller>
-                <Company>Atari</Company>
+                <Company>Sirius Software</Company>
                 <ScreenType>NTSC</ScreenType>
-                <RomFile>Air-Sea Battle - Air Sea Battle - Target Fun (Anti-Aircraft) (1977) (Atari, Larry Kaplan - Sears) (CX2602 - 99802, 6-99802, 49-75102) ~.bin</RomFile>
+                <RomFile>Worm War I (1983) (CCE) (C-843).bin</RomFile>
             </Game>
         </RomFiles>
     </VCS>

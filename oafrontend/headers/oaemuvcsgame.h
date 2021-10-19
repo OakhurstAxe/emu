@@ -11,7 +11,7 @@ namespace oa
         class VcsGame
         {
         public:
-            QString GetName();
+            QString GetName() const;
             void SetName(QString name);
             QString GetMapper();
             void SetMapper(QString mapper);
@@ -23,6 +23,8 @@ namespace oa
             void SetScreenType(QString screenType);
             QString GetRomFile();
             void SetRomFile(QString romFile);
+            
+            bool operator<(const VcsGame& other) const;
         private:
             QString name_;
             QString mapper_;

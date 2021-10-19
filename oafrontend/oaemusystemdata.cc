@@ -128,6 +128,7 @@ namespace oa
                                             vcsSystem_->AppendVcsGame(game);
                                         }
                                     }
+                                    vcsSystem_->SortVcsGames();
                                 }
                             }
                             

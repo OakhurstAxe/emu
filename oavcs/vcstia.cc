@@ -68,7 +68,7 @@
 #define REG_INPT4   0x3C
 #define REG_INPT5   0x3D
 
-#define CLOSE       14
+#define CLOSE       16
 #define MEDIUM      (CLOSE + 16)
 #define WIDE        (CLOSE + 32)
 

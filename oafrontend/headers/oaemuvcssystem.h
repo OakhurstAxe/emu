@@ -19,6 +19,7 @@ namespace oa
             void SetRomZipFile(QString fileName);
             QList<VcsGame*> GetVcsGames();
             void AppendVcsGame(VcsGame* vcsGame);
+            void SortVcsGames();
             QList<QString> GetMappers();
             void AppendMapper(QString mapper);
             QList<QString> GetCompanies();

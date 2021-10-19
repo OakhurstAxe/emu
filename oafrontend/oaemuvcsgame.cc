@@ -6,7 +6,7 @@ namespace oa
     namespace emu
     {
 
-        QString VcsGame::GetName()
+        QString VcsGame::GetName() const
         {
             return name_;
         }
@@ -55,5 +55,10 @@ namespace oa
             romFile_ = romFile;
         }
         
+        bool VcsGame::operator<(const VcsGame& other) const
+        {
+           bool result = GetName() < other.GetName();
+           return result;
+        }        
     }
 }

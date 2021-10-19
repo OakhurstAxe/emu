@@ -5,7 +5,6 @@ namespace oa
 {
     namespace emu
     {
-        
         VcsSystem::VcsSystem()
         {
         }
@@ -42,6 +41,16 @@ namespace oa
             mappers_.append(mapper);
         }
         
+        bool GameSortFunc (VcsGame *i,VcsGame *j) 
+        { 
+            return (i->GetName()<j->GetName());             
+        }
+
+        void VcsSystem::SortVcsGames()
+        {
+            std::sort(vcsGames_.begin(), vcsGames_.end(), GameSortFunc);
+        }
+
         QList<QString> VcsSystem::GetCompanies()
         {
             return companies_;

@@ -26,11 +26,11 @@ namespace oa
             opCodeLookup_[0x00] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0x01] = {&M6502::OpORA, &M6502::IndirectXAddress, 6};
             opCodeLookup_[0x02] = {&M6502::OpBRK, &M6502::NullAddress, 7};
-            opCodeLookup_[0x03] = {&M6502::OpBRK, &M6502::NullAddress, 7};
+            opCodeLookup_[0x03] = {&M6502::OpSLO, &M6502::IndirectXAddress, 8};
             opCodeLookup_[0x04] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0x05] = {&M6502::OpORA, &M6502::ZeroAddress, 3};
             opCodeLookup_[0x06] = {&M6502::OpASL, &M6502::ZeroAddress, 5};
-            opCodeLookup_[0x07] = {&M6502::OpBRK, &M6502::NullAddress, 7};
+            opCodeLookup_[0x07] = {&M6502::OpSLO, &M6502::ZeroAddress, 5};
             opCodeLookup_[0x08] = {&M6502::OpPHP, &M6502::NullAddress, 3};
             opCodeLookup_[0x09] = {&M6502::OpORA, &M6502::ImmediateAddress, 2};
             opCodeLookup_[0x0a] = {&M6502::OpASL, &M6502::Accumlator, 2};
@@ -38,24 +38,24 @@ namespace oa
             opCodeLookup_[0x0c] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0x0d] = {&M6502::OpORA, &M6502::AbsoluteAddress, 4};
             opCodeLookup_[0x0e] = {&M6502::OpASL, &M6502::AbsoluteAddress, 6};
-            opCodeLookup_[0x0f] = {&M6502::OpBRK, &M6502::NullAddress, 7};
+            opCodeLookup_[0x0f] = {&M6502::OpSLO, &M6502::AbsoluteAddress, 6};
 
             opCodeLookup_[0x10] = {&M6502::OpBPL, &M6502::ImmediateAddress, 2};
             opCodeLookup_[0x11] = {&M6502::OpORA, &M6502::IndirectYAddress, 5};
             opCodeLookup_[0x12] = {&M6502::OpBRK, &M6502::NullAddress, 7};
-            opCodeLookup_[0x13] = {&M6502::OpBRK, &M6502::NullAddress, 7};
+            opCodeLookup_[0x13] = {&M6502::OpSLO, &M6502::IndirectYAddressNoOverflow, 8};
             opCodeLookup_[0x14] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0x15] = {&M6502::OpORA, &M6502::ZeroXAddress, 4};
             opCodeLookup_[0x16] = {&M6502::OpASL, &M6502::ZeroXAddress, 6};
-            opCodeLookup_[0x17] = {&M6502::OpBRK, &M6502::NullAddress, 7};
+            opCodeLookup_[0x17] = {&M6502::OpSLO, &M6502::ZeroXAddress, 6};
             opCodeLookup_[0x18] = {&M6502::OpCLC, &M6502::NullAddress, 2};
             opCodeLookup_[0x19] = {&M6502::OpORA, &M6502::AbsoluteYAddress, 4};
             opCodeLookup_[0x1a] = {&M6502::OpBRK, &M6502::NullAddress, 7};
-            opCodeLookup_[0x1b] = {&M6502::OpBRK, &M6502::NullAddress, 7};
+            opCodeLookup_[0x1b] = {&M6502::OpSLO, &M6502::AbsoluteYAddressNoOverflow, 7};
             opCodeLookup_[0x1c] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0x1d] = {&M6502::OpORA, &M6502::AbsoluteXAddress, 4};
             opCodeLookup_[0x1e] = {&M6502::OpASL, &M6502::AbsoluteXAddressNoOverflow, 7};
-            opCodeLookup_[0x1f] = {&M6502::OpBRK, &M6502::NullAddress, 7};
+            opCodeLookup_[0x1f] = {&M6502::OpSLO, &M6502::AbsoluteXAddressNoOverflow, 7};
 
             opCodeLookup_[0x20] = {&M6502::OpJSR, &M6502::AbsoluteAddress, 6};
             opCodeLookup_[0x21] = {&M6502::OpAND, &M6502::IndirectXAddress, 6};
@@ -162,11 +162,11 @@ namespace oa
             opCodeLookup_[0x80] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0x81] = {&M6502::OpSTA, &M6502::IndirectXAddress, 6};
             opCodeLookup_[0x82] = {&M6502::OpBRK, &M6502::NullAddress, 7};
-            opCodeLookup_[0x83] = {&M6502::OpBRK, &M6502::NullAddress, 7};
+            opCodeLookup_[0x83] = {&M6502::OpSAX, &M6502::IndirectXAddress, 6};
             opCodeLookup_[0x84] = {&M6502::OpSTY, &M6502::ZeroAddress, 3};
             opCodeLookup_[0x85] = {&M6502::OpSTA, &M6502::ZeroAddress, 3};
             opCodeLookup_[0x86] = {&M6502::OpSTX, &M6502::ZeroAddress, 3};
-            opCodeLookup_[0x87] = {&M6502::OpBRK, &M6502::NullAddress, 7};
+            opCodeLookup_[0x87] = {&M6502::OpSAX, &M6502::ZeroAddress, 3};
             opCodeLookup_[0x88] = {&M6502::OpDEY, &M6502::NullAddress, 2};
             opCodeLookup_[0x89] = {&M6502::OpBRK, &M6502::NullAddress, 7};
             opCodeLookup_[0x8a] = {&M6502::OpTXA, &M6502::NullAddress, 2};
@@ -174,7 +174,7 @@ namespace oa
             opCodeLookup_[0x8c] = {&M6502::OpSTY, &M6502::AbsoluteAddress, 4};
             opCodeLookup_[0x8d] = {&M6502::OpSTA, &M6502::AbsoluteAddress, 4};
             opCodeLookup_[0x8e] = {&M6502::OpSTX, &M6502::AbsoluteAddress, 4};
-            opCodeLookup_[0x8f] = {&M6502::OpBRK, &M6502::NullAddress, 7};
+            opCodeLookup_[0x8f] = {&M6502::OpSAX, &M6502::AbsoluteAddress, 4};
 
             opCodeLookup_[0x90] = {&M6502::OpBCC, &M6502::ImmediateAddress, 2};
             opCodeLookup_[0x91] = {&M6502::OpSTA, &M6502::IndirectYAddressNoOverflow, 6};
@@ -183,7 +183,7 @@ namespace oa
             opCodeLookup_[0x94] = {&M6502::OpSTY, &M6502::ZeroXAddress, 4};
             opCodeLookup_[0x95] = {&M6502::OpSTA, &M6502::ZeroXAddress, 4};
             opCodeLookup_[0x96] = {&M6502::OpSTX, &M6502::ZeroYAddress, 4};
-            opCodeLookup_[0x97] = {&M6502::OpBRK, &M6502::NullAddress, 7};
+            opCodeLookup_[0x97] = {&M6502::OpSAX, &M6502::ZeroYAddress, 4};
             opCodeLookup_[0x98] = {&M6502::OpTYA, &M6502::NullAddress, 2};
             opCodeLookup_[0x99] = {&M6502::OpSTA, &M6502::AbsoluteYAddressNoOverflow, 5};
             opCodeLookup_[0x9a] = {&M6502::OpTXS, &M6502::NullAddress, 2};
@@ -305,6 +305,11 @@ namespace oa
             }
             overflowTicks_--;
 
+            if (programCounter_ == 0xFB8C)
+            {
+                int x = 10;
+            }
+        
             CallOpMethod(operation_.operation_, operation_.addressMethod_);
             
             uint8_t instruction = memory_->CpuRead(programCounter_);
@@ -1032,5 +1037,24 @@ namespace oa
             programCounter_ = load;
         }
         
+        void M6502::OpSAX(AddressMethod addressMethod)
+        {
+            uint16_t address = CallAddressMethod(addressMethod);
+            uint8_t byte = accumulator_ & registerX_;
+            memory_->CpuWrite(address, byte);
+        }
+
+        void M6502::OpSLO(AddressMethod addressMethod)
+        {
+            uint16_t address = CallAddressMethod(addressMethod);
+            uint8_t byte = memory_->CpuRead(address);
+            statusRegister_.carryFlag = (byte & 0x80) > 0;
+            byte = byte << 1;
+            memory_->CpuWrite(address, byte);
+            
+            accumulator_ |= byte;
+            statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
+            statusRegister_.zeroFlag = (accumulator_ == 0);            
+        }        
     }
 }
