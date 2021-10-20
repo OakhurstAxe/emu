@@ -68,9 +68,9 @@
 #define REG_INPT4   0x3C
 #define REG_INPT5   0x3D
 
-#define CLOSE       16
-#define MEDIUM      (CLOSE + 16)
-#define WIDE        (CLOSE + 32)
+#define CLOSE       (16)
+#define MEDIUM      (40)
+#define WIDE        (72)
 
 #define SPRITEOFFSET 5
 
@@ -210,7 +210,7 @@ namespace oa
             else if ((size & 0x07) == 3)
             {
                 position2Cycle = playerCycle + CLOSE;
-                position3Cycle = playerCycle + MEDIUM;
+                position3Cycle = position2Cycle + CLOSE;
             }
             else if ((size & 0x07) == 4)
             {
@@ -223,7 +223,7 @@ namespace oa
             else if ((size & 0x07) == 6)
             {
                 position2Cycle = playerCycle + MEDIUM;
-                position3Cycle = playerCycle + WIDE;
+                position3Cycle = position2Cycle + MEDIUM;
             }
             else if ((size & 0x07) == 7)
             {
@@ -477,16 +477,10 @@ namespace oa
             uint16_t screenX = cycle_ - 68;
             uint16_t screenY = scanLine_ - (3 + vcsConsoleType_->GetVBlankLines());
             uint8_t background = COLUBK;
-            
-            // Background
-            screen_[screenY * vcsConsoleType_->GetXResolution() + screenX] = background;
+            int16_t currentColor = -1;
             
             // Playfield
             int16_t playfieldPixel = GetPlayfieldPixel();
-            if (playfieldPixel >= 0)
-            {
-                screen_[screenY * vcsConsoleType_->GetXResolution() + screenX]  = (uint8_t)playfieldPixel;
-            }
             bool pfAbove = false;
             if ((CTRLPF & 0x04) > 0)
             {
@@ -500,36 +494,61 @@ namespace oa
             int16_t m1Pixel = GetMisslePixel(ENAM1, RESMP1, NUSIZ1, COLUP1, resM1Cycle_);
             int16_t ballPixel = GetBallPixel();
             
-            // Don't display pixel if PF has priority and is set
-            if (playfieldPixel == -1 || pfAbove == false)
-            {
-                // Sprites
-                if (p0Pixel >= 0)
-                {
-                    screen_[screenY * vcsConsoleType_->GetXResolution() + screenX]  = (uint8_t)p0Pixel;
-                }
-                if (p1Pixel >= 0)
-                {
-                    screen_[screenY * vcsConsoleType_->GetXResolution() + screenX]  = (uint8_t)p1Pixel;
-                }
-                
-                // Missiles
-                if (m0Pixel >= 0)
-                {
-                    screen_[screenY * vcsConsoleType_->GetXResolution() + screenX]  = (uint8_t)m0Pixel;
-                }
-                if (m1Pixel >= 0)
-                {
-                    screen_[screenY * vcsConsoleType_->GetXResolution() + screenX]  = (uint8_t)m1Pixel;
-                }
+            uint32_t currentPixel = screenY * vcsConsoleType_->GetXResolution() + screenX;
 
+            // Don't display pixel if PF has priority and is set
+            if (pfAbove)
+            {                
                 // Ball
-                if (ballPixel >= 0)
+                if (ballPixel >= 0 && currentColor == -1)
                 {
-                    screen_[screenY * vcsConsoleType_->GetXResolution() + screenX]  = (uint8_t)ballPixel;
+                    currentColor = (uint8_t)ballPixel;
+                }
+                // Playfield
+                if (playfieldPixel >= 0 && currentColor == -1)
+                {
+                    currentColor = (uint8_t)playfieldPixel;
                 }
             }
+            // P0
+            if (p0Pixel >= 0 && currentColor == -1)
+            {
+                currentColor = (uint8_t)p0Pixel;
+            }
+            // M0
+            if (m0Pixel >= 0 && currentColor == -1)
+            {
+                currentColor = (uint8_t)m0Pixel;
+            }
             
+            // P1
+            if (p1Pixel >= 0 && currentColor == -1)
+            {
+                currentColor = (uint8_t)p1Pixel;
+            }            
+            // M1
+            if (m1Pixel >= 0 && currentColor == -1)
+            {
+                currentColor = (uint8_t)m1Pixel;
+            }
+
+            // Ball
+            if (ballPixel >= 0 && currentColor == -1)
+            {
+                currentColor = (uint8_t)ballPixel;
+            }
+            // Playfield
+            if (playfieldPixel >= 0 && currentColor == -1)
+            {
+                currentColor = (uint8_t)playfieldPixel;
+            }
+            // Background
+            if (currentColor == -1)
+            {
+                currentColor = (uint8_t)background;
+            }
+            screen_[currentPixel] = currentColor;
+
             CheckCollisions(playfieldPixel,
                 p0Pixel, p1Pixel, m0Pixel, m1Pixel,
                 ballPixel);
@@ -715,11 +734,40 @@ namespace oa
             }
             else if (location == REG_GRP0)
             {
-                GRP0 = byte;
+                if ((VDELP0 & 0x01) > 0)
+                {
+                    GRP0DELAY = byte;
+                }
+                else
+                {
+                    GRP0 = byte;
+                }
+                if ((VDELP1 & 0x01) > 0)
+                {
+                    GRP1 = GRP1DELAY;
+                    //VDELP1 = 0;
+                }
             }
             else if (location == REG_GRP1)
             {
-                GRP1 = byte;
+                if ((VDELP1 & 0x01) > 0)
+                {
+                    GRP1DELAY = byte;
+                }
+                else
+                {
+                    GRP1 = byte;
+                }
+                if ((VDELP0 & 0x01) > 0)
+                {
+                    GRP0 = GRP0DELAY;
+                    //VDELP0 = 0;
+                }
+                if ((VDELBL & 0x01) > 0)
+                {
+                    ENABL = ENABLDELAY;
+                    //VDELBL = 0;
+                }
             }
             else if (location == REG_ENAM0)
             {
@@ -731,7 +779,14 @@ namespace oa
             }
             else if (location == REG_ENABL)
             {
-                ENABL = byte;
+                if ((VDELBL & 0x01) > 0)
+                {
+                    ENABLDELAY = byte;
+                }
+                else
+                {
+                    ENABL = byte;
+                }
             }
             else if (location == REG_HMP0)
             {
@@ -866,61 +921,6 @@ namespace oa
                 MemoryRam::Write(REG_CXBLPF, 0);
                 MemoryRam::Write(REG_CXPPMM, 0);
             }
-            if (location == REG_VDELP0)
-            {
-                vertDelayGrP0_ = true;
-            }
-            if (location == REG_GRP0)
-            {
-                if (vertDelayGrP0_)
-                {
-                    delayedGrP0_ = byte;
-                    return;
-                }                
-            }
-            if (location == REG_VDELP1)
-            {
-                vertDelayGrP1_ = true;
-            }
-            if (location == REG_VDELBL)
-            {
-                vertDelayGrBl_ = true;                
-            }
-            if (location == REG_GRP0)
-            {
-                if (vertDelayGrP1_)
-                {
-                    vertDelayGrP1_ = false;
-                    MemoryRam::Write(REG_GRP1, delayedGrP1_);
-                }
-            }            
-            if (location == REG_GRP1)
-            {
-                if (vertDelayGrP0_)
-                {
-                    vertDelayGrP0_ = false;
-                    MemoryRam::Write(REG_GRP0, delayedGrP0_);
-                }
-                if (vertDelayGrBl_)
-                {
-                    vertDelayGrBl_ = false;
-                    MemoryRam::Write(REG_ENABL, delayedGrBl_);
-                }                
-                if (vertDelayGrP1_)
-                {
-                    delayedGrP1_ = byte;
-                    return;
-                } 
-            }
-            if (location == REG_ENABL)
-            {
-                if (vertDelayGrBl_)
-                {
-                    delayedGrBl_ = byte;
-                    return;
-                } 
-            }
-            
             MemoryRam::Write(location, byte);
         }
 

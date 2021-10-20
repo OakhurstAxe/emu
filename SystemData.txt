@@ -62,12 +62,20 @@
                 <RomFile>Airlock (1982) (Data Age) (DA1004) ~.bin</RomFile>
             </Game>
             <Game>
-                <Name>Alices Abenteuer</Name>
-                <Mapper>SC</Mapper>
+                <Name>Alien</Name>
+                <Mapper>4K</Mapper>
                 <Controller>Joystick</Controller>
                 <Company>Atari</Company>
-                <ScreenType>PAL</ScreenType>
-                <RomFile>Alices Abenteuer - Lilly Adventure (1983) (Quelle - Otto Versand) (732.273 8 - 600273, 781644) (PAL).bin</RomFile>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Alien (1982) (20th Century Fox Video Games, Douglas 'Dallas North' Neubauer) (11006) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Alligator People</Name>
+                <Mapper>4K</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Alligator People (1983) (20th Century Fox Video Games, John Russell) (Prototype) ~.bin</RomFile>
             </Game>
             <Game>
                 <Name>Atlantis</Name>

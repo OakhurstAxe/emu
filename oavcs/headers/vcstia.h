@@ -47,11 +47,14 @@ namespace oa
             uint8_t AUDF1 = 0;
             uint8_t AUDV0 = 0;
             uint8_t AUDV1 = 0;
-            uint8_t GRP0;
-            uint8_t GRP1;
+            uint8_t GRP0 = 0;
+            uint8_t GRP0DELAY = 0;
+            uint8_t GRP1 = 0;
+            uint8_t GRP1DELAY = 0;
             uint8_t ENAM0 = 0;
             uint8_t ENAM1 = 0;
             uint8_t ENABL = 0;
+            uint8_t ENABLDELAY = 0;
             uint8_t HMP0 = 0;
             uint8_t HMP1 = 0;
             uint8_t HMM0 = 0;
