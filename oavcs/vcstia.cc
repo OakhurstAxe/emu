@@ -112,7 +112,7 @@ namespace oa
                 scanLine_++;
             }
             
-            if ((scanLine_ > 2 + vcsConsoleType_->GetVBlankLines()) && (scanLine_ <= 2 + vcsConsoleType_->GetVBlankLines() + vcsConsoleType_->GetYResolution()) && (cycle_ > 67))// && (cycle_ <= 69 + vcsConsoleType_->GetXResolution()))
+            if ((scanLine_ > 2 + vcsConsoleType_->GetVBlankLines()) && (scanLine_ <= 2 + vcsConsoleType_->GetVBlankLines() + vcsConsoleType_->GetYResolution()) && (cycle_ > 67))
             {
                 RenderPixel();
             }
@@ -650,7 +650,6 @@ namespace oa
             bool result = false;
             
             if (wSyncSet_)
-
             {
                 result = true;
             }
@@ -745,7 +744,7 @@ namespace oa
                 if ((VDELP1 & 0x01) > 0)
                 {
                     GRP1 = GRP1DELAY;
-                    //VDELP1 = 0;
+                    GRP1DELAY = 0;
                 }
             }
             else if (location == REG_GRP1)
@@ -761,12 +760,12 @@ namespace oa
                 if ((VDELP0 & 0x01) > 0)
                 {
                     GRP0 = GRP0DELAY;
-                    //VDELP0 = 0;
+                    GRP0DELAY = 0;
                 }
                 if ((VDELBL & 0x01) > 0)
                 {
                     ENABL = ENABLDELAY;
-                    //VDELBL = 0;
+                    ENABLDELAY = 0;
                 }
             }
             else if (location == REG_ENAM0)
@@ -823,32 +822,47 @@ namespace oa
             else if (location == REG_RESMP0)
             {
                 RESMP0 = byte;
+                if ((byte & 0x02) > 0)
+                {
+                    resM0Cycle_ = resP0Cycle_;
+                }
+
             }
             else if (location == REG_RESMP1)
             {
                 RESMP1 = byte;
+                if ((byte & 0x02) > 0)
+                {
+                    resM1Cycle_ = resP1Cycle_;
+                }
             }
 
-            if (location == REG_VSYNC && (byte & 0x02) > 0)
+            else if (location == REG_VSYNC)
             {
-                cycle_ = 0;
-                scanLine_ = 0;
+                if ((byte & 0x02) > 0)
+                {
+                    cycle_ = 0;
+                    scanLine_ = 0;
+                }
             }
-            if (location == REG_VBLANK && (byte & 0x02) == 0)
+            else if (location == REG_VBLANK)
             {
-                cycle_ = 0;
-                scanLine_ = 2 + vcsConsoleType_->GetVBlankLines();
+                if ((byte & 0x02) == 0)
+                {
+                    cycle_ = 0;
+                    scanLine_ = 2 + vcsConsoleType_->GetVBlankLines();
+                }
             }
-            if (location == REG_WSYNC)
+            else if (location == REG_WSYNC)
             {
                 wSyncSet_ = true;
             }
 
-            if (location == REG_RSYNC)
+            else if (location == REG_RSYNC)
             {
                 cycle_ = 0;
             }
-            if (location == REG_RESP0)
+            else if (location == REG_RESP0)
             {
                 resP0Cycle_ = cycle_ + SPRITEOFFSET;
                 if (resP0Cycle_ < 68)
@@ -856,7 +870,7 @@ namespace oa
                     resP0Cycle_ = 71;
                 }
             }
-            if (location == REG_RESP1)
+            else if (location == REG_RESP1)
             {
                 resP1Cycle_ = cycle_ + SPRITEOFFSET;
                 if (resP1Cycle_ < 68)
@@ -864,7 +878,7 @@ namespace oa
                     resP1Cycle_ = 71;
                 }
             }
-            if (location == REG_RESM0)
+            else if (location == REG_RESM0)
             {
                 resM0Cycle_ = cycle_ + SPRITEOFFSET;
                 if (resM0Cycle_ < 68)
@@ -872,7 +886,7 @@ namespace oa
                     resM0Cycle_ = 71;
                 }
             }
-            if (location == REG_RESM1)
+            else if (location == REG_RESM1)
             {
                 resM1Cycle_ = cycle_ + SPRITEOFFSET;
                 if (resM1Cycle_ < 68)
@@ -880,7 +894,7 @@ namespace oa
                     resM1Cycle_ = 71;
                 }
             }
-            if (location == REG_RESBL)
+            else if (location == REG_RESBL)
             {
                 resBLCycle_ = cycle_ + SPRITEOFFSET;
                 if (resBLCycle_ < 68)
@@ -888,29 +902,15 @@ namespace oa
                     resBLCycle_ = 71;
                 }
             }
-            if (location == REG_HMOVE)
+            else if (location == REG_HMOVE)
             {
                 ApplyMovement();
             }
-            if (location == REG_HMCLR)
+            else if (location == REG_HMCLR)
             {
                 ClearMoveRegisters();
             }
-            if (location == REG_RESMP0)
-            {
-                if ((byte & 0x02) > 0)
-                {
-                    resM0Cycle_ = resP0Cycle_;
-                }
-            }
-            if (location == REG_RESMP1)
-            {
-                if ((byte & 0x02) > 0)
-                {
-                    resM1Cycle_ = resP1Cycle_;
-                }
-            }
-            if (location == REG_CXCLR)
+            else if (location == REG_CXCLR)
             {
                 MemoryRam::Write(REG_CXM0P, 0);
                 MemoryRam::Write(REG_CXM1P, 0);
@@ -921,7 +921,10 @@ namespace oa
                 MemoryRam::Write(REG_CXBLPF, 0);
                 MemoryRam::Write(REG_CXPPMM, 0);
             }
-            MemoryRam::Write(location, byte);
+            else
+            {
+                MemoryRam::Write(location, byte);
+            }
         }
 
         uint8_t VcsTia::GetAudioC0()

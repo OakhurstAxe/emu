@@ -78,6 +78,22 @@
                 <RomFile>Alligator People (1983) (20th Century Fox Video Games, John Russell) (Prototype) ~.bin</RomFile>
             </Game>
             <Game>
+                <Name>Amidar</Name>
+                <Mapper>4K</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Amidar (1982) (Parker Brothers, Ed Temple) (PB5310) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Apples and Dolls</Name>
+                <Mapper>4K</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Apples and Dolls (AKA Open, Sesame!) (CCE).bin</RomFile>
+            </Game>
+            <Game>
                 <Name>Atlantis</Name>
                 <Mapper>4K</Mapper>
                 <Controller>Joystick</Controller>

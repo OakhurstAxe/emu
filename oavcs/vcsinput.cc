@@ -11,7 +11,7 @@ namespace oa
         VcsInput::VcsInput()
         {
             regSwcha_ = 255;
-            regSwchb_ = 255;
+            regSwchb_ = 11;
             regSwcnt_ = 255;
             regInpt0_ = 255;
             regInpt1_ = 255;
