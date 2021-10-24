@@ -4,7 +4,7 @@
 #include "oaemumemory/headers/memoryram.h"
 #include "oaemumemory/headers/memoryramflagged.h"
 #include "oaemumemory/headers/memoryrom.h"
-#include "oaemumemory/headers/memorymapper.h"
+#include "oaemumemory/headers/imemorymapper.h"
 #include "oaemucpu/headers/m6502.h"
 #include "vcscartridge.h"
 #include "vcstia.h"
@@ -15,10 +15,10 @@ namespace oa
     namespace vcs
     {
         
-        class VcsMemory: public emu::MemoryMapper
+        class VcsMemory: public emu::IMemoryMapper
         {
         public:
-            VcsMemory(VcsTia *vscTia, emu::MemoryRam *ram, VcsRiot *vcsRiot, VcsCartridge *vcsCartridge);
+            VcsMemory(VcsTia *vscTia, VcsRiot *vcsRiot, VcsParameters* vcsParameters);
             virtual ~VcsMemory();
 
             uint8_t CpuRead(uint16_t location) override;
@@ -26,7 +26,7 @@ namespace oa
 
         private:
             VcsTia* vcsTia_;
-            emu::MemoryRam* ram_;
+            emu::MemoryRam ram_;
             VcsRiot *vcsRiot_;
             VcsCartridge* vcsCartridge_;
 
@@ -37,4 +37,3 @@ namespace oa
     }
 }
 #endif
-

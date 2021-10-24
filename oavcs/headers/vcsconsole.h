@@ -9,7 +9,6 @@
 #include "oaemucpu/headers/m6502.h"
 #include "vcsmainwindow.h"
 #include "vcsmemory.h"
-#include "vcscartridge.h"
 #include "vcstia.h"
 #include "m6507.h"
 #include "vcsriot.h"
@@ -27,7 +26,7 @@ namespace oa
             Q_OBJECT
             
         public:
-            VcsConsole(VcsMainWindow* vcsMainWindow, VcsParameters* vcsParameters, VcsCartridge *vcsCartridge);
+            VcsConsole(VcsMainWindow* vcsMainWindow, VcsParameters* vcsParameters);
             virtual ~VcsConsole();
             void StartUp();
             VcsInput *GetVcsInput();
@@ -38,9 +37,7 @@ namespace oa
             
             VcsConsoleType vcsConsoleType_;
             VcsTia vcsTia_;
-            emu::MemoryRam ram_;
             VcsRiot vcsRiot_;
-            VcsCartridge *vcsCartridge_;
             M6507 cpu_;
             VcsMemory vcsMemory_;
             VcsInput vcsInput_;
@@ -56,5 +53,3 @@ namespace oa
 
 
 #endif
-
-

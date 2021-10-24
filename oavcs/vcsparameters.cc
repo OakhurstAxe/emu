@@ -9,7 +9,7 @@ namespace oa
     {
         VcsParameters::VcsParameters()
         {
-            consoleType_ = ConsoleType::NTSC;
+            consoleType_ = NTSC;
             cartData_ = NULL;
             cartSize_ = 0;
         }

@@ -2,7 +2,7 @@
 #define _OA_VCS_M6507_H
 
 #include "oaemucpu/headers/m6502.h"
-#include "oaemumemory/headers/memorymapper.h"
+#include "oaemumemory/headers/imemorymapper.h"
 
 namespace oa
 {
@@ -12,7 +12,7 @@ namespace oa
         class M6507: public emu::M6502
         {
         public:
-            M6507(emu::MemoryMapper *memory);
+            M6507(emu::IMemoryMapper *memory);
         protected:
             // Override stack methods, Atari programmers 
             // corrupt stack to save space

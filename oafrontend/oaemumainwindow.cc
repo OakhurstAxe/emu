@@ -237,15 +237,15 @@ namespace oa
             vcs::ConsoleType consoleType;
             if (ui_.lblScreenValue->text() == "NTSC")
             {
-                consoleType = vcs::ConsoleType::NTSC;
+                consoleType = vcs::NTSC;
             }
             else if (ui_.lblScreenValue->text() == "PAL")
             {
-                consoleType = vcs::ConsoleType::PAL;
+                consoleType = vcs::PAL;
             }
             else
             {
-                consoleType = vcs::ConsoleType::SECAM;
+                consoleType = vcs::SECAM;
             }
             vcsParameters_.SetConsoleType(consoleType);
             vcsParameters_.SetCartData(buffer, bufferSize);

@@ -4,7 +4,7 @@
 #include "oaemumemory/headers/memoryram.h"
 #include "oaemumemory/headers/memoryramflagged.h"
 #include "oaemumemory/headers/memoryrom.h"
-#include "oaemumemory/headers/memorymapper.h"
+#include "oaemumemory/headers/imemorymapper.h"
 #include "oanes/oanesmapper/headers/nescartridge.h"
 #include "r2a03.h"
 
@@ -13,7 +13,7 @@ namespace oa
     namespace nes
     {
         
-        class NesMemory: public emu::MemoryMapper
+        class NesMemory: public emu::IMemoryMapper
         {
         public:
             NesMemory();

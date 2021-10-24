@@ -1,5 +1,5 @@
-#ifndef _OA_EMU_MEMORYMAPPER
-#define _OA_EMU_MEMORYMAPPER
+#ifndef _OA_EMU_IMEMORYMAPPER_H
+#define _OA_EMU_IMEMORYMAPPER_H
 
 #include <stdint.h>
 
@@ -8,7 +8,7 @@ namespace oa
     namespace emu
     {
  
-        class MemoryMapper
+        class IMemoryMapper
         {
         public:
             virtual uint8_t CpuRead(uint16_t location) = 0;
@@ -18,3 +18,5 @@ namespace oa
 }
 
 #endif
+
+

@@ -239,6 +239,10 @@ namespace oa
         {
             if (frequency_ == 0)
             {
+                if (sampleCount > BufferSize)
+                {
+                    throw std::out_of_range(QString("Audio Sample [%1] larger than buffer size. %2").arg(sampleCount).arg(BufferSize).toLocal8Bit().data());
+                }
                 memset(m_buffer_, 0, sampleCount);
                 return m_buffer_;
             }
@@ -312,6 +316,10 @@ namespace oa
                 }                
                 sampleIndex++;
                 totalSample_++;
+                if (sampleIndex > BufferSize)
+                {
+                    throw std::out_of_range(QString("Audio Sample Index [%1] larger than buffer size. %2").arg(sampleIndex).arg(BufferSize).toLocal8Bit().data());
+                }
             }
             return m_buffer_;
         }    

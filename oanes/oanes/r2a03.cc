@@ -8,7 +8,7 @@ namespace oa
     namespace nes
     {
     
-        R2A03::R2A03(emu::MemoryMapper *memory) : emu::M6502(memory)
+        R2A03::R2A03(emu::IMemoryMapper *memory) : emu::M6502(memory)
         {
             SetOpCodes();
         }

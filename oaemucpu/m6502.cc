@@ -9,7 +9,7 @@ namespace oa
     namespace emu
     {
         
-        M6502::M6502(MemoryMapper *memory)
+        M6502::M6502(IMemoryMapper *memory)
         {
             memory_ = memory;
             SetOpCodes();
@@ -662,36 +662,58 @@ namespace oa
         {
             uint16_t byte = memory_->CpuRead(CallAddressMethod(addressMethod));
             uint8_t tmpAccumulator = accumulator_;
+            uint16_t value;
             if (statusRegister_.decimalMode)
             {
+                byte = (((byte & 0xF0) >> 4) * 10) + (byte & 0x0F) + statusRegister_.carryFlag;
                 tmpAccumulator = (((tmpAccumulator & 0xF0) >> 4) * 10) + (tmpAccumulator & 0x0F);
-            }
-            uint16_t value = tmpAccumulator + byte + statusRegister_.carryFlag;
-            if (statusRegister_.decimalMode)
-            {
+                bool newCarry = (tmpAccumulator + byte) > 99;
+                value = tmpAccumulator + byte;
+                if (newCarry)
+                {
+                    value -= 100;
+                }
+                statusRegister_.carryFlag = newCarry;
                 value = ((value / 10) << 4) + (value % 10);
             }
-            statusRegister_.carryFlag = (value > 255);
+            else
+            {
+                value = tmpAccumulator + byte + statusRegister_.carryFlag;
+                statusRegister_.carryFlag = (value > 255);
+            }
             statusRegister_.zeroFlag = ((value & 0xff) == 0);
             statusRegister_.overflowFlag = (~(accumulator_ ^ byte) & (accumulator_ ^ value) & 0x80) != 0;
             statusRegister_.negativeFlag = (value & 0x80) != 0;
-            accumulator_ = (value & 0xff);
-        }    
+            accumulator_ = value & 0xff;
+        }  
         void M6502::OpSBC(AddressMethod addressMethod)
         {
-            uint16_t byte = memory_->CpuRead(CallAddressMethod(addressMethod)) ^ 0xff;
+            uint16_t byte = memory_->CpuRead(CallAddressMethod(addressMethod));
             uint8_t tmpAccumulator = accumulator_;
+            uint16_t value;
             if (statusRegister_.decimalMode)
             {
+                byte = (((byte & 0xF0) >> 4) * 10) + (byte & 0x0F);
+                if (!statusRegister_.carryFlag)
+                {
+                    byte++;
+                }
                 tmpAccumulator = (((tmpAccumulator & 0xF0) >> 4) * 10) + (tmpAccumulator & 0x0F);
-            }
-            uint16_t value = tmpAccumulator + byte + statusRegister_.carryFlag;
-            if (statusRegister_.decimalMode)
-            {
-                value = value & 0xff;
+                bool newCarry = tmpAccumulator >= byte;
+                if (tmpAccumulator < byte)
+                {
+                    tmpAccumulator += 100;
+                }
+                value = tmpAccumulator - byte;
+                statusRegister_.carryFlag = newCarry;
                 value = ((value / 10) << 4) + (value % 10);
             }
-            statusRegister_.carryFlag = (value & 0xff00) != 0;
+            else
+            {
+                byte ^= 0xff;
+                value = tmpAccumulator + byte + statusRegister_.carryFlag;
+                statusRegister_.carryFlag = (value & 0xff00) != 0;
+            }
             statusRegister_.zeroFlag = (value & 0xff) == 0;
             statusRegister_.overflowFlag  = ((value ^ accumulator_) & (value ^ byte) & 0x80) != 0;
             statusRegister_.negativeFlag = (value & 0x80) != 0;
@@ -886,6 +908,7 @@ namespace oa
         void M6502::OpJSR(AddressMethod addressMethod) 
         {
             uint16_t jumpAddress = CallAddressMethod(addressMethod);
+            programCounter_--;
             PushStack((programCounter_ & 0xff00) >> 8);
             PushStack(programCounter_ & 0xff);
             programCounter_ = jumpAddress;
@@ -897,6 +920,7 @@ namespace oa
             uint8_t loadh = PopStack();
             uint16_t load = (loadh << 8) + loadl;
             programCounter_ = load;
+            programCounter_++;
         }
 
         // branch operations

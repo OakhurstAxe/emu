@@ -3,7 +3,7 @@
 
 #include "basecpu.h"
 
-#include "oaemumemory/headers/memorymapper.h"
+#include "oaemumemory/headers/imemorymapper.h"
 
 #define CallAddressMethod(methodName) std::__invoke(methodName, this)
 #define CallOpMethod(methodNane, addressMethod) std::__invoke(methodNane, this, addressMethod);
@@ -16,7 +16,7 @@ namespace oa
         class M6502 : public BaseCpu
         {
         public:
-            M6502(MemoryMapper *memory);
+            M6502(IMemoryMapper *memory);
             virtual ~M6502();
             virtual void ExecuteTick();
             virtual void Reset();
@@ -43,7 +43,7 @@ namespace oa
             virtual void PushStack(uint8_t byte);
             virtual uint8_t PopStack(void);
             
-            MemoryMapper *memory_;
+            IMemoryMapper *memory_;
             uint16_t stackPointerMax_;
             uint16_t stackPointerMin_;
             

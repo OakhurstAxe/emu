@@ -7,7 +7,7 @@ const int DataSampleRateHz        = 44100;
 const int SamplesPerFrame         = 736;
 const int SamplesPerHalfFrame     = 366;
 const int SamplesPerQuarterFrame  = 183;
-const int BufferSize              = SamplesPerFrame * sizeof(float);
+const int BufferSize              = SamplesPerFrame * sizeof(float) * 2;
 
 namespace oa
 {

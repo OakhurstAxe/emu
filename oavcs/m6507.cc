@@ -8,7 +8,7 @@ namespace oa
     namespace vcs
     {
         
-        M6507::M6507(emu::MemoryMapper *memory) : M6502(memory)
+        M6507::M6507(emu::IMemoryMapper *memory) : M6502(memory)
         {
             stackPointerMax_ = 0xff;
             stackPointerMin_ = 0x80;

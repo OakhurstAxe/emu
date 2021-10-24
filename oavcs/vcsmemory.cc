@@ -6,16 +6,17 @@ namespace oa
     namespace vcs
     {
         
-        VcsMemory::VcsMemory(VcsTia *vcsTia, emu::MemoryRam *ram, VcsRiot *vcsRiot, VcsCartridge *vcsCartridge)
+        VcsMemory::VcsMemory(VcsTia *vcsTia, VcsRiot *vcsRiot, VcsParameters* vcsParameters):
+            ram_(0x80, "VCS Ram")
         {
             vcsTia_ = vcsTia;
-            ram_ = ram;
             vcsRiot_ = vcsRiot;
-            vcsCartridge_ = vcsCartridge;
+            vcsCartridge_ = VcsCartridge::GetCartridge(vcsParameters);
         }
 
         VcsMemory::~VcsMemory()
         {
+            delete vcsCartridge_;
         }
 
         uint8_t VcsMemory::CpuRead(uint16_t location)
@@ -37,7 +38,7 @@ namespace oa
             else if ((location & 0x1280) == 0x0080)
             {
                 location &= 0x7F;
-                return ram_->Read(location);
+                return ram_.Read(location);
             }
             
             // PIA I/O Mirrors - A12=0, A9=1, A7=1  0 **1* 1*** ****
@@ -75,7 +76,7 @@ namespace oa
             else if ((location & 0x1280) == 0x0080)
             {
                 location &= 0x7F;
-                return ram_->Write(location, byte);
+                return ram_.Write(location, byte);
             }
             
             // PIA I/O Mirrors - A12=0, A9=1, A7=1  0 **1* 1*** ****

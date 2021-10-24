@@ -12,6 +12,7 @@
             <Name>4K</Name>
             <Name>E7</Name>
             <Name>F6</Name>
+            <Name>F8</Name>
             <Name>SC</Name>
         </MapperTypes>
         <ControllerTypes>
@@ -108,6 +109,14 @@
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
                 <RomFile>Combat - Tank-Plus (Tank) (1977) (Atari, Joe Decuir, Larry Kaplan, Steve Mayer, Larry Wagner - Sears) (CX2601 - 99801, 6-99801, 49-75101, 49-75124) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>E.T. The Extra-Terrestrial</Name>
+                <Mapper>F8</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>E.T. - The Extra-Terrestrial (1982) (Atari, Jerome Domurat, Howard Scott Warshaw) (CX2674) ~.bin</RomFile>
             </Game>
             <Game>
                 <Name>TRON</Name>

@@ -8,22 +8,17 @@
 #include <QMessageBox>
 #include <QDebug>
 
-#define TICKS_PER_SECOND 3584160
-
 namespace oa
 {
     namespace vcs
     {
-        VcsConsole::VcsConsole(VcsMainWindow* vcsMainWindow, VcsParameters* vcsParameters, VcsCartridge *vcsCartridge) :
-            ram_(0x80, "VCS Ram"),
+        VcsConsole::VcsConsole(VcsMainWindow* vcsMainWindow, VcsParameters* vcsParameters) :
             vcsConsoleType_(vcsParameters->GetConsoleType()),
             vcsTia_(&vcsConsoleType_),
-            vcsMemory_(&vcsTia_, &ram_, &vcsRiot_, vcsCartridge),
+            vcsMemory_(&vcsTia_, &vcsRiot_, vcsParameters),
             vcsAudio_(&vcsTia_),
             cpu_(&vcsMemory_)
         {
-            vcsCartridge_ = vcsCartridge;
-            
             vcsMainWindow_ = vcsMainWindow;
             ticksPerFrame_ = vcsConsoleType_.TicksPerSecond() / vcsConsoleType_.GetFramesPerSecond();
             

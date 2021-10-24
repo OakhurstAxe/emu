@@ -21,8 +21,7 @@ namespace oa
                                  vcsConsoleType_.GetYResolution(),
                                  QImage::Format_RGB32);
 
-            vcsCartridge_ = VcsCartridge::GetCartridge(&vcsParameters);
-            vcsConsole_ = new VcsConsole(this, &vcsParameters, vcsCartridge_);
+            vcsConsole_ = new VcsConsole(this, &vcsParameters);
             vcsConsole_->StartUp();
             vcsInput = vcsConsole_->GetVcsInput();
             
@@ -35,7 +34,6 @@ namespace oa
 
         VcsMainWindow::~VcsMainWindow()
         {
-            delete vcsCartridge_;
             delete vcsConsole_;
             delete qImage_;
         }
