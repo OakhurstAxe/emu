@@ -65,6 +65,8 @@ namespace oa
             uint8_t VDELBL = 0;
             uint8_t RESMP0 = 0;
             uint8_t RESMP1 = 0;
+            uint8_t VSYNC = 2;
+            uint8_t VBLANK = 2;
             
             int16_t GetPlayerPixel(uint8_t graphicsPlayer, uint8_t playerSize,
                 uint8_t reflectPlayer, uint8_t color, uint16_t playerCycle);

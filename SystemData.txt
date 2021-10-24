@@ -25,6 +25,7 @@
         <Companies>
             <Name>Activision</Name>
             <Name>Atari</Name>
+            <Name>Imagic</Name>
             <Name>Salu</Name>
             <Name>Sega</Name>
             <Name>Sirius Software</Name>
@@ -103,12 +104,44 @@
                 <RomFile>Atlantis (1983) (CCE) (C-832).bin</RomFile>
             </Game>
             <Game>
+                <Name>Bugs Bunny</Name>
+                <Mapper>F8</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Bugs Bunny (1983) (Atari, Alan J. Murphy, Robert C. Polaro) (CX26100) (Prototype).bin</RomFile>
+            </Game>
+            <Game>
                 <Name>Combat</Name>
                 <Mapper>2K</Mapper>
                 <Controller>Joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
                 <RomFile>Combat - Tank-Plus (Tank) (1977) (Atari, Joe Decuir, Larry Kaplan, Steve Mayer, Larry Wagner - Sears) (CX2601 - 99801, 6-99801, 49-75101, 49-75124) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Congo Bongo</Name>
+                <Mapper>F8</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Sega</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Congo Bongo (1983) (SEGA - Beck-Tech, Steve Beck, Phat Ho) (006-01) [a].bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Demon Attack</Name>
+                <Mapper>4K</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Demon Attack (Death from Above) (1982) (Imagic, Rob Fulop) (720000-200, 720101-1B, 720101-1C, IA3200, IA3200C, IX-006-04) [fixed] ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Dragonfire</Name>
+                <Mapper>4K</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Imagic</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Dragonfire (Cheese) (1982) (Imagic, Bob Smith) (720020-1A, IA3611, IA3611C) ~.bin</RomFile>
             </Game>
             <Game>
                 <Name>E.T. The Extra-Terrestrial</Name>
@@ -119,6 +152,54 @@
                 <RomFile>E.T. - The Extra-Terrestrial (1982) (Atari, Jerome Domurat, Howard Scott Warshaw) (CX2674) ~.bin</RomFile>
             </Game>
             <Game>
+                <Name>Fathom</Name>
+                <Mapper>F8</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Imagic</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Fathom (Scuba) (1983) (Imagic, Wilfredo Aguilar, Michael Becker, Rob Fulop) (720111-1A, 03205) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Frostbite</Name>
+                <Mapper>4K</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Activision</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Frostbite (1983) (Activision, Steve Cartwright) (AX-031) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Haunted House</Name>
+                <Mapper>4K</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Haunted House (Mystery Mansion, Graves' Manor, Nightmare Manor) (1982) (Atari, James Andreasen - Sears) (CX2654 - 49-75141) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Jungle Hunt</Name>
+                <Mapper>F8</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Jungle Hunt (1983) (Atari - GCC, John Allred, Mike Feinstein) (CX2688) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Keystone Kapers</Name>
+                <Mapper>4K</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Activision</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Keystone Kapers (1983) (Activision, Garry Kitchen) (AX-025, AX-025-04) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>River Raid</Name>
+                <Mapper>4K</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Activision</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>River Raid (Digivision).bin</RomFile>
+            </Game>
+            <Game>
                 <Name>TRON</Name>
                 <Mapper>4K</Mapper>
                 <Controller>Joystick</Controller>
@@ -127,12 +208,28 @@
                 <RomFile>Adventures of TRON (TRON Joystick) (1983) (M Network - INTV - APh Technological Consulting, Hal Finney, Glenn Hightower, Peter Kaminski) (MT4317) ~.bin</RomFile>
             </Game>
             <Game>
+                <Name>Vanguard</Name>
+                <Mapper>F8</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Vanguard (1983) (Atari - GCC, Dave Payne) (CX2669) ~.bin</RomFile>
+            </Game>
+            <Game>
                 <Name>Worm War I</Name>
                 <Mapper>4K</Mapper>
                 <Controller>Joystick</Controller>
                 <Company>Sirius Software</Company>
                 <ScreenType>NTSC</ScreenType>
                 <RomFile>Worm War I (1983) (CCE) (C-843).bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Pitfall!</Name>
+                <Mapper>4K</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Pitfall! - Pitfall Harry's Jungle Adventure (Jungle Runner) (1982) (Activision, David Crane) (AX-018, AX-018-04) ~.bin</RomFile>
             </Game>
         </RomFiles>
     </VCS>

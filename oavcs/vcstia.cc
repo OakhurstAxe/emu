@@ -839,19 +839,21 @@ namespace oa
 
             else if (location == REG_VSYNC)
             {
-                if ((byte & 0x02) > 0)
+                if ((byte & 0x02) == 0 && (VSYNC & 0x02) > 0)
                 {
                     cycle_ = 0;
-                    scanLine_ = 0;
+                    scanLine_ = 2;
                 }
+                VSYNC = byte;
             }
             else if (location == REG_VBLANK)
             {
-                if ((byte & 0x02) == 0)
+                if ((byte & 0x02) == 0 && (VBLANK & 0x02) > 0)
                 {
                     cycle_ = 0;
                     scanLine_ = 2 + vcsConsoleType_->GetVBlankLines();
                 }
+                VBLANK = byte;
             }
             else if (location == REG_WSYNC)
             {

@@ -1032,7 +1032,7 @@ namespace oa
             Q_UNUSED(addressMethod);
             statusRegister_.interruptDisable = 1;
             PushStack((programCounter_ & 0xff00) >> 8);
-            PushStack(programCounter_ & 0x00ff);
+            PushStack(programCounter_ & 0xff);
             statusRegister_.breakCommand = true;
             PushStack(statusRegister_.register_);
             statusRegister_.breakCommand = false;
@@ -1054,6 +1054,7 @@ namespace oa
             uint8_t loadh = PopStack();
             uint16_t load = (loadh << 8) + loadl;
             programCounter_ = load;
+            programCounter_ ++;
         }
         
         void M6502::OpISC(AddressMethod addressMethod)
