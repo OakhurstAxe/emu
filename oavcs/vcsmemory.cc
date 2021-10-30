@@ -25,7 +25,10 @@ namespace oa
 
             // Only 13 bit address
             location = location & 0x1FFF;
-            
+            if (location == 0x280)
+            {
+                int x = 10;
+            }
             // TIA - If A12=0, A7=0 Mirroring 0 **** 0*** ****
             if ((location & 0x1080) == 0)
             {
@@ -68,6 +71,10 @@ namespace oa
             // TIA - If A12=0, A7=0 Mirroring 0 **** 0*** ****
             if ((location & 0x1080) == 0)
             {
+                if (location == 15)
+                {
+                    int x = 10;
+                }
                 location &= 0x7F;
                 return vcsTia_->Write(location, byte);
             }

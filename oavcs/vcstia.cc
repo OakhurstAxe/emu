@@ -850,8 +850,11 @@ namespace oa
             {
                 if ((byte & 0x02) == 0 && (VBLANK & 0x02) > 0)
                 {
-                    cycle_ = 0;
-                    scanLine_ = 2 + vcsConsoleType_->GetVBlankLines();
+                    //cycle_ = 0;
+                    if (scanLine_ > 2 + vcsConsoleType_->GetVBlankLines())
+                    {
+                        scanLine_ = 2 + vcsConsoleType_->GetVBlankLines();
+                    }
                 }
                 VBLANK = byte;
             }

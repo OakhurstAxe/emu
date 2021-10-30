@@ -25,7 +25,9 @@
         <Companies>
             <Name>Activision</Name>
             <Name>Atari</Name>
+            <Name>Data Age</Name>
             <Name>Imagic</Name>
+            <Name>Parker Brothers</Name>
             <Name>Salu</Name>
             <Name>Sega</Name>
             <Name>Sirius Software</Name>
@@ -104,6 +106,14 @@
                 <RomFile>Atlantis (1983) (CCE) (C-832).bin</RomFile>
             </Game>
             <Game>
+                <Name>Berzerk</Name>
+                <Mapper>4K</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Berzerk (1982) (Atari, Dan Hitchens - Sears) (CX2650 - 49-75168) ~.bin</RomFile>
+            </Game>
+            <Game>
                 <Name>Bugs Bunny</Name>
                 <Mapper>F8</Mapper>
                 <Controller>Joystick</Controller>
@@ -176,6 +186,14 @@
                 <RomFile>Haunted House (Mystery Mansion, Graves' Manor, Nightmare Manor) (1982) (Atari, James Andreasen - Sears) (CX2654 - 49-75141) ~.bin</RomFile>
             </Game>
             <Game>
+                <Name>Journey Escape</Name>
+                <Mapper>4K</Mapper>
+                <Controller></Controller>
+                <Company>Data Age</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Journey Escape (1983) (Data Age, J. Ray Dettling) (112-006) ~.bin</RomFile>
+            </Game>
+            <Game>
                 <Name>Jungle Hunt</Name>
                 <Mapper>F8</Mapper>
                 <Controller>Joystick</Controller>
@@ -192,6 +210,38 @@
                 <RomFile>Keystone Kapers (1983) (Activision, Garry Kitchen) (AX-025, AX-025-04) ~.bin</RomFile>
             </Game>
             <Game>
+                <Name>Krull</Name>
+                <Mapper>F8</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Krull (1983) (Atari, Jerome Domurat, Dave Staugas) (CX2682) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>MegaMania</Name>
+                <Mapper>4K</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Activision</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>MegaMania - A Space Nightmare (1982) (Activision, Steve Cartwright) (AX-017, AX-017-04) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Oink!</Name>
+                <Mapper>4K</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Activision</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Oink! (1983) (Activision, Mike Lorenzen) (AX-023) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Pitfall!</Name>
+                <Mapper>4K</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Pitfall! - Pitfall Harry's Jungle Adventure (Jungle Runner) (1982) (Activision, David Crane) (AX-018, AX-018-04) ~.bin</RomFile>
+            </Game>
+            <Game>
                 <Name>River Raid</Name>
                 <Mapper>4K</Mapper>
                 <Controller>Joystick</Controller>
@@ -200,12 +250,28 @@
                 <RomFile>River Raid (Digivision).bin</RomFile>
             </Game>
             <Game>
+                <Name>Smurf</Name>
+                <Mapper>F8</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Smurf - Rescue in Gargamel's Castle (Smurf, Smurf Action) (1983) (Coleco - JWDA, Todd Marshall, Robin McDaniel, Henry Will IV) (2465) ~.bin</RomFile>
+            </Game>
+            <Game>
                 <Name>TRON</Name>
                 <Mapper>4K</Mapper>
                 <Controller>Joystick</Controller>
                 <Company>Activision</Company>
                 <ScreenType>NTSC</ScreenType>
                 <RomFile>Adventures of TRON (TRON Joystick) (1983) (M Network - INTV - APh Technological Consulting, Hal Finney, Glenn Hightower, Peter Kaminski) (MT4317) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Taz</Name>
+                <Mapper>F8</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Taz (Tazz) (1984) (Atari, Jerome Domurat, Steve Woita) (CX2699) ~.bin</RomFile>
             </Game>
             <Game>
                 <Name>Vanguard</Name>
@@ -224,12 +290,12 @@
                 <RomFile>Worm War I (1983) (CCE) (C-843).bin</RomFile>
             </Game>
             <Game>
-                <Name>Pitfall!</Name>
-                <Mapper>4K</Mapper>
+                <Name>Star Wars - The Arcade Game</Name>
+                <Mapper>F8</Mapper>
                 <Controller>Joystick</Controller>
-                <Company>Atari</Company>
+                <Company>Parker Brothers</Company>
                 <ScreenType>NTSC</ScreenType>
-                <RomFile>Pitfall! - Pitfall Harry's Jungle Adventure (Jungle Runner) (1982) (Activision, David Crane) (AX-018, AX-018-04) ~.bin</RomFile>
+                <RomFile>Star Wars - The Arcade Game (1984) (Parker Brothers, Wilfredo Aguilar, Michael Becker, Neil McKenzie, Bob Smith, Brad Stewart) (PB5540) ~.bin</RomFile>
             </Game>
         </RomFiles>
     </VCS>
