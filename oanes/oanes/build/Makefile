@@ -515,11 +515,11 @@ build/nesmemory.o: ../nesmemory.cc ../headers/nesmemory.h \
 		../../../oaemumemory/headers/basememory.h \
 		../../../oaemumemory/headers/memoryramflagged.h \
 		../../../oaemumemory/headers/memoryrom.h \
+		../../../oaemumemory/headers/imemorymapper.h \
 		../../oanesmapper/headers/nescartridge.h \
 		../headers/r2a03.h \
 		../../../oaemucpu/headers/m6502.h \
-		../../../oaemucpu/headers/basecpu.h \
-		../../../oaemumemory/headers/imemorymapper.h
+		../../../oaemucpu/headers/basecpu.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nesmemory.o ../nesmemory.cc
 
 build/r2a03.o: ../r2a03.cc ../headers/r2a03.h \
@@ -535,11 +535,11 @@ build/nesapu.o: ../nesapu.cc ../headers/nesapu.h \
 		../../../oaemumemory/headers/basememory.h \
 		../../../oaemumemory/headers/memoryramflagged.h \
 		../../../oaemumemory/headers/memoryrom.h \
+		../../../oaemumemory/headers/imemorymapper.h \
 		../../oanesmapper/headers/nescartridge.h \
 		../headers/r2a03.h \
 		../../../oaemucpu/headers/m6502.h \
 		../../../oaemucpu/headers/basecpu.h \
-		../../../oaemumemory/headers/imemorymapper.h \
 		../headers/nesapupulsechannel.h \
 		../headers/nesaputrianglechannel.h \
 		../headers/nesapunoisechannel.h
@@ -552,10 +552,10 @@ build/nesppu.o: ../nesppu.cc ../headers/nesppu.h \
 		../../../oaemumemory/headers/basememory.h \
 		../../../oaemumemory/headers/memoryramflagged.h \
 		../../../oaemumemory/headers/memoryrom.h \
+		../../../oaemumemory/headers/imemorymapper.h \
 		../../oanesmapper/headers/nescartridge.h \
 		../headers/r2a03.h \
-		../../../oaemucpu/headers/m6502.h \
-		../../../oaemumemory/headers/imemorymapper.h
+		../../../oaemucpu/headers/m6502.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/nesppu.o ../nesppu.cc
 
 build/nesmainwindow.o: ../nesmainwindow.cc ../headers/nesmainwindow.h \

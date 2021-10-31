@@ -30,7 +30,7 @@ namespace oa
         {
             Q_UNUSED(addressMethod);
             registerX_ = stackPointer_;
-            statusRegister_.negativeFlag = (registerX_ & 0x80) > 0;
+            statusRegister_.negativeFlag = ((int8_t)registerX_ < 0);
             statusRegister_.zeroFlag = (registerX_ == 0);
         }
         void M6507::OpTXS(AddressMethod addressMethod) 

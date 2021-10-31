@@ -87,6 +87,11 @@ namespace oa
             uint16_t IndirectYAddress();
             uint16_t IndirectYAddressNoOverflow();
             
+            // Set statusregister flags
+            virtual void SetNegative(uint8_t byte);
+            virtual void SetZero(uint8_t byte);
+            virtual void SetNegativeZero(uint8_t byte);
+            
             // Load Store operations
             virtual void OpLDA(AddressMethod addressMethod);
             virtual void OpLDX(AddressMethod addressMethod);

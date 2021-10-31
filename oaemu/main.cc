@@ -9,9 +9,9 @@ int main(int argc, char** argv)
 {
     QApplication app(argc, argv);
 
-    //oa::nes::NesMainWindow nes;
-    //nes.resize(1024, 768);
-    //nes.show();
+    oa::nes::NesMainWindow nes;
+    nes.resize(1024, 768);
+    nes.show();
     
     //oa::vcs::VcsMainWindow vcs(oa::vcs::ConsoleType::NTSC);
     //vcs.show();

@@ -12,14 +12,14 @@ Type=Native Application
 
 [Launch][Launch Configuration 0][Data]
 Arguments=
-Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x02\x00\x00\x00\n\x00o\x00a\x00e\x00m\x00u\x00\x00\x00\n\x00o\x00a\x00e\x00m\x00u)
-Dependency Action=Build
+Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
+Dependency Action=Nothing
 EnvironmentGroup=
 Executable=file:///home/dmax/projects/oaemu/oaemu
 External Terminal=konsole --noclose --workdir %workdir -e %exe
 Project Target=oaemu,oaemu
 Use External Terminal=false
-Working Directory=file:///home/dmax/projects/oaemu
+Working Directory=file:///home/dmax/projects/oaemu/
 isExecutable=false
 
 [Project]

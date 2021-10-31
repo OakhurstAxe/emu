@@ -9,8 +9,8 @@ namespace oa
         {
             for (int index=0; index<2; index++)
             {
-                cpuPrgRom_[index] = new emu::MemoryRom(0x4000, "Cartridge Program ROM");
-                ppuCharRom_[index] = new emu::MemoryRom(0x2000, "PPU Character ROM");
+                cpuPrgRom_[index] = new emu::MemoryRam(0x4000, "Cartridge Program ROM");
+                ppuCharRom_[index] = new emu::MemoryRam(0x2000, "PPU Character ROM");
             }
         }
         
@@ -27,7 +27,14 @@ namespace oa
         {
             if (location < 0xc000)
             {
-                location -= 0x8000;
+                if (location > 0x8000)
+                {
+                    location -= 0x8000;
+                }
+                else
+                {
+                    location -= 0x4000;
+                }
                 return cpuPrgRom_[0]->Read(location);
             }
             else
@@ -66,13 +73,13 @@ namespace oa
         {
             if (size == 1)
             {
-                cpuPrgRom_[0]->LoadData(&data[0], 4);
-                cpuPrgRom_[1]->LoadData(&data[0], 4);
+                cpuPrgRom_[0]->LoadData(&data[0], 0x4000);
+                cpuPrgRom_[1]->LoadData(&data[0], 0x4000);
             }
             else if (size == 2)
             {
-                cpuPrgRom_[0]->LoadData(&data[0], 4);
-                cpuPrgRom_[1]->LoadData(&data[0x4000], 4);
+                cpuPrgRom_[0]->LoadData(&data[0], 0x4000);
+                cpuPrgRom_[1]->LoadData(&data[0x4000], 0x4000);
             }
         }
         
@@ -80,8 +87,8 @@ namespace oa
         {
             if (size == 1)
             {
-                ppuCharRom_[0]->LoadData(&data[0], 2);
-                ppuCharRom_[1]->LoadData(&data[0], 2);
+                ppuCharRom_[0]->LoadData(&data[0], 0x2000);
+                ppuCharRom_[1]->LoadData(&data[0], 0x2000);
             }
             else if (size == 2)
             {
