@@ -24,8 +24,8 @@ namespace oa
             void LoadCharRom(uint8_t* data, uint8_t size) override;
             uint16_t GetMapper() override;
         private:
-            emu::MemoryRam* cpuPrgRom_[2];
-            emu::MemoryRam* ppuCharRom_[2];
+            emu::MemoryRom* cpuPrgRom_[2];
+            emu::MemoryRom* ppuCharRom_[2];
         };
         
     }

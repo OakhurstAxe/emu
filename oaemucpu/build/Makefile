@@ -420,7 +420,8 @@ build/basecpu.o: ../basecpu.cc ../headers/basecpu.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/basecpu.o ../basecpu.cc
 
 build/m6502.o: ../m6502.cc ../headers/m6502.h \
-		../headers/basecpu.h
+		../headers/basecpu.h \
+		../../oaemumemory/headers/imemorymapper.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/m6502.o ../m6502.cc
 
 ####### Install

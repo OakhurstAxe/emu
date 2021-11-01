@@ -13,6 +13,7 @@ namespace oa
     namespace vcs
     {
         VcsConsole::VcsConsole(VcsMainWindow* vcsMainWindow, VcsParameters* vcsParameters) :
+            vcsRiot_(&vcsInput_),
             vcsConsoleType_(vcsParameters->GetConsoleType()),
             vcsTia_(&vcsConsoleType_),
             vcsMemory_(&vcsTia_, &vcsRiot_, vcsParameters),
@@ -77,9 +78,9 @@ namespace oa
         
         void VcsConsole::ReadInput()
         {
-            vcsMemory_.CpuWrite(0x280, vcsInput_.GetSwchaReg());
-            vcsMemory_.CpuWrite(0x281, vcsInput_.GetSwcntReg());
-            vcsMemory_.CpuWrite(0x282, vcsInput_.GetSwchbReg());
+            //vcsMemory_.CpuWrite(0x280, vcsInput_.GetSwchaReg());
+            //vcsMemory_.CpuWrite(0x281, vcsInput_.GetSwcntReg());
+            //vcsMemory_.CpuWrite(0x282, vcsInput_.GetSwchbReg());
             vcsMemory_.CpuWrite(0x38, vcsInput_.GetInpt0Reg());
             vcsMemory_.CpuWrite(0x39, vcsInput_.GetInpt1Reg());
             vcsMemory_.CpuWrite(0x3A, vcsInput_.GetInpt2Reg());

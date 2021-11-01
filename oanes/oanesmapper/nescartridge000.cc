@@ -9,8 +9,8 @@ namespace oa
         {
             for (int index=0; index<2; index++)
             {
-                cpuPrgRom_[index] = new emu::MemoryRam(0x4000, "Cartridge Program ROM");
-                ppuCharRom_[index] = new emu::MemoryRam(0x2000, "PPU Character ROM");
+                cpuPrgRom_[index] = new emu::MemoryRom(0x4000, "Cartridge Program ROM");
+                ppuCharRom_[index] = new emu::MemoryRom(0x2000, "PPU Character ROM");
             }
         }
         

@@ -13,12 +13,7 @@ namespace oa
         {
             memory_ = memory;
             SetOpCodes();
-            stackPointerMax_ = 0x1FF;
-            stackPointerMin_ = 0xFF;
-        }
-        
-        M6502::~M6502()
-        {
+            stackPointerPage_ = 0x100;
         }
         
         void M6502::SetOpCodes()
@@ -298,28 +293,28 @@ namespace oa
         
         void M6502::ExecuteTick()
         {
-            if (overflowTicks_ > 1)
+            if (overflowTicks_  > 1)
             {
                 overflowTicks_--;
                 return;
             }
             overflowTicks_--;
-
-            CallOpMethod(operation_.operation_, operation_.addressMethod_);
             
+            CallOpMethod(operation_.operation_, operation_.addressMethod_);
+
             uint8_t instruction = memory_->CpuRead(programCounter_);
             programCounter_++;
             operation_ = opCodeLookup_[instruction];
+
             prevInst5 = prevInst4;
             prevInst4 = prevInst3;
             prevInst3 = prevInst2;
             prevInst2 = prevInst1;
             prevInst1 = instruction;
             
-            // Add ticks for next instruction
             overflowTicks_ += operation_.ticks;
             SetOverflowForOperation();
-            SetOverflowForAddressAccess();
+            SetOverflowForAddressAccess();            
         }
 
         void M6502::SetOverflowForOperation()
@@ -373,33 +368,31 @@ namespace oa
                 overflowTicks_ += 1;
             }
         }
-
+        
         void M6502::PushStack(uint8_t byte)
         {
-            if (stackPointer_ < stackPointerMin_)
+            if (stackPointer_ == 0)
             {
-                // Atari VCS games use stack in strange ways, this check cannot be used there
                 throw std::out_of_range(QString("Stack overflow").toLocal8Bit().data());
             }
-            memory_->CpuWrite(stackPointer_, byte);
+            memory_->CpuWrite(stackPointer_ + stackPointerPage_, byte);
             stackPointer_--;
         }
 
         uint8_t M6502::PopStack(void)
         {
-            if (stackPointer_ >= stackPointerMax_)
+            if (stackPointer_ > 255)
             {
-                // Atari VCS games use stack in strange ways, this check cannot be used there
                 throw std::out_of_range(QString("Stack underflow").toLocal8Bit().data());
             }
             stackPointer_++;
-            return memory_->CpuRead(stackPointer_);
+            return memory_->CpuRead(stackPointer_ + stackPointerPage_);
         }
 
         void M6502::Reset()
         {
             operation_ = opCodeLookup_[0xea]; //OpNOP            
-            stackPointer_ = stackPointerMax_;
+            stackPointer_ = 255;
             uint8_t pcl = memory_->CpuRead(0xfffc);
             uint8_t pch = memory_->CpuRead(0xfffd);
             programCounter_ = (pch << 8) + pcl;
@@ -521,7 +514,7 @@ namespace oa
         {
             return IndirectYAddress();
         }
-
+        
         // Set statusregister flags
         void M6502::SetNegative(uint8_t byte)
         {
@@ -538,7 +531,7 @@ namespace oa
             SetNegative(byte);
             SetZero(byte);
         }
-            
+
         // Load Store operations
         void M6502::OpLDA(AddressMethod addressMethod) 
         {
@@ -602,13 +595,13 @@ namespace oa
         void M6502::OpTSX(AddressMethod addressMethod) 
         {
             Q_UNUSED(addressMethod);
-            registerX_ = stackPointer_ & 0xFF;
+            registerX_ = stackPointer_;
             SetNegativeZero(registerX_);
         }
         void M6502::OpTXS(AddressMethod addressMethod) 
         {
             Q_UNUSED(addressMethod);
-            stackPointer_ = registerX_ | 0x100;
+            stackPointer_ = registerX_;
         }
         void M6502::OpPHA(AddressMethod addressMethod) 
         {
@@ -634,7 +627,7 @@ namespace oa
         {
             Q_UNUSED(addressMethod);
             statusRegister_.register_ = PopStack();
-        }    
+        }
 
         // Logical operations
         void M6502::OpAND(AddressMethod addressMethod)
@@ -1041,9 +1034,8 @@ namespace oa
             uint8_t loadh = PopStack();
             uint16_t load = (loadh << 8) + loadl;
             programCounter_ = load;
-            programCounter_ ++;
         }
-        
+
         void M6502::OpISC(AddressMethod addressMethod)
         {
             uint16_t address = CallAddressMethod(addressMethod);
@@ -1077,6 +1069,6 @@ namespace oa
             accumulator_ |= byte;
             statusRegister_.negativeFlag = (accumulator_ & 0x80) > 0;
             statusRegister_.zeroFlag = (accumulator_ == 0);            
-        }        
+        }           
     }
 }

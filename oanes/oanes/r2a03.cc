@@ -22,7 +22,7 @@ namespace oa
             if (isNmiSet_)
             {
                 isNmiSet_ = false;
-                //programCounter_--;
+                programCounter_--;
                 PushStack((programCounter_ & 0xff00) >> 8);
                 PushStack(programCounter_ & 0x00ff);
                 OpPHP(&R2A03::NullAddress);
@@ -153,6 +153,11 @@ namespace oa
             opCodeLookup_[0xfb] = {(OperationMethod)&R2A03::OpISC, (AddressMethod)&R2A03::AbsoluteYAddress, 7};
             opCodeLookup_[0xfc] = {(OperationMethod)&R2A03::OpNOP, (AddressMethod)&R2A03::AbsoluteXAddress, 2};
             opCodeLookup_[0xff] = {(OperationMethod)&R2A03::OpISC, (AddressMethod)&R2A03::AbsoluteXAddress, 7};
+        }
+        
+        void R2A03::OpSED(AddressMethod addressMethod)
+        {
+            // do nothing, this chip has no decimal mode
         }
 
         void R2A03::OpLAX(AddressMethod addressMethod)
