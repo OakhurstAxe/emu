@@ -22,6 +22,7 @@ namespace oa
         protected:
             typedef uint16_t (M6502::*AddressMethod)();
             typedef void (M6502::*OperationMethod)(AddressMethod addressMethod);
+            void GetNextOperation();
             void SetOverflowForOperation();
             void SetOverflowForAddressAccess();
             struct OperationStruct

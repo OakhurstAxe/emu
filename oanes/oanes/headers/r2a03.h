@@ -20,7 +20,8 @@ namespace oa
             void DmaSuspend();
         protected:
             void SetOpCodes() override;
-            void OpSED(AddressMethod addressMethod) override;
+            virtual void OpADC(AddressMethod addressMethod);
+            virtual void OpSBC(AddressMethod addressMethod);
             virtual void OpISC(AddressMethod addressMethod);
             virtual void OpLAX(AddressMethod addressMethod);
             virtual void OpSAX(AddressMethod addressMethod);

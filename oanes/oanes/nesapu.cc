@@ -30,7 +30,7 @@ namespace oa
 
         void NesApu::ExecuteTick()
         {
-            for (int i=0; i<0; i++)
+            for (int i=0; i<4; i++)
             {
                 uint8_t register1 = memory_->CpuRead(0x4000 + (i*4));
                 bool register1flag = memory_->CpuWriteFlagged(0x4000 + (i*4));
