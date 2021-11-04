@@ -2,6 +2,7 @@
 #define _OA_VCS_PALETTE_H
 
 #include <QColor>
+
 #include "vcsconsoletype.h"
 
 namespace oa

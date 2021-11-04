@@ -1,51 +1,46 @@
-#ifndef _OA_VCS_CONSOLE
-#define _OA_VCS_CONSOLE
+#ifndef _OA_VCS_CONSOLE_H
+#define _OA_VCS_CONSOLE_H
 
-#include <memory>
+#include <QObject>
+#include <QMainWindow>
 #include <QTimer>
 
-#include "oaemumemory/headers/memoryram.h"
-#include "oaemumemory/headers/memoryrom.h"
-#include "oaemucpu/headers/m6502.h"
-#include "vcsmainwindow.h"
-#include "vcsmemory.h"
-#include "vcstia.h"
 #include "m6507.h"
-#include "vcsriot.h"
-#include "vcsinput.h"
 #include "vcsaudio.h"
+#include "vcsmemory.h"
+#include "vcsparameters.h"
+#include "vcsriot.h"
+#include "vcstia.h"
 
 namespace oa
 {
     namespace vcs
     {
-        class VcsMainWindow; 
- 
-        class VcsConsole : public QObject
+        class VcsConsole : public QWidget
         {
             Q_OBJECT
             
         public:
-            VcsConsole(VcsMainWindow* vcsMainWindow, VcsParameters* vcsParameters);
+            VcsConsole(/*VcsMainWindow* vcsMainWindow,*/ VcsParameters* vcsParameters);
             virtual ~VcsConsole();
             void StartUp();
-            VcsInput *GetVcsInput();
         public slots:
             void StartNextFrame();
+        protected:
+            void paintEvent(QPaintEvent *event);            
         private:
-            void ReadInput();
-            
+            VcsRiot vcsRiot_;
             VcsConsoleType vcsConsoleType_;
             VcsTia vcsTia_;
-            VcsRiot vcsRiot_;
-            M6507 cpu_;
             VcsMemory vcsMemory_;
-            VcsInput vcsInput_;
             VcsAudio vcsAudio_;
+            M6507 cpu_;
             
-            VcsMainWindow *vcsMainWindow_;
+            //VcsMainWindow *vcsMainWindow_;
             QTimer cpuTimer_;
             uint32_t ticksPerFrame_;
+            
+            QImage *qImage_;
         };
         
     }

@@ -4,7 +4,7 @@
 
 #include "ui_oaemumainwindow.h"
 #include "headers/oaemusystemdata.h"
-#include "oavcs/headers/vcsmainwindow.h"
+#include "oavcs/headers/vcsconsole.h"
 #include "oavcs/headers/vcsconsoletype.h"
 #include "oavcs/headers/vcsparameters.h"
 
@@ -33,7 +33,7 @@ namespace oa
             void AddClicked(bool checked);
             void RunClicked(bool checked);
         private:
-            vcs::VcsMainWindow* vcs_ = NULL;
+            vcs::VcsConsole* vcs_ = NULL;
             vcs::VcsParameters vcsParameters_;
             bool isEdit_ = true;
             Ui::MainWindow ui_;

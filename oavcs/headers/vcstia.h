@@ -1,22 +1,29 @@
 #ifndef _OA_VCS_TIA_H
 #define _OA_VCS_TIA_H
 
+#include <QObject>
+#include <QtGamepad/QGamepad>
+
 #include "oaemumemory/headers/memoryram.h"
 #include "vcsconsoletype.h"
+#include "vcspalette.h"
 
 namespace oa
 {
     namespace vcs
     {
-        class VcsTia : public emu::MemoryRam
+        class VcsTia : public QObject, public emu::MemoryRam
         {
+            Q_OBJECT
+            
         public:
             VcsTia(VcsConsoleType *vcsConsoleType);
             virtual ~VcsTia();
             void Reset();
             void ExecuteTick();
             bool IsCpuBlocked();
-            uint8_t* GetScreen();
+            QRgb* GetScreen();
+            virtual uint8_t Read(uint16_t location) override;
             virtual void Write(uint16_t location, uint8_t byte) override;
             bool Repaint();
             bool IsCycleZero();
@@ -27,7 +34,8 @@ namespace oa
             uint8_t GetAudioF1();
             uint8_t GetAudioV0();
             uint8_t GetAudioV1();
-            
+        public slots:            
+            void LeftControllerA(bool value);
         private:
             uint8_t NUSIZ0;
             uint8_t NUSIZ1;
@@ -86,7 +94,7 @@ namespace oa
             VcsConsoleType *vcsConsoleType_;
             uint16_t cycle_;
             uint16_t scanLine_;
-            uint8_t *screen_;
+            QRgb *screen_;
             bool wSyncSet_;
             uint16_t resP0Cycle_;
             uint16_t resP1Cycle_;
@@ -99,6 +107,14 @@ namespace oa
             uint8_t delayedGrP1_ = 0;
             bool vertDelayGrBl_ = false;
             uint8_t delayedGrBl_ = 0;
+            VcsPalette vcsPalette_;
+            
+            QGamepad m_gamepad_;
+            uint8_t regInpt0_;
+            uint8_t regInpt1_;
+            uint8_t regInpt2_;
+            uint8_t regInpt3_;
+            uint8_t regInpt4_;
         };
         
     }

@@ -1,29 +1,28 @@
 
 #include "headers/vcsconsole.h"
-#include "headers/vcsfile.h"
 
-#include <iostream>
-#include <fstream>
-#include <ostream>
-#include <QMessageBox>
-#include <QDebug>
+#include <QPainter>
 
 namespace oa
 {
     namespace vcs
     {
-        VcsConsole::VcsConsole(VcsMainWindow* vcsMainWindow, VcsParameters* vcsParameters) :
-            vcsRiot_(&vcsInput_),
+        VcsConsole::VcsConsole(VcsParameters* vcsParameters) :
+            vcsRiot_(),
             vcsConsoleType_(vcsParameters->GetConsoleType()),
             vcsTia_(&vcsConsoleType_),
             vcsMemory_(&vcsTia_, &vcsRiot_, vcsParameters),
             vcsAudio_(&vcsTia_),
             cpu_(&vcsMemory_)
         {
-            vcsMainWindow_ = vcsMainWindow;
-            ticksPerFrame_ = vcsConsoleType_.TicksPerSecond() / vcsConsoleType_.GetFramesPerSecond();
+            this->resize(vcsConsoleType_.GetXResolution() * 4, vcsConsoleType_.GetYResolution() * 4);
+            qImage_ = new QImage(vcsConsoleType_.GetXResolution(),
+                                 vcsConsoleType_.GetYResolution(),
+                                 QImage::Format_RGB32);
             
-            vcsMainWindow_->SetScreen(vcsTia_.GetScreen());
+            //vcsMainWindow_ = vcsMainWindow;
+            ticksPerFrame_ = vcsConsoleType_.TicksPerSecond() / vcsConsoleType_.GetFramesPerSecond();
+            StartUp();
         }
         
         VcsConsole::~VcsConsole()
@@ -42,15 +41,21 @@ namespace oa
             cpuTimer_.start();
         }
         
-        VcsInput *VcsConsole::GetVcsInput()
+        void VcsConsole::paintEvent(QPaintEvent* event)
         {
-            return &vcsInput_;
+            Q_UNUSED(event);
+            
+            QRgb* dest = (QRgb*)qImage_->bits();
+            memcpy(dest, vcsTia_.GetScreen(), vcsConsoleType_.GetYResolution() * vcsConsoleType_.GetXResolution() * sizeof(QRgb));
+
+            QRect rect(0,0,vcsConsoleType_.GetXResolution()*4, vcsConsoleType_.GetYResolution()*4);
+            QPainter painter(this);          
+            painter.drawImage(rect, *qImage_);
         }
         
         void VcsConsole::StartNextFrame()
         {
             //qDebug() << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-            ReadInput();
             uint32_t ticks = 0;
             vcsAudio_.ExecuteTick();
             while (ticks < ticksPerFrame_)
@@ -70,23 +75,10 @@ namespace oa
                 vcsTia_.ExecuteTick();
                 if (vcsTia_.Repaint())
                 {
-                    vcsMainWindow_->repaint();
+                    this->repaint();
                 }
                 ticks++;
             }
-        }
-        
-        void VcsConsole::ReadInput()
-        {
-            //vcsMemory_.CpuWrite(0x280, vcsInput_.GetSwchaReg());
-            //vcsMemory_.CpuWrite(0x281, vcsInput_.GetSwcntReg());
-            //vcsMemory_.CpuWrite(0x282, vcsInput_.GetSwchbReg());
-            vcsMemory_.CpuWrite(0x38, vcsInput_.GetInpt0Reg());
-            vcsMemory_.CpuWrite(0x39, vcsInput_.GetInpt1Reg());
-            vcsMemory_.CpuWrite(0x3A, vcsInput_.GetInpt2Reg());
-            vcsMemory_.CpuWrite(0x3B, vcsInput_.GetInpt3Reg());
-            vcsMemory_.CpuWrite(0x3C, vcsInput_.GetInpt4Reg());
-            vcsMemory_.CpuWrite(0x3D, vcsInput_.GetInpt5Reg());
         }
     }
 }

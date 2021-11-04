@@ -411,11 +411,24 @@ build/moc_oaemumainwindow.cpp: ../headers/oaemumainwindow.h \
 		../headers/oaemuscreentypes.h \
 		../headers/oaemuvcssystem.h \
 		../headers/oaemuvcsgame.h \
-		../../oavcs/headers/vcsmainwindow.h \
-		../../oavcs/headers/vcspalette.h \
+		../../oavcs/headers/vcsconsole.h \
+		../../oavcs/headers/m6507.h \
+		../../oaemucpu/headers/m6502.h \
+		../../oaemucpu/headers/basecpu.h \
+		../../oaemumemory/headers/imemorymapper.h \
+		../../oavcs/headers/vcsaudio.h \
+		../../oavcs/headers/vcsaudiochannel.h \
+		../../oavcs/headers/vcstia.h \
+		../../oaemumemory/headers/memoryram.h \
+		../../oaemumemory/headers/basememory.h \
 		../../oavcs/headers/vcsconsoletype.h \
-		../../oavcs/headers/vcsinput.h \
+		../../oavcs/headers/vcspalette.h \
+		../../oavcs/headers/vcsmemory.h \
+		../../oaemumemory/headers/memoryramflagged.h \
+		../../oaemumemory/headers/memoryrom.h \
+		../../oavcs/headers/vcscartridge.h \
 		../../oavcs/headers/vcsparameters.h \
+		../../oavcs/headers/vcsriot.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/dmax/projects/oaemu/oafrontend/build/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/dmax/projects/oaemu/oafrontend -I/home/dmax/projects/oaemu -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtXml -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../headers/oaemumainwindow.h -o build/moc_oaemumainwindow.cpp
@@ -447,11 +460,24 @@ build/main.o: ../main.cc ../headers/oaemusystemdata.h \
 		../headers/oaemuvcsgame.h \
 		../headers/oaemumainwindow.h \
 		build/ui_oaemumainwindow.h \
-		../../oavcs/headers/vcsmainwindow.h \
-		../../oavcs/headers/vcspalette.h \
+		../../oavcs/headers/vcsconsole.h \
+		../../oavcs/headers/m6507.h \
+		../../oaemucpu/headers/m6502.h \
+		../../oaemucpu/headers/basecpu.h \
+		../../oaemumemory/headers/imemorymapper.h \
+		../../oavcs/headers/vcsaudio.h \
+		../../oavcs/headers/vcsaudiochannel.h \
+		../../oavcs/headers/vcstia.h \
+		../../oaemumemory/headers/memoryram.h \
+		../../oaemumemory/headers/basememory.h \
 		../../oavcs/headers/vcsconsoletype.h \
-		../../oavcs/headers/vcsinput.h \
-		../../oavcs/headers/vcsparameters.h
+		../../oavcs/headers/vcspalette.h \
+		../../oavcs/headers/vcsmemory.h \
+		../../oaemumemory/headers/memoryramflagged.h \
+		../../oaemumemory/headers/memoryrom.h \
+		../../oavcs/headers/vcscartridge.h \
+		../../oavcs/headers/vcsparameters.h \
+		../../oavcs/headers/vcsriot.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/main.o ../main.cc
 
 build/oaemuvcsgame.o: ../oaemuvcsgame.cc ../headers/oaemuvcsgame.h
@@ -476,11 +502,24 @@ build/oaemumainwindow.o: ../oaemumainwindow.cc ../headers/oaemumainwindow.h \
 		../headers/oaemuscreentypes.h \
 		../headers/oaemuvcssystem.h \
 		../headers/oaemuvcsgame.h \
-		../../oavcs/headers/vcsmainwindow.h \
-		../../oavcs/headers/vcspalette.h \
+		../../oavcs/headers/vcsconsole.h \
+		../../oavcs/headers/m6507.h \
+		../../oaemucpu/headers/m6502.h \
+		../../oaemucpu/headers/basecpu.h \
+		../../oaemumemory/headers/imemorymapper.h \
+		../../oavcs/headers/vcsaudio.h \
+		../../oavcs/headers/vcsaudiochannel.h \
+		../../oavcs/headers/vcstia.h \
+		../../oaemumemory/headers/memoryram.h \
+		../../oaemumemory/headers/basememory.h \
 		../../oavcs/headers/vcsconsoletype.h \
-		../../oavcs/headers/vcsinput.h \
-		../../oavcs/headers/vcsparameters.h
+		../../oavcs/headers/vcspalette.h \
+		../../oavcs/headers/vcsmemory.h \
+		../../oaemumemory/headers/memoryramflagged.h \
+		../../oaemumemory/headers/memoryrom.h \
+		../../oavcs/headers/vcscartridge.h \
+		../../oavcs/headers/vcsparameters.h \
+		../../oavcs/headers/vcsriot.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/oaemumainwindow.o ../oaemumainwindow.cc
 
 build/moc_oaemumainwindow.o: build/moc_oaemumainwindow.cpp 

@@ -1,16 +1,16 @@
 /****************************************************************************
-** Meta object code from reading C++ file 'vcsmainwindow.h'
+** Meta object code from reading C++ file 'vcsinput.h'
 **
 ** Created by: The Qt Meta Object Compiler version 67 (Qt 5.12.8)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "../../headers/vcsmainwindow.h"
+#include "../../headers/vcsinput.h"
 #include <QtCore/qbytearray.h>
 #include <QtCore/qmetatype.h>
 #if !defined(Q_MOC_OUTPUT_REVISION)
-#error "The header file 'vcsmainwindow.h' doesn't include <QObject>."
+#error "The header file 'vcsinput.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
 #error "This file was generated using the moc from 5.12.8. It"
 #error "cannot be used with the include files from this version of Qt."
@@ -20,25 +20,25 @@
 QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
-struct qt_meta_stringdata_oa__vcs__VcsMainWindow_t {
+struct qt_meta_stringdata_oa__vcs__VcsInput_t {
     QByteArrayData data[1];
-    char stringdata0[23];
+    char stringdata0[18];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_oa__vcs__VcsMainWindow_t, stringdata0) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_oa__vcs__VcsInput_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
-static const qt_meta_stringdata_oa__vcs__VcsMainWindow_t qt_meta_stringdata_oa__vcs__VcsMainWindow = {
+static const qt_meta_stringdata_oa__vcs__VcsInput_t qt_meta_stringdata_oa__vcs__VcsInput = {
     {
-QT_MOC_LITERAL(0, 0, 22) // "oa::vcs::VcsMainWindow"
+QT_MOC_LITERAL(0, 0, 17) // "oa::vcs::VcsInput"
 
     },
-    "oa::vcs::VcsMainWindow"
+    "oa::vcs::VcsInput"
 };
 #undef QT_MOC_LITERAL
 
-static const uint qt_meta_data_oa__vcs__VcsMainWindow[] = {
+static const uint qt_meta_data_oa__vcs__VcsInput[] = {
 
  // content:
        8,       // revision
@@ -54,7 +54,7 @@ static const uint qt_meta_data_oa__vcs__VcsMainWindow[] = {
        0        // eod
 };
 
-void oa::vcs::VcsMainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void oa::vcs::VcsInput::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     Q_UNUSED(_o);
     Q_UNUSED(_id);
@@ -62,32 +62,32 @@ void oa::vcs::VcsMainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _
     Q_UNUSED(_a);
 }
 
-QT_INIT_METAOBJECT const QMetaObject oa::vcs::VcsMainWindow::staticMetaObject = { {
-    &QWidget::staticMetaObject,
-    qt_meta_stringdata_oa__vcs__VcsMainWindow.data,
-    qt_meta_data_oa__vcs__VcsMainWindow,
+QT_INIT_METAOBJECT const QMetaObject oa::vcs::VcsInput::staticMetaObject = { {
+    &QObject::staticMetaObject,
+    qt_meta_stringdata_oa__vcs__VcsInput.data,
+    qt_meta_data_oa__vcs__VcsInput,
     qt_static_metacall,
     nullptr,
     nullptr
 } };
 
 
-const QMetaObject *oa::vcs::VcsMainWindow::metaObject() const
+const QMetaObject *oa::vcs::VcsInput::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *oa::vcs::VcsMainWindow::qt_metacast(const char *_clname)
+void *oa::vcs::VcsInput::qt_metacast(const char *_clname)
 {
     if (!_clname) return nullptr;
-    if (!strcmp(_clname, qt_meta_stringdata_oa__vcs__VcsMainWindow.stringdata0))
+    if (!strcmp(_clname, qt_meta_stringdata_oa__vcs__VcsInput.stringdata0))
         return static_cast<void*>(this);
-    return QWidget::qt_metacast(_clname);
+    return QObject::qt_metacast(_clname);
 }
 
-int oa::vcs::VcsMainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int oa::vcs::VcsInput::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    _id = QWidget::qt_metacall(_c, _id, _a);
+    _id = QObject::qt_metacall(_c, _id, _a);
     return _id;
 }
 QT_WARNING_POP

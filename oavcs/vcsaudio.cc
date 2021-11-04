@@ -1,7 +1,7 @@
-#include <QDebug>
 
 #include "headers/vcsaudio.h"
-#include "headers/vcsaudiochannel.h"
+
+#include <QDebug>
 
 #define REG_AUDV0   0x19
 #define REG_AUDV1   0x1A
@@ -50,8 +50,7 @@ namespace oa
             register1 = vcsTia_->GetAudioV1();
             register2 = vcsTia_->GetAudioF1();
             register3 = vcsTia_->GetAudioC1();
-            channels_[1]->SetChannelSettings(register1, register2, register3);
-            
+            channels_[1]->SetChannelSettings(register1, register2, register3);            
         }
 
     }

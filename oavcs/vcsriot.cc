@@ -20,9 +20,24 @@ namespace oa
     namespace vcs
     {
  
-        VcsRiot::VcsRiot(VcsInput *vcsInput) : MemoryRam(0x80, "VCS RIOT Registers")
+        VcsRiot::VcsRiot() : 
+            MemoryRam(0x80, "VCS RIOT Registers"),
+            m_gamepad_(*QGamepadManager::instance()->connectedGamepads().begin())
         {
-            vcsInput_ = vcsInput;
+            regSwcha_ = 255;
+            regSwchb_ = 11;
+            regSwcnt_ = 255;
+            regInpt0_ = 255;
+            regInpt1_ = 255;
+            regInpt2_ = 255;
+            regInpt3_ = 255;
+            regInpt4_ = 255;
+            regInpt5_ = 255;
+
+            connect(&m_gamepad_, SIGNAL(buttonXChanged(bool)), this, SLOT(LeftControllerReset(bool)));
+            connect(&m_gamepad_, SIGNAL(buttonYChanged(bool)), this, SLOT(LeftControllerSelect(bool)));
+            connect(&m_gamepad_, SIGNAL(axisLeftXChanged(double)), this, SLOT(LeftControllerLeftRight(double)));
+            connect(&m_gamepad_, SIGNAL(axisLeftYChanged(double)), this, SLOT(LeftControllerUpDown(double)));
         }
         
         void VcsRiot::Reset()
@@ -51,25 +66,89 @@ namespace oa
             MemoryRam::Write(REG_INTIM, timer);
         }
         
+        void VcsRiot::LeftControllerReset(bool value)
+        {
+            //qDebug() << "A" << value;
+            if (value != 0)
+            {
+                regSwchb_ &= 0xFE;
+            }
+            else
+            {
+                regSwchb_ |= 0x01;
+            }
+        }
+
+        void VcsRiot::LeftControllerSelect(bool value)
+        {
+            //qDebug() << "A" << value;
+            if (value != 0)
+            {
+                regSwchb_ &= 0xFD;
+            }
+            else
+            {
+                regSwchb_ |= 0x02;
+            }
+        }
+
+        void VcsRiot::LeftControllerUpDown(double value)
+        {
+            //qDebug() << "Button Up" << value;
+            if (value < 0)
+            {
+                regSwcha_ |= 0x30;
+                regSwcha_ &= 0xEF;
+            }
+            else if (value > 0)
+            {
+                regSwcha_ |= 0x30;
+                regSwcha_ &= 0xDF;
+            }
+            else if (value == 0)
+            {
+                regSwcha_ |= 0x30;
+            }
+        }
+            
+        void VcsRiot::LeftControllerLeftRight(double value)
+        {
+            //qDebug() << "Left X" << value;
+            if (value < 0)
+            {
+                regSwcha_ |= 0xC0;
+                regSwcha_ &= 0xBF;
+            }
+            else if (value > 0)
+            {
+                regSwcha_ |= 0xC0;
+                regSwcha_ &= 0x7F;
+            }
+            else if (value == 0)
+            {
+                regSwcha_ |= 0xC0;
+            }
+        }
+        
         uint8_t VcsRiot::Read(uint16_t location)
         {
             location &= 0x7F;
 
             if (location == REG_SWCHA)
             {
-                return vcsInput_->GetSwchaReg();
+                return regSwcha_;
             }
             else if (location == REG_SWCNT)
             {
-                return vcsInput_->GetSwcntReg();
+                return regInpt4_;
             }
             else if (location == REG_SWCHB)
             {
-                return vcsInput_->GetSwchbReg();
+                return regSwchb_;
             }
             else if (location == REG_SWBCNT)
             {
-                return vcsInput_->GetSwcntReg();
+                return regSwcnt_;
             }
             else if (location == REG_INTIM)
             {

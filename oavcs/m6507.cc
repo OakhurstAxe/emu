@@ -1,8 +1,6 @@
 
 #include "headers/m6507.h"
 
-#include <QDebug>
-
 namespace oa
 {
     namespace vcs

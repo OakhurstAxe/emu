@@ -1,16 +1,16 @@
 /****************************************************************************
-** Meta object code from reading C++ file 'vcsconsole.h'
+** Meta object code from reading C++ file 'vcstia.h'
 **
 ** Created by: The Qt Meta Object Compiler version 67 (Qt 5.12.8)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "../../headers/vcsconsole.h"
+#include "../../headers/vcstia.h"
 #include <QtCore/qbytearray.h>
 #include <QtCore/qmetatype.h>
 #if !defined(Q_MOC_OUTPUT_REVISION)
-#error "The header file 'vcsconsole.h' doesn't include <QObject>."
+#error "The header file 'vcstia.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
 #error "This file was generated using the moc from 5.12.8. It"
 #error "cannot be used with the include files from this version of Qt."
@@ -20,27 +20,28 @@
 QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
-struct qt_meta_stringdata_oa__vcs__VcsConsole_t {
-    QByteArrayData data[3];
-    char stringdata0[36];
+struct qt_meta_stringdata_oa__vcs__VcsTia_t {
+    QByteArrayData data[4];
+    char stringdata0[39];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_oa__vcs__VcsConsole_t, stringdata0) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_oa__vcs__VcsTia_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
-static const qt_meta_stringdata_oa__vcs__VcsConsole_t qt_meta_stringdata_oa__vcs__VcsConsole = {
+static const qt_meta_stringdata_oa__vcs__VcsTia_t qt_meta_stringdata_oa__vcs__VcsTia = {
     {
-QT_MOC_LITERAL(0, 0, 19), // "oa::vcs::VcsConsole"
-QT_MOC_LITERAL(1, 20, 14), // "StartNextFrame"
-QT_MOC_LITERAL(2, 35, 0) // ""
+QT_MOC_LITERAL(0, 0, 15), // "oa::vcs::VcsTia"
+QT_MOC_LITERAL(1, 16, 15), // "LeftControllerA"
+QT_MOC_LITERAL(2, 32, 0), // ""
+QT_MOC_LITERAL(3, 33, 5) // "value"
 
     },
-    "oa::vcs::VcsConsole\0StartNextFrame\0"
+    "oa::vcs::VcsTia\0LeftControllerA\0\0value"
 };
 #undef QT_MOC_LITERAL
 
-static const uint qt_meta_data_oa__vcs__VcsConsole[] = {
+static const uint qt_meta_data_oa__vcs__VcsTia[] = {
 
  // content:
        8,       // revision
@@ -54,53 +55,54 @@ static const uint qt_meta_data_oa__vcs__VcsConsole[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   19,    2, 0x0a /* Public */,
+       1,    1,   19,    2, 0x0a /* Public */,
 
  // slots: parameters
-    QMetaType::Void,
+    QMetaType::Void, QMetaType::Bool,    3,
 
        0        // eod
 };
 
-void oa::vcs::VcsConsole::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void oa::vcs::VcsTia::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
-        auto *_t = static_cast<VcsConsole *>(_o);
+        auto *_t = static_cast<VcsTia *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->StartNextFrame(); break;
+        case 0: _t->LeftControllerA((*reinterpret_cast< bool(*)>(_a[1]))); break;
         default: ;
         }
     }
-    Q_UNUSED(_a);
 }
 
-QT_INIT_METAOBJECT const QMetaObject oa::vcs::VcsConsole::staticMetaObject = { {
-    &QWidget::staticMetaObject,
-    qt_meta_stringdata_oa__vcs__VcsConsole.data,
-    qt_meta_data_oa__vcs__VcsConsole,
+QT_INIT_METAOBJECT const QMetaObject oa::vcs::VcsTia::staticMetaObject = { {
+    &QObject::staticMetaObject,
+    qt_meta_stringdata_oa__vcs__VcsTia.data,
+    qt_meta_data_oa__vcs__VcsTia,
     qt_static_metacall,
     nullptr,
     nullptr
 } };
 
 
-const QMetaObject *oa::vcs::VcsConsole::metaObject() const
+const QMetaObject *oa::vcs::VcsTia::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *oa::vcs::VcsConsole::qt_metacast(const char *_clname)
+void *oa::vcs::VcsTia::qt_metacast(const char *_clname)
 {
     if (!_clname) return nullptr;
-    if (!strcmp(_clname, qt_meta_stringdata_oa__vcs__VcsConsole.stringdata0))
+    if (!strcmp(_clname, qt_meta_stringdata_oa__vcs__VcsTia.stringdata0))
         return static_cast<void*>(this);
-    return QWidget::qt_metacast(_clname);
+    if (!strcmp(_clname, "emu::MemoryRam"))
+        return static_cast< emu::MemoryRam*>(this);
+    return QObject::qt_metacast(_clname);
 }
 
-int oa::vcs::VcsConsole::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int oa::vcs::VcsTia::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    _id = QWidget::qt_metacall(_c, _id, _a);
+    _id = QObject::qt_metacall(_c, _id, _a);
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {

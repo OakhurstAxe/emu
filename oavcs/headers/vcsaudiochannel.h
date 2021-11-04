@@ -3,18 +3,20 @@
 
 #include "portaudio.h"
 
-const int DataSampleRateHz        = 44100;
-const int SamplesPerFrame         = 736;
-const int SamplesPerHalfFrame     = 366;
-const int SamplesPerQuarterFrame  = 183;
-const int BufferSize              = SamplesPerFrame * sizeof(float) * 2;
+#include <stdint.h>
+#include <QtGlobal>
+
+#define DataSampleRateHz        44100
+#define SamplesPerFrame         736
+#define SamplesPerHalfFrame     366
+#define SamplesPerQuarterFrame  183
+#define BufferSize              SamplesPerFrame * sizeof(float)
 
 namespace oa
 {
     namespace vcs
     {
         enum ShiftRegister { four, five, nine, fiveToFour, div2, div31, div31four };
-
 
         class VcsAudioChannel
         {
@@ -29,8 +31,8 @@ namespace oa
                 PaStreamCallbackFlags statusFlags,
                 void* userData);
             void SetChannelSettings(uint8_t volumeReg, uint8_t frequencyReg, uint8_t noiseReg);
-            float *GenerateBufferData(int sampleCount);
         protected:
+            float *GenerateBufferData(uint32_t sampleCount);
             void ShiftRegisters();
             void ShiftFourRegister();
             void ShiftFiveRegister();
@@ -57,5 +59,6 @@ namespace oa
 
     }
 }
+
 #endif
 

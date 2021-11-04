@@ -5,56 +5,22 @@ namespace oa
 {
     namespace vcs
     {
-        VcsCartridgeF6::VcsCartridgeF6() :
-            cartRom0_(0x1000, "Cartridge ROM Bank 0"),
-            cartRom1_(0x1000, "Cartridge ROM Bank 1"),
-            cartRom2_(0x1000, "Cartridge ROM Bank 2"),
-            cartRom3_(0x1000, "Cartridge ROM Bank 3")
+        VcsCartridgeF6::VcsCartridgeF6() : VcsCartridge(0x4000, "Cartridge ROM Bank")
         {
-            selectedCartRom_ = &cartRom3_;
+            memoryOffset_ = 0x3000;
         }
         
         uint8_t VcsCartridgeF6::Read(uint16_t location)
         {
-            if (location == 0xFF6)
-            {
-                selectedCartRom_ = &cartRom0_;
-            }
-            else if (location == 0xFF7)
-            {
-                selectedCartRom_ = &cartRom1_;
-            }
-            else if (location == 0xFF8)
-            {
-                selectedCartRom_ = &cartRom2_;
-            }
-            else if (location == 0xFF9)
-            {
-                selectedCartRom_ = &cartRom3_;
-            }
-            return selectedCartRom_->Read(location);
+            SetMemoryOffset(location);
+
+            return VcsCartridge::Read(location + memoryOffset_);
         }
         
         void VcsCartridgeF6::Write(uint16_t location, uint8_t byte)
         {
-            if (location == 0xFF6)
+            if (SetMemoryOffset(location))
             {
-                selectedCartRom_ = &cartRom0_;
-                return;
-            }
-            else if (location == 0xFF7)
-            {
-                selectedCartRom_ = &cartRom1_;
-                return;
-            }
-            else if (location == 0xFF8)
-            {
-                selectedCartRom_ = &cartRom2_;
-                return;
-            }
-            else if (location == 0xFF9)
-            {
-                selectedCartRom_ = &cartRom3_;
                 return;
             }
 
@@ -62,14 +28,30 @@ namespace oa
             throw std::out_of_range(QString("Cannot write to Cart ROM %1").arg(location).toLocal8Bit().data());
         }
         
-        void VcsCartridgeF6::LoadData(uint8_t* data, uint32_t size)
+        bool VcsCartridgeF6::SetMemoryOffset(uint16_t location)
         {
-            cartRom0_.LoadData(&data[0x1000 * 0], 0x1000);
-            cartRom1_.LoadData(&data[0x1000 * 1], 0x1000);
-            cartRom2_.LoadData(&data[0x1000 * 2], 0x1000);
-            cartRom3_.LoadData(&data[0x1000 * 3], 0x1000);
+            if (location == 0xFF6)
+            {
+                memoryOffset_ = 0x0000;
+                return true;
+            }
+            else if (location == 0xFF7)
+            {
+                memoryOffset_ = 0x1000;
+                return true;
+            }
+            else if (location == 0xFF8)
+            {
+                memoryOffset_ = 0x2000;
+                return true;
+            }
+            else if (location == 0xFF9)
+            {
+                memoryOffset_ = 0x3000;
+                return true;
+            }
+            return false;
         }
-        
     }
 }
 

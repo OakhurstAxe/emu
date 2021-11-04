@@ -27,8 +27,7 @@ namespace oa
             if (err != paNoError)
             {
                 qDebug() << "Error starting stream for port audio";
-            }
-                
+            }                
         }
 
         VcsAudioChannel::~VcsAudioChannel()
@@ -235,7 +234,7 @@ namespace oa
             }
         }
 
-        float *VcsAudioChannel::GenerateBufferData(int sampleCount)
+        float *VcsAudioChannel::GenerateBufferData(uint32_t sampleCount)
         {
             if (frequency_ == 0)
             {
@@ -248,7 +247,7 @@ namespace oa
             }
             
             uint wavelength = ((DataSampleRateHz / frequency_));
-            int sampleIndex = 0;
+            uint32_t sampleIndex = 0;
 
             while (sampleIndex < sampleCount) 
             {
@@ -344,7 +343,6 @@ namespace oa
                 if (statusFlags == 4)
                     qDebug() << "Audio underflow";
                 //qDebug() << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-                //qDebug() << "frameCount: " << frameCount;
                 float *buffer = self->GenerateBufferData(frameCount);
                 memcpy(output, buffer, frameCount * sizeof(float));
                 return 0;

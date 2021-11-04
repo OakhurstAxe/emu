@@ -5,7 +5,7 @@ namespace oa
 {
     namespace vcs
     {
-        VcsCartridgeE7::VcsCartridgeE7() :
+        VcsCartridgeE7::VcsCartridgeE7() : VcsCartridge(0x1000, "Cartridge Program ROM"),
             cartRam1K_(0x800, "Cartridge RAM Bank 1K"),
             cartRam0_(0xFF, "Cartridge RAM Bank 0"),
             cartRam1_(0xFF, "Cartridge RAM Bank 1"),
@@ -117,8 +117,10 @@ namespace oa
             throw std::out_of_range(QString("Cannot write to Cart ROM %1").arg(location).toLocal8Bit().data());
         }
         
-        void VcsCartridgeE7::LoadData(uint8_t* data, uint32_t size)
+        void VcsCartridgeE7::LoadData(uint8_t* data, uint16_t size)
         {
+            Q_UNUSED(size);
+            
             cartRom0_.LoadData(&data[0x800 * 0], 0x800);
             cartRom1_.LoadData(&data[0x800 * 1], 0x800);
             cartRom2_.LoadData(&data[0x800 * 2], 0x800);

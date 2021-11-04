@@ -17,7 +17,7 @@ namespace oa
             
             uint8_t Read(uint16_t location) override;
             void Write(uint16_t location, uint8_t byte) override;
-            void LoadData(uint8_t * data, uint32_t size) override;
+            void LoadData(uint8_t* data, uint16_t size) override;
         private:
             // Using RAM because first 128 bytes is writeable
             emu::MemoryRam cartRam_;

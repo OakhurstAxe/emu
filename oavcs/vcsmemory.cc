@@ -75,10 +75,6 @@ namespace oa
             // Working RAM A12=0, A9=0, A7=1 0 **0* 1*** ****
             else if ((location & 0x1280) == 0x0080)
             {
-                if (location == 254)
-                {
-                    int x = 10;
-                }
                 location &= 0x7F;
                 return ram_.Write(location, byte);
             }

@@ -79,11 +79,21 @@ namespace oa
     namespace vcs
     {
  
-        VcsTia::VcsTia(VcsConsoleType *vcsConsoleType) : MemoryRam(0x7F, "TIA Registers")
+        VcsTia::VcsTia(VcsConsoleType *vcsConsoleType) : 
+            MemoryRam(0x7F, "TIA Registers"),
+            vcsPalette_(vcsConsoleType),
+            m_gamepad_(*QGamepadManager::instance()->connectedGamepads().begin())
         {
             vcsConsoleType_ = vcsConsoleType;
-            screen_ = (uint8_t*)malloc(vcsConsoleType_->GetXResolution() * vcsConsoleType_->GetYResolution());
+            screen_ = (QRgb*)malloc(vcsConsoleType_->GetXResolution() * vcsConsoleType_->GetYResolution() * sizeof(QRgb));
             Reset();
+            connect(&m_gamepad_, SIGNAL(buttonAChanged(bool)), this, SLOT(LeftControllerA(bool)));
+            
+            regInpt0_ = 255;
+            regInpt1_ = 255;
+            regInpt2_ = 255;
+            regInpt3_ = 255;
+            regInpt4_ = 255;
         }
         
         VcsTia::~VcsTia()
@@ -124,6 +134,18 @@ namespace oa
             }
         }
         
+        void VcsTia::LeftControllerA(bool value)
+        {
+            if (value != 0)
+            {
+                regInpt4_ &= 0x7F;
+            }
+            else
+            {
+                regInpt4_ |= 0x80;
+            }
+        }
+        
         bool VcsTia::Repaint()
         {
             return (cycle_ == 0 && scanLine_ == 3);
@@ -134,7 +156,7 @@ namespace oa
             return (cycle_ == 0);
         }
                     
-        uint8_t* VcsTia::GetScreen()
+        QRgb* VcsTia::GetScreen()
         {
             return screen_;
         }
@@ -547,7 +569,7 @@ namespace oa
             {
                 currentColor = (uint8_t)background;
             }
-            screen_[currentPixel] = currentColor;
+            screen_[currentPixel] = vcsPalette_.GetColor(currentColor).rgb();
 
             CheckCollisions(playfieldPixel,
                 p0Pixel, p1Pixel, m0Pixel, m1Pixel,
@@ -655,6 +677,15 @@ namespace oa
             }
             
             return result;
+        }
+        
+        uint8_t VcsTia::Read(uint16_t location)
+        {
+            if (location == REG_INPT4)
+            {
+                return regInpt4_;
+            }
+            return MemoryRam::Read(location);
         }
         
         void VcsTia::Write(uint16_t location, uint8_t byte)

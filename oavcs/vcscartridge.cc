@@ -13,6 +13,10 @@ namespace oa
     namespace vcs
     {
 
+        VcsCartridge::VcsCartridge(uint16_t size, QString name) : emu::MemoryRom(size, name)
+        {
+        }
+        
         VcsCartridge* VcsCartridge::GetCartridge(VcsParameters *vcsParameters)
         {
             VcsCartridge *cart;

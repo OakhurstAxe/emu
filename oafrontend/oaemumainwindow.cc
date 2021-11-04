@@ -257,7 +257,7 @@ namespace oa
             {
                 delete vcs_;
             }
-            vcs_ = new vcs::VcsMainWindow(vcsParameters_);
+            vcs_ = new vcs::VcsConsole(&vcsParameters_);
             vcs_->show();            
         }
 

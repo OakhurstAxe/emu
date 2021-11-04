@@ -1,14 +1,11 @@
 #ifndef _OA_VCS_MEMORY_H
 #define _OA_VCS_MEMORY_H
 
-#include "oaemumemory/headers/memoryram.h"
-#include "oaemumemory/headers/memoryramflagged.h"
-#include "oaemumemory/headers/memoryrom.h"
 #include "oaemumemory/headers/imemorymapper.h"
-#include "oaemucpu/headers/m6502.h"
 #include "vcscartridge.h"
-#include "vcstia.h"
+#include "vcsparameters.h"
 #include "vcsriot.h"
+#include "vcstia.h"
 
 namespace oa
 {
@@ -29,9 +26,6 @@ namespace oa
             emu::MemoryRam ram_;
             VcsRiot *vcsRiot_;
             VcsCartridge* vcsCartridge_;
-
-            uint8_t leftController_ = 0;
-            uint8_t rightController_ = 0;
         };
 
     }
