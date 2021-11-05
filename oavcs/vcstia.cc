@@ -89,11 +89,12 @@ namespace oa
             Reset();
             connect(&m_gamepad_, SIGNAL(buttonAChanged(bool)), this, SLOT(LeftControllerA(bool)));
             
-            regInpt0_ = 255;
-            regInpt1_ = 255;
-            regInpt2_ = 255;
-            regInpt3_ = 255;
-            regInpt4_ = 255;
+            memory_[REG_INPT0] = 255;
+            memory_[REG_INPT1] = 255;
+            memory_[REG_INPT2] = 255;
+            memory_[REG_INPT3] = 255;
+            memory_[REG_INPT4] = 255;
+            memory_[REG_INPT5] = 255;
         }
         
         VcsTia::~VcsTia()
@@ -134,18 +135,6 @@ namespace oa
             }
         }
         
-        void VcsTia::LeftControllerA(bool value)
-        {
-            if (value != 0)
-            {
-                regInpt4_ &= 0x7F;
-            }
-            else
-            {
-                regInpt4_ |= 0x80;
-            }
-        }
-        
         bool VcsTia::Repaint()
         {
             return (cycle_ == 0 && scanLine_ == 3);
@@ -182,20 +171,20 @@ namespace oa
         
         void VcsTia::ApplyMovement()
         {
-            MoveObject(HMP0, &resP0Cycle_);
-            MoveObject(HMP1, &resP1Cycle_);
-            MoveObject(HMM0, &resM0Cycle_);
-            MoveObject(HMM1, &resM1Cycle_);
-            MoveObject(HMBL, &resBLCycle_);
+            MoveObject(memory_[REG_HMP0], &resP0Cycle_);
+            MoveObject(memory_[REG_HMP1], &resP1Cycle_);
+            MoveObject(memory_[REG_HMM0], &resM0Cycle_);
+            MoveObject(memory_[REG_HMM1], &resM1Cycle_);
+            MoveObject(memory_[REG_HMBL], &resBLCycle_);
         }
         
         void VcsTia::ClearMoveRegisters()
         {
-            HMP0 = 0;
-            HMP1 = 0;
-            HMM0 = 0;
-            HMM1 = 0;
-            HMBL = 0;
+            memory_[REG_HMP0] = 0;
+            memory_[REG_HMP1] = 0;
+            memory_[REG_HMM0] = 0;
+            memory_[REG_HMM1] = 0;
+            memory_[REG_HMBL] = 0;
         }
 
         int16_t VcsTia::GetPlayerPixel(uint8_t graphicsPlayer, uint8_t playerSize,
@@ -277,8 +266,8 @@ namespace oa
         int16_t VcsTia::GetPlayfieldPixel()
         {
             uint16_t screenX = cycle_ - 68;
-            uint8_t controlPlayfield = CTRLPF;
-            uint8_t playfieldColor = COLUPF;
+            uint8_t controlPlayfield = memory_[REG_CTRLPF];
+            uint8_t playfieldColor = memory_[REG_COLUPF];
             uint8_t byte;
             int16_t result = -1;
             
@@ -286,16 +275,16 @@ namespace oa
             {
                 if (screenX < 80)
                 {
-                    playfieldColor = COLUP0;
+                    playfieldColor = memory_[REG_COLUP0];
                 }
                 else
                 {
-                    playfieldColor = COLUP1;
+                    playfieldColor = memory_[REG_COLUP1];
                 }
             }
             if (screenX < 16)
             {
-                byte = ((PF0 >> 4) & 0x0f);
+                byte = ((memory_[REG_PF0] >> 4) & 0x0f);
                 byte = (byte >> (screenX >> 2)) & 0x01;
                 if (byte > 0)
                 {
@@ -304,7 +293,7 @@ namespace oa
             }
             else if (screenX < 48)
             {
-                byte = PF1;
+                byte = memory_[REG_PF1];
                 byte = ReverseBits(byte);
                 uint8_t shift = (screenX - 16) >> 2;
                 byte = (byte >> shift) & 0x01;
@@ -315,7 +304,7 @@ namespace oa
             }
             else if (screenX < 80)
             {
-                byte = PF2;
+                byte = memory_[REG_PF2];
                 uint8_t shift = (screenX - 48) >> 2;
                 byte = (byte >> shift) & 0x01;
                 if (byte > 0)
@@ -329,7 +318,7 @@ namespace oa
                 {
                     if (screenX < 112)
                     {
-                        byte = PF2;
+                        byte = memory_[REG_PF2];
                         byte = ReverseBits(byte);
                         uint8_t shift = (screenX - 80) >> 2;
                         byte = (byte >> shift) & 0x01;
@@ -340,7 +329,7 @@ namespace oa
                     }
                     else if (screenX < 144)
                     {
-                        byte = PF1;
+                        byte = memory_[REG_PF1];
                         uint8_t shift = (screenX - 112) >> 2;
                         byte = (byte >> shift) & 0x01;
                         if (byte > 0)
@@ -350,7 +339,7 @@ namespace oa
                     }
                     else if (screenX <= vcsConsoleType_->GetXResolution())
                     {
-                        byte = ((PF0 >> 4) & 0x0f);
+                        byte = ((memory_[REG_PF0] >> 4) & 0x0f);
                         byte = ReverseBits(byte) >> 4;
                         uint8_t shift = (screenX - 144) >> 2;
                         byte = (byte >> shift) & 0x01;
@@ -364,7 +353,7 @@ namespace oa
                 {
                     if (screenX < 96)
                     {
-                        byte = ((PF0 >> 4) & 0x0f);
+                        byte = ((memory_[REG_PF0] >> 4) & 0x0f);
                         uint8_t shift = (screenX - 80) >> 2;
                         byte = (byte >> shift) & 0x01;
                         if (byte > 0)
@@ -374,7 +363,7 @@ namespace oa
                     }
                     else if (screenX < 128)
                     {
-                        byte = PF1;
+                        byte = memory_[REG_PF1];
                         byte = ReverseBits(byte);
                         uint8_t shift = (screenX - 96) >> 2;
                         byte = (byte >> shift) & 0x01;
@@ -385,7 +374,7 @@ namespace oa
                     }
                     else if (screenX < vcsConsoleType_->GetXResolution())
                     {
-                        byte = PF2;
+                        byte = memory_[REG_PF2];
                         uint8_t shift = (screenX - 128) >> 2;
                         byte = (byte >> shift) & 0x01;
                         if (byte > 0)
@@ -466,9 +455,9 @@ namespace oa
         {
             int16_t result = -1;
             
-            if ((ENABL & 0x02) > 0)
+            if ((memory_[REG_ENABL] & 0x02) > 0)
             {
-                uint8_t size = CTRLPF;
+                uint8_t size = memory_[REG_CTRLPF];
                 size = ((size & 0x30) >> 4);
                 switch (size)
                 {
@@ -487,7 +476,7 @@ namespace oa
                 }
                 if ((resBLCycle_) <= cycle_ && (resBLCycle_ + size) >= cycle_)
                 {
-                    result = COLUPF;
+                    result = memory_[REG_COLUPF];
                 }
             }
             
@@ -498,22 +487,22 @@ namespace oa
         {
             uint16_t screenX = cycle_ - 68;
             uint16_t screenY = scanLine_ - (3 + vcsConsoleType_->GetVBlankLines());
-            uint8_t background = COLUBK;
+            uint8_t background = memory_[REG_COLUBK];
             int16_t currentColor = -1;
             
             // Playfield
             int16_t playfieldPixel = GetPlayfieldPixel();
             bool pfAbove = false;
-            if ((CTRLPF & 0x04) > 0)
+            if ((memory_[REG_CTRLPF] & 0x04) > 0)
             {
                 pfAbove = true;
             }
             
             // Get each pixel for collision detection
-            int16_t p0Pixel = GetPlayerPixel(GRP0, NUSIZ0, REFP0, COLUP0, resP0Cycle_);
-            int16_t p1Pixel = GetPlayerPixel(GRP1, NUSIZ1, REFP1, COLUP1, resP1Cycle_);
-            int16_t m0Pixel = GetMisslePixel(ENAM0, RESMP0, NUSIZ0, COLUP0, resM0Cycle_);
-            int16_t m1Pixel = GetMisslePixel(ENAM1, RESMP1, NUSIZ1, COLUP1, resM1Cycle_);
+            int16_t p0Pixel = GetPlayerPixel(memory_[REG_GRP0], memory_[REG_NUSIZ0], memory_[REG_REFP0], memory_[REG_COLUP0], resP0Cycle_);
+            int16_t p1Pixel = GetPlayerPixel(memory_[REG_GRP1], memory_[REG_NUSIZ1], memory_[REG_REFP1], memory_[REG_COLUP1], resP1Cycle_);
+            int16_t m0Pixel = GetMisslePixel(memory_[REG_ENAM0], memory_[REG_RESMP0], memory_[REG_NUSIZ0], memory_[REG_COLUP0], resM0Cycle_);
+            int16_t m1Pixel = GetMisslePixel(memory_[REG_ENAM1], memory_[REG_RESMP1], memory_[REG_NUSIZ1], memory_[REG_COLUP1], resM1Cycle_);
             int16_t ballPixel = GetBallPixel();
             
             uint32_t currentPixel = screenY * vcsConsoleType_->GetXResolution() + screenX;
@@ -677,191 +666,88 @@ namespace oa
             }
             
             return result;
+        }        
+                
+        void VcsTia::LeftControllerA(bool value)
+        {
+            uint8_t regInpt4 = memory_[REG_INPT4];
+            if (value != 0)
+            {
+                regInpt4 &= 0x7F;
+            }
+            else
+            {
+                regInpt4 |= 0x80;
+            }
+            memory_[REG_INPT4] = regInpt4;
         }
         
         uint8_t VcsTia::Read(uint16_t location)
         {
-            if (location == REG_INPT4)
-            {
-                return regInpt4_;
-            }
             return MemoryRam::Read(location);
         }
         
         void VcsTia::Write(uint16_t location, uint8_t byte)
         {
-            if (location == REG_NUSIZ0)
+            if (location == REG_GRP0)
             {
-                NUSIZ0 = byte;
-            }
-            else if (location == REG_NUSIZ1)
-            {
-                NUSIZ1 = byte;
-            }
-            else if (location == REG_COLUP0)
-            {
-                COLUP0 = byte;
-            }
-            else if (location == REG_COLUP1)
-            {
-                COLUP1 = byte;
-            }
-            else if (location == REG_COLUPF)
-            {
-                COLUPF = byte;
-            }
-            else if (location == REG_COLUBK)
-            {
-                COLUBK = byte;
-            }
-            else if (location == REG_CTRLPF)
-            {
-                CTRLPF = byte;
-            }
-            else if (location == REG_REFP0)
-            {
-                REFP0 = byte;
-            }
-            else if (location == REG_REFP1)
-            {
-                REFP1 = byte;
-            }
-            else if (location == REG_PF0)
-            {
-                PF0 = byte;
-            }
-            else if (location == REG_PF1)
-            {
-                PF1 = byte;
-            }
-            else if (location == REG_PF2)
-            {
-                PF2 = byte;
-            }
-            else if (location == REG_AUDC0)
-            {
-                AUDC0 = byte;
-            }
-            else if (location == REG_AUDC1)
-            {
-                AUDC1 = byte;
-            }
-            else if (location == REG_AUDF0)
-            {
-                AUDF0 = byte;
-            }
-            else if (location == REG_AUDF1)
-            {
-                AUDF1 = byte;
-            }
-            else if (location == REG_AUDV0)
-            {
-                AUDV0 = byte;
-            }
-            else if (location == REG_AUDV1)
-            {
-                AUDV1 = byte;
-            }
-            else if (location == REG_GRP0)
-            {
-                if ((VDELP0 & 0x01) > 0)
+                if ((memory_[REG_VDELP0] & 0x01) > 0)
                 {
                     GRP0DELAY = byte;
                 }
                 else
                 {
-                    GRP0 = byte;
+                    memory_[REG_GRP0] = byte;
                 }
-                if ((VDELP1 & 0x01) > 0)
+                if ((memory_[REG_VDELP1] & 0x01) > 0)
                 {
-                    GRP1 = GRP1DELAY;
+                    memory_[REG_GRP1] = GRP1DELAY;
                     GRP1DELAY = 0;
                 }
             }
             else if (location == REG_GRP1)
             {
-                if ((VDELP1 & 0x01) > 0)
+                if ((memory_[REG_VDELP1] & 0x01) > 0)
                 {
                     GRP1DELAY = byte;
                 }
                 else
                 {
-                    GRP1 = byte;
+                    memory_[REG_GRP1] = byte;
                 }
-                if ((VDELP0 & 0x01) > 0)
+                if ((memory_[REG_VDELP0] & 0x01) > 0)
                 {
-                    GRP0 = GRP0DELAY;
+                    memory_[REG_GRP0] = GRP0DELAY;
                     GRP0DELAY = 0;
                 }
-                if ((VDELBL & 0x01) > 0)
+                if ((memory_[REG_VDELBL] & 0x01) > 0)
                 {
-                    ENABL = ENABLDELAY;
+                    memory_[REG_ENABL] = ENABLDELAY;
                     ENABLDELAY = 0;
                 }
             }
-            else if (location == REG_ENAM0)
-            {
-                ENAM0 = byte;
-            }
-            else if (location == REG_ENAM1)
-            {
-                ENAM1 = byte;
-            }
             else if (location == REG_ENABL)
             {
-                if ((VDELBL & 0x01) > 0)
+                if ((memory_[REG_VDELBL] & 0x01) > 0)
                 {
                     ENABLDELAY = byte;
                 }
                 else
                 {
-                    ENABL = byte;
+                    memory_[REG_ENABL] = byte;
                 }
-            }
-            else if (location == REG_HMP0)
-            {
-                HMP0 = byte;
-            }
-            else if (location == REG_HMP1)
-            {
-                HMP1 = byte;
-            }
-            else if (location == REG_HMM0)
-            {
-                HMM0 = byte;
-            }
-            else if (location == REG_HMM1)
-            {
-                HMM1 = byte;
-            }
-            else if (location == REG_HMBL)
-            {
-                HMBL = byte;
-            }
-            else if (location == REG_VDELP0)
-            {
-                VDELP0 = byte;
-            }
-            else if (location == REG_VDELP1)
-            {
-                VDELP1 = byte;
-            }
-            else if (location == REG_VDELBL)
-            {
-                VDELBL = byte;
             }
             else if (location == REG_RESMP0)
             {
-                RESMP0 = byte;
+                memory_[REG_RESMP0] = byte;
                 if ((byte & 0x02) > 0)
                 {
                     resM0Cycle_ = resP0Cycle_;
                 }
-
             }
             else if (location == REG_RESMP1)
             {
-                RESMP1 = byte;
+                memory_[REG_RESMP1] = byte;
                 if ((byte & 0x02) > 0)
                 {
                     resM1Cycle_ = resP1Cycle_;
@@ -870,16 +756,16 @@ namespace oa
 
             else if (location == REG_VSYNC)
             {
-                if ((byte & 0x02) == 0 && (VSYNC & 0x02) > 0)
+                if ((byte & 0x02) == 0 && (memory_[REG_VSYNC] & 0x02) > 0)
                 {
                     cycle_ = 0;
                     scanLine_ = 2;
                 }
-                VSYNC = byte;
+                memory_[REG_VSYNC] = byte;
             }
             else if (location == REG_VBLANK)
             {
-                if ((byte & 0x02) == 0 && (VBLANK & 0x02) > 0)
+                if ((byte & 0x02) == 0 && (memory_[REG_VBLANK] & 0x02) > 0)
                 {
                     //cycle_ = 0;
                     if (scanLine_ > 2 + vcsConsoleType_->GetVBlankLines())
@@ -887,7 +773,7 @@ namespace oa
                         scanLine_ = 2 + vcsConsoleType_->GetVBlankLines();
                     }
                 }
-                VBLANK = byte;
+                memory_[REG_VBLANK] = byte;
             }
             else if (location == REG_WSYNC)
             {
@@ -965,27 +851,27 @@ namespace oa
 
         uint8_t VcsTia::GetAudioC0()
         {
-            return AUDC0;
+            return memory_[REG_AUDC0];
         }
         uint8_t VcsTia::GetAudioC1()
         {
-            return AUDC1;
+            return memory_[REG_AUDC1];
         }
         uint8_t VcsTia::GetAudioF0()
         {
-            return AUDF0;
+            return memory_[REG_AUDF0];
         }
         uint8_t VcsTia::GetAudioF1()
         {
-            return AUDF1;
+            return memory_[REG_AUDF1];
         }
         uint8_t VcsTia::GetAudioV0()
         {
-            return AUDV0;
+            return memory_[REG_AUDV0];
         }
         uint8_t VcsTia::GetAudioV1()
         {
-            return AUDV1;
+            return memory_[REG_AUDV1];
         }
 
         uint8_t VcsTia::ReverseBits(uint8_t n) 

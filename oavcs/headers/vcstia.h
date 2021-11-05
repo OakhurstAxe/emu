@@ -37,44 +37,9 @@ namespace oa
         public slots:            
             void LeftControllerA(bool value);
         private:
-            uint8_t NUSIZ0;
-            uint8_t NUSIZ1;
-            uint8_t COLUP0;
-            uint8_t COLUP1;
-            uint8_t COLUPF;
-            uint8_t COLUBK;
-            uint8_t CTRLPF;
-            uint8_t REFP0;
-            uint8_t REFP1;
-            uint8_t PF0;
-            uint8_t PF1;
-            uint8_t PF2;
-            uint8_t AUDC0 = 0;
-            uint8_t AUDC1 = 0;
-            uint8_t AUDF0 = 0;
-            uint8_t AUDF1 = 0;
-            uint8_t AUDV0 = 0;
-            uint8_t AUDV1 = 0;
-            uint8_t GRP0 = 0;
             uint8_t GRP0DELAY = 0;
-            uint8_t GRP1 = 0;
             uint8_t GRP1DELAY = 0;
-            uint8_t ENAM0 = 0;
-            uint8_t ENAM1 = 0;
-            uint8_t ENABL = 0;
             uint8_t ENABLDELAY = 0;
-            uint8_t HMP0 = 0;
-            uint8_t HMP1 = 0;
-            uint8_t HMM0 = 0;
-            uint8_t HMM1 = 0;
-            uint8_t HMBL = 0;
-            uint8_t VDELP0 = 0;
-            uint8_t VDELP1 = 0;
-            uint8_t VDELBL = 0;
-            uint8_t RESMP0 = 0;
-            uint8_t RESMP1 = 0;
-            uint8_t VSYNC = 2;
-            uint8_t VBLANK = 2;
             
             int16_t GetPlayerPixel(uint8_t graphicsPlayer, uint8_t playerSize,
                 uint8_t reflectPlayer, uint8_t color, uint16_t playerCycle);
@@ -110,11 +75,6 @@ namespace oa
             VcsPalette vcsPalette_;
             
             QGamepad m_gamepad_;
-            uint8_t regInpt0_;
-            uint8_t regInpt1_;
-            uint8_t regInpt2_;
-            uint8_t regInpt3_;
-            uint8_t regInpt4_;
         };
         
     }
