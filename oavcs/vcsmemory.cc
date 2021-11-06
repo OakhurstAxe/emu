@@ -44,7 +44,14 @@ namespace oa
             // PIA I/O Mirrors - A12=0, A9=1, A7=1  0 **1* 1*** ****
             else if ((location & 0x1280) == 0x0280)
             {
-                location &= 0x00FF;
+                // copies of PIA
+                location &= 0x1F;
+                
+                // Timer locations duplicated in each block
+                if (location == 0x05 || location == 0x07)
+                {
+                    location -= 2;
+                }
                 return vcsRiot_->Read(location);
             }
             
@@ -68,7 +75,11 @@ namespace oa
             // TIA - If A12=0, A7=0 Mirroring 0 **** 0*** ****
             if ((location & 0x1080) == 0)
             {
-                location &= 0x7F;
+                location &= 0xFF;
+                if (location >= 0x40)
+                {
+                    location -= 0x40;
+                }
                 return vcsTia_->Write(location, byte);
             }
             
@@ -82,7 +93,14 @@ namespace oa
             // PIA I/O Mirrors - A12=0, A9=1, A7=1  0 **1* 1*** ****
             else if ((location & 0x1280) == 0x0280)
             {
-                location &= 0x00FF;
+                // copies of PIA
+                location &= 0x1F;
+                
+                // Timer locations duplicated in each block
+                if (location == 0x05 || location == 0x07)
+                {
+                    location -= 2;
+                }
                 return vcsRiot_->Write(location, byte);
             }
 

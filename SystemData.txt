@@ -135,7 +135,7 @@
                 <Controller>Joystick</Controller>
                 <Company>Sega</Company>
                 <ScreenType>NTSC</ScreenType>
-                <RomFile>Congo Bongo (1983) (SEGA - Beck-Tech, Steve Beck, Phat Ho) (006-01) [a].bin</RomFile>
+                <RomFile>Congo Bongo (1983) (SEGA - Beck-Tech, Steve Beck, Phat Ho) (006-01) ~.bin</RomFile>
             </Game>
             <Game>
                 <Name>Demon Attack</Name>
@@ -258,6 +258,14 @@
                 <RomFile>Smurf - Rescue in Gargamel's Castle (Smurf, Smurf Action) (1983) (Coleco - JWDA, Todd Marshall, Robin McDaniel, Henry Will IV) (2465) ~.bin</RomFile>
             </Game>
             <Game>
+                <Name>Star Wars - The Arcade Game</Name>
+                <Mapper>F8</Mapper>
+                <Controller>Joystick</Controller>
+                <Company>Parker Brothers</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Star Wars - The Arcade Game (1984) (Parker Brothers, Wilfredo Aguilar, Michael Becker, Neil McKenzie, Bob Smith, Brad Stewart) (PB5540) ~.bin</RomFile>
+            </Game>
+            <Game>
                 <Name>TRON</Name>
                 <Mapper>4K</Mapper>
                 <Controller>Joystick</Controller>
@@ -288,14 +296,6 @@
                 <Company>Sirius Software</Company>
                 <ScreenType>NTSC</ScreenType>
                 <RomFile>Worm War I (1983) (CCE) (C-843).bin</RomFile>
-            </Game>
-            <Game>
-                <Name>Star Wars - The Arcade Game</Name>
-                <Mapper>F8</Mapper>
-                <Controller>Joystick</Controller>
-                <Company>Parker Brothers</Company>
-                <ScreenType>NTSC</ScreenType>
-                <RomFile>Star Wars - The Arcade Game (1984) (Parker Brothers, Wilfredo Aguilar, Michael Becker, Neil McKenzie, Bob Smith, Brad Stewart) (PB5540) ~.bin</RomFile>
             </Game>
         </RomFiles>
     </VCS>

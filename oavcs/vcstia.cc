@@ -88,13 +88,6 @@ namespace oa
             screen_ = (QRgb*)malloc(vcsConsoleType_->GetXResolution() * vcsConsoleType_->GetYResolution() * sizeof(QRgb));
             Reset();
             connect(&m_gamepad_, SIGNAL(buttonAChanged(bool)), this, SLOT(LeftControllerA(bool)));
-            
-            memory_[REG_INPT0] = 255;
-            memory_[REG_INPT1] = 255;
-            memory_[REG_INPT2] = 255;
-            memory_[REG_INPT3] = 255;
-            memory_[REG_INPT4] = 255;
-            memory_[REG_INPT5] = 255;
         }
         
         VcsTia::~VcsTia()
@@ -111,6 +104,13 @@ namespace oa
             resP1Cycle_ = 0;
             
             memset(memory_, 0, 0x7F);
+
+            memory_[REG_INPT0] = 255;
+            memory_[REG_INPT1] = 255;
+            memory_[REG_INPT2] = 255;
+            memory_[REG_INPT3] = 255;
+            memory_[REG_INPT4] = 255;
+            memory_[REG_INPT5] = 255;            
         }
         
         void VcsTia::ExecuteTick()
@@ -126,6 +126,41 @@ namespace oa
             if ((scanLine_ > 2 + vcsConsoleType_->GetVBlankLines()) && (scanLine_ <= 2 + vcsConsoleType_->GetVBlankLines() + vcsConsoleType_->GetYResolution()) && (cycle_ > 67))
             {
                 RenderPixel();
+            }
+            
+            if ((memory_[REG_RESMP0] & 0x02) > 0)
+            {
+                uint8_t size = memory_[REG_NUSIZ0];
+                resM0Cycle_ = resP0Cycle_;
+                if ((size & 0x07) == 5) // size 2
+                {
+                    resM0Cycle_ += 6;
+                }
+                else if ((size & 0x07) == 7) // size 4
+                {
+                    resM0Cycle_ += 10;
+                }
+                else // size 1
+                {
+                    resM0Cycle_ += 3;
+                }
+            }
+            if ((memory_[REG_RESMP1] & 0x02) > 0)
+            {
+                uint8_t size = memory_[REG_NUSIZ1];
+                resM1Cycle_ = resP1Cycle_;
+                if ((size & 0x07) == 5) // size 2
+                {
+                    resM1Cycle_ += 6;
+                }
+                else if ((size & 0x07) == 7) // size 4
+                {
+                    resM1Cycle_ += 10;
+                }
+                else // size 1
+                {
+                    resM1Cycle_ += 3;
+                }
             }
             
             // WSYNC 
@@ -392,8 +427,8 @@ namespace oa
             uint8_t missleColor, uint16_t missleCycle)
         {
             int16_t result = -1;
-                        
-            if ((enable & 0x02) > 0 && (missleReset & 0x01) == 0)
+            
+            if ((enable & 0x02) > 0 && (missleReset & 0x02) == 0)
             {
                 uint16_t position2Cycle_ = missleCycle;
                 uint16_t position3Cycle_ = missleCycle;
@@ -684,11 +719,24 @@ namespace oa
         
         uint8_t VcsTia::Read(uint16_t location)
         {
+            if (location < 0x30 || location > 0x3D)
+            {
+                // Undefined TIA read returns address 0x30
+                return MemoryRam::Read(0x30);
+            }
+            
             return MemoryRam::Read(location);
         }
         
         void VcsTia::Write(uint16_t location, uint8_t byte)
         {
+            if (location > 0x2C)
+            {
+                // Undefined write, does nothing.
+                // Sometimes used to waste specific cycle count.
+                return; 
+            }
+            
             if (location == REG_GRP0)
             {
                 if ((memory_[REG_VDELP0] & 0x01) > 0)
@@ -737,23 +785,6 @@ namespace oa
                     memory_[REG_ENABL] = byte;
                 }
             }
-            else if (location == REG_RESMP0)
-            {
-                memory_[REG_RESMP0] = byte;
-                if ((byte & 0x02) > 0)
-                {
-                    resM0Cycle_ = resP0Cycle_;
-                }
-            }
-            else if (location == REG_RESMP1)
-            {
-                memory_[REG_RESMP1] = byte;
-                if ((byte & 0x02) > 0)
-                {
-                    resM1Cycle_ = resP1Cycle_;
-                }
-            }
-
             else if (location == REG_VSYNC)
             {
                 if ((byte & 0x02) == 0 && (memory_[REG_VSYNC] & 0x02) > 0)
