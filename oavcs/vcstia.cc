@@ -791,6 +791,7 @@ namespace oa
                 {
                     cycle_ = 0;
                     scanLine_ = 2;
+                    memory_[REG_VBLANK] = memory_[REG_VBLANK] | 0x02;
                 }
                 memory_[REG_VSYNC] = byte;
             }
@@ -798,8 +799,6 @@ namespace oa
             {
                 if ((byte & 0x02) == 0 && (memory_[REG_VBLANK] & 0x02) > 0)
                 {
-                    //cycle_ = 0;
-                    if (scanLine_ > 2 + vcsConsoleType_->GetVBlankLines())
                     {
                         scanLine_ = 2 + vcsConsoleType_->GetVBlankLines();
                     }
@@ -833,7 +832,7 @@ namespace oa
             }
             else if (location == REG_RESM0)
             {
-                resM0Cycle_ = cycle_ + SPRITEOFFSET;
+                resM0Cycle_ = cycle_ + SPRITEOFFSET - 1;
                 if (resM0Cycle_ < 68)
                 {
                     resM0Cycle_ = 71;
@@ -841,7 +840,7 @@ namespace oa
             }
             else if (location == REG_RESM1)
             {
-                resM1Cycle_ = cycle_ + SPRITEOFFSET;
+                resM1Cycle_ = cycle_ + SPRITEOFFSET - 1;
                 if (resM1Cycle_ < 68)
                 {
                     resM1Cycle_ = 71;

@@ -11,7 +11,7 @@ namespace oa
         class VcsCartridge2K : public VcsCartridge
         {
         public:
-            VcsCartridge2K();
+            VcsCartridge2K(VcsParameters *vcsParameters);
             
             uint8_t Read(uint16_t location) override;
             void LoadData(uint8_t* data, uint16_t size) override;

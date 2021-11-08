@@ -32,15 +32,6 @@ namespace oa
             uint16_t stepCount_;
             
             QGamepad m_gamepad_;
-            uint8_t regInpt0_;
-            uint8_t regInpt1_;
-            uint8_t regInpt2_;
-            uint8_t regInpt3_;
-            uint8_t regInpt4_;
-            uint8_t regInpt5_;
-            uint8_t regSwcha_;
-            uint8_t regSwchb_;
-            uint8_t regSwcnt_;            
         };
         
     }

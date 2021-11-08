@@ -363,17 +363,20 @@ namespace oa
             
             // overflow on address lookup ONLY if low byte carrys to 
             // high byte by adding X or Y register
-            if (operation_.addressMethod_ == &M6502::AbsoluteXAddress)
+            if (operation_.addressMethod_ == &M6502::AbsoluteXAddress)// ||
+                //operation_.addressMethod_ == &M6502::AbsoluteXAddressNoOverflow)
             {
                 uint8_t loadl = memory_->CpuRead(programCounter_);
                 carry = loadl + registerX_;
             }
-            else if (operation_.addressMethod_ == &M6502::AbsoluteYAddress)
+            else if (operation_.addressMethod_ == &M6502::AbsoluteYAddress)// ||
+                //operation_.addressMethod_ == &M6502::AbsoluteYAddressNoOverflow)
             {
                 uint8_t loadl = memory_->CpuRead(programCounter_);
                 carry = loadl + registerY_;
             }
-            else if (operation_.addressMethod_ == &M6502::IndirectYAddress)
+            else if (operation_.addressMethod_ == &M6502::IndirectYAddress)// ||
+                //operation_.addressMethod_ == &M6502::IndirectYAddressNoOverflow)
             {
                 uint16_t indirect = memory_->CpuRead(programCounter_);
                 uint8_t loadl = memory_->CpuRead(indirect & 0xff);

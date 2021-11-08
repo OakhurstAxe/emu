@@ -11,7 +11,7 @@ namespace oa
         class VcsCartridge4K : public VcsCartridge
         {
         public:
-            VcsCartridge4K();
+            VcsCartridge4K(VcsParameters *vcsParameters);
         };
         
     }

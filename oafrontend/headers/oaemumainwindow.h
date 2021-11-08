@@ -1,3 +1,5 @@
+#ifndef _OA_EMU_MAINWINDOW_H
+#define _OA_EMU_MAINWINDOW_H
 
 #include <QMainWindow>
 #include <QStringListModel>
@@ -5,6 +7,8 @@
 #include "ui_oaemumainwindow.h"
 #include "headers/oaemusystemdata.h"
 #include "oavcs/headers/vcsconsole.h"
+
+
 #include "oavcs/headers/vcsconsoletype.h"
 #include "oavcs/headers/vcsparameters.h"
 
@@ -23,6 +27,7 @@ namespace oa
         private slots:
             void VcsGameNameEdit(const QString &text);
             void VcsGameMapperEdit(const QString &text);
+            void VcsGameSuperChipEdit(const int state);
             void VcsGameControllerEdit(const QString &text);
             void VcsGameCompanyEdit(const QString &text);
             void VcsGameScreenEdit(const QString &text);
@@ -44,3 +49,5 @@ namespace oa
         
     }
 }
+
+#endif

@@ -13,7 +13,7 @@ namespace oa
         class VcsCartridgeE7 : public VcsCartridge
         {
         public:
-            VcsCartridgeE7();
+            VcsCartridgeE7(VcsParameters *vcsParameters);
             
             uint8_t Read(uint16_t location) override;
             void Write(uint16_t location, uint8_t byte) override;

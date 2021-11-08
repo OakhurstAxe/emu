@@ -12,6 +12,7 @@ namespace oa
             consoleType_ = NTSC;
             cartData_ = NULL;
             cartSize_ = 0;
+            hasSuperChip_ = false;
         }
         
         VcsParameters::~VcsParameters()
@@ -66,5 +67,15 @@ namespace oa
             return mapper_;
         }
         
+        void VcsParameters::SetHasSuperChip(bool hasSuperChip)
+        {
+            hasSuperChip_ = hasSuperChip;
+        }
+        
+        bool VcsParameters::GetHasSuperChip()
+        {
+            return hasSuperChip_;
+        }
+            
     }
 }

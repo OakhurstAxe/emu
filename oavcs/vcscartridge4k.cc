@@ -5,7 +5,7 @@ namespace oa
 {
     namespace vcs
     {
-        VcsCartridge4K::VcsCartridge4K() : VcsCartridge(0x1000, "Cartridge Program ROM")
+        VcsCartridge4K::VcsCartridge4K(VcsParameters *vcsParameters) : VcsCartridge(0x1000, "Cartridge Program ROM", vcsParameters)
         {
         }
     }

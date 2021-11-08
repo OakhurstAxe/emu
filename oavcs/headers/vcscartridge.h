@@ -14,14 +14,15 @@ namespace oa
         class VcsCartridge : public emu::MemoryRom
         {
         public:
-            VcsCartridge(uint16_t size, QString name);
+            VcsCartridge(uint16_t size, QString name, VcsParameters *vcsParameters);
             virtual ~VcsCartridge() {};
+            void Write(uint16_t location, uint8_t byte) override;
             static VcsCartridge* GetCartridge(VcsParameters *vcsParameters);
+        private:
+            bool hasSuperChip_;
         };
         
     }
 }
 
 #endif
-
-

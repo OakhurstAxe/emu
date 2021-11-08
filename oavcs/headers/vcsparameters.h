@@ -21,11 +21,14 @@ namespace oa
             uint32_t GetCartSize();
             void SetMapper(QString mapper);
             QString GetMapper();
+            void SetHasSuperChip(bool hasSuperChip);
+            bool GetHasSuperChip();
         private:
             ConsoleType consoleType_;
             uint8_t* cartData_;
             uint32_t cartSize_;
             QString mapper_;
+            bool hasSuperChip_;
         };
         
     }

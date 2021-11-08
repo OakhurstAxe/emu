@@ -5,7 +5,7 @@ namespace oa
 {
     namespace vcs
     {
-        VcsCartridgeE7::VcsCartridgeE7() : VcsCartridge(0x1000, "Cartridge Program ROM"),
+        VcsCartridgeE7::VcsCartridgeE7(VcsParameters *vcsParameters) : VcsCartridge(0x1000, "Cartridge Program ROM", vcsParameters),
             cartRam1K_(0x800, "Cartridge RAM Bank 1K"),
             cartRam0_(0xFF, "Cartridge RAM Bank 0"),
             cartRam1_(0xFF, "Cartridge RAM Bank 1"),

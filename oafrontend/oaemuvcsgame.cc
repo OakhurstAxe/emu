@@ -26,6 +26,14 @@ namespace oa
         {
             return mapper_;
         }
+        void VcsGame::SetHasSuperChip(bool hasSuperChip)
+        {
+            hasSuperChip_ = hasSuperChip;
+        }
+        bool VcsGame::GetHasSuperChip()
+        {
+            return hasSuperChip_;
+        }
         void VcsGame::SetController(QString controller)
         {
             controller_ = controller;

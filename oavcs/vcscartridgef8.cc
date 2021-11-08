@@ -5,7 +5,7 @@ namespace oa
 {
     namespace vcs
     {
-        VcsCartridgeF8::VcsCartridgeF8() : VcsCartridge(0x2000, "Cartridge ROM Bank")
+        VcsCartridgeF8::VcsCartridgeF8(VcsParameters *vcsParameters) : VcsCartridge(0x2000, "Cartridge ROM Bank", vcsParameters)
         {
             memoryOffset_ = 0x1000;
         }

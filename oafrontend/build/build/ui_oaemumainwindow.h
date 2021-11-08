@@ -11,6 +11,7 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QLabel>
@@ -45,6 +46,8 @@ public:
     QLabel *lblMapper;
     QLabel *lblMapperValue;
     QComboBox *cmbMapper;
+    QCheckBox *cbSuperChip;
+    QLabel *lblSuperChip;
     QPushButton *btnRun;
     QPushButton *btnEdit;
     QPushButton *btnAdd;
@@ -57,13 +60,13 @@ public:
         MainWindow->resize(800, 600);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
-        centralWidget->setGeometry(QRect(0, 10, 471, 584));
+        centralWidget->setGeometry(QRect(0, 10, 481, 584));
         lstGameView = new QListView(centralWidget);
         lstGameView->setObjectName(QString::fromUtf8("lstGameView"));
         lstGameView->setGeometry(QRect(10, 20, 256, 192));
         gbViewVcs = new QGroupBox(centralWidget);
         gbViewVcs->setObjectName(QString::fromUtf8("gbViewVcs"));
-        gbViewVcs->setGeometry(QRect(10, 230, 451, 261));
+        gbViewVcs->setGeometry(QRect(10, 240, 471, 261));
         lblName = new QLabel(gbViewVcs);
         lblName->setObjectName(QString::fromUtf8("lblName"));
         lblName->setGeometry(QRect(40, 50, 58, 18));
@@ -118,6 +121,12 @@ public:
         cmbMapper = new QComboBox(gbViewVcs);
         cmbMapper->setObjectName(QString::fromUtf8("cmbMapper"));
         cmbMapper->setGeometry(QRect(120, 70, 291, 32));
+        cbSuperChip = new QCheckBox(gbViewVcs);
+        cbSuperChip->setObjectName(QString::fromUtf8("cbSuperChip"));
+        cbSuperChip->setGeometry(QRect(420, 80, 51, 22));
+        lblSuperChip = new QLabel(gbViewVcs);
+        lblSuperChip->setObjectName(QString::fromUtf8("lblSuperChip"));
+        lblSuperChip->setGeometry(QRect(420, 80, 21, 18));
         lblName->raise();
         lblController->raise();
         lblCompany->raise();
@@ -136,6 +145,8 @@ public:
         lblMapper->raise();
         lblMapperValue->raise();
         cmbMapper->raise();
+        cbSuperChip->raise();
+        lblSuperChip->raise();
         btnRun = new QPushButton(centralWidget);
         btnRun->setObjectName(QString::fromUtf8("btnRun"));
         btnRun->setGeometry(QRect(100, 530, 88, 34));
@@ -170,6 +181,8 @@ public:
         lblRomValue->setText(QApplication::translate("MainWindow", "TextLabel", nullptr));
         lblMapper->setText(QApplication::translate("MainWindow", "Mapper:", nullptr));
         lblMapperValue->setText(QApplication::translate("MainWindow", "TextLabel", nullptr));
+        cbSuperChip->setText(QApplication::translate("MainWindow", "SC", nullptr));
+        lblSuperChip->setText(QApplication::translate("MainWindow", "SC", nullptr));
         btnRun->setText(QApplication::translate("MainWindow", "Run", nullptr));
         btnEdit->setText(QApplication::translate("MainWindow", "Edit", nullptr));
         btnAdd->setText(QApplication::translate("MainWindow", "Add", nullptr));

@@ -6,44 +6,50 @@
 #include "headers/vcscartridgef6.h"
 #include "headers/vcscartridgef8.h"
 #include "headers/vcscartridgee7.h"
-#include "headers/vcscartridgesc.h"
 
 namespace oa
 {
     namespace vcs
     {
 
-        VcsCartridge::VcsCartridge(uint16_t size, QString name) : emu::MemoryRom(size, name)
+        VcsCartridge::VcsCartridge(uint16_t size, QString name, VcsParameters *vcsParameters) : emu::MemoryRom(size, name)
         {
+            hasSuperChip_ = vcsParameters->GetHasSuperChip();
         }
         
+        void VcsCartridge::Write(uint16_t location, uint8_t byte)
+        {
+            if (hasSuperChip_ && location < 0x80)
+            {
+                memory_[location + 0x80] = byte;
+                return;
+            }
+            MemoryRom::Write(location, byte);            
+        }
+
         VcsCartridge* VcsCartridge::GetCartridge(VcsParameters *vcsParameters)
         {
             VcsCartridge *cart;
             
             if (vcsParameters->GetMapper() == "2K")
             {
-                cart = new VcsCartridge2K();
+                cart = new VcsCartridge2K(vcsParameters);
             }
             else if (vcsParameters->GetMapper() == "4K")
             {
-                cart = new VcsCartridge4K();
+                cart = new VcsCartridge4K(vcsParameters);
             }
             else if (vcsParameters->GetMapper() == "E7")
             {
-                cart = new VcsCartridgeE7();
+                cart = new VcsCartridgeE7(vcsParameters);
             }
             else if (vcsParameters->GetMapper() == "F6")
             {
-                cart = new VcsCartridgeF6();
+                cart = new VcsCartridgeF6(vcsParameters);
             }
             else if (vcsParameters->GetMapper() == "F8")
             {
-                cart = new VcsCartridgeF8();
-            }
-            else if (vcsParameters->GetMapper() == "SC")
-            {
-                cart = new VcsCartridgeSC();
+                cart = new VcsCartridgeF8(vcsParameters);
             }
             else
             {

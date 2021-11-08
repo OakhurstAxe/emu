@@ -11,7 +11,7 @@ namespace oa
         class VcsCartridgeF8 : public VcsCartridge
         {
         public:
-            VcsCartridgeF8();
+            VcsCartridgeF8(VcsParameters *vcsParameters);
             
             uint8_t Read(uint16_t location) override;
             void Write(uint16_t location, uint8_t byte) override;

@@ -36,6 +36,7 @@
             <Game>
                 <Name>Acid Drop</Name>
                 <Mapper>F6</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Salu</Company>
                 <ScreenType>PAL</ScreenType>
@@ -44,6 +45,7 @@
             <Game>
                 <Name>Adventure</Name>
                 <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -52,6 +54,7 @@
             <Game>
                 <Name>Air-Sea Battle</Name>
                 <Mapper>2K</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -60,6 +63,7 @@
             <Game>
                 <Name>Airlock</Name>
                 <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -68,6 +72,7 @@
             <Game>
                 <Name>Alien</Name>
                 <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -76,6 +81,7 @@
             <Game>
                 <Name>Alligator People</Name>
                 <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -84,6 +90,7 @@
             <Game>
                 <Name>Amidar</Name>
                 <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -92,6 +99,7 @@
             <Game>
                 <Name>Apples and Dolls</Name>
                 <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -100,6 +108,7 @@
             <Game>
                 <Name>Atlantis</Name>
                 <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -108,6 +117,7 @@
             <Game>
                 <Name>Berzerk</Name>
                 <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -116,6 +126,7 @@
             <Game>
                 <Name>Bugs Bunny</Name>
                 <Mapper>F8</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -124,6 +135,7 @@
             <Game>
                 <Name>Combat</Name>
                 <Mapper>2K</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -132,6 +144,7 @@
             <Game>
                 <Name>Congo Bongo</Name>
                 <Mapper>F8</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Sega</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -140,6 +153,7 @@
             <Game>
                 <Name>Demon Attack</Name>
                 <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -148,6 +162,7 @@
             <Game>
                 <Name>Dragonfire</Name>
                 <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Imagic</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -156,6 +171,7 @@
             <Game>
                 <Name>E.T. The Extra-Terrestrial</Name>
                 <Mapper>F8</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -164,6 +180,7 @@
             <Game>
                 <Name>Fathom</Name>
                 <Mapper>F8</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Imagic</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -172,6 +189,7 @@
             <Game>
                 <Name>Frostbite</Name>
                 <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Activision</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -180,6 +198,7 @@
             <Game>
                 <Name>Haunted House</Name>
                 <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -188,6 +207,7 @@
             <Game>
                 <Name>Journey Escape</Name>
                 <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller></Controller>
                 <Company>Data Age</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -196,6 +216,7 @@
             <Game>
                 <Name>Jungle Hunt</Name>
                 <Mapper>F8</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -204,6 +225,7 @@
             <Game>
                 <Name>Keystone Kapers</Name>
                 <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Activision</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -212,6 +234,7 @@
             <Game>
                 <Name>Krull</Name>
                 <Mapper>F8</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -220,6 +243,7 @@
             <Game>
                 <Name>MegaMania</Name>
                 <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Activision</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -228,6 +252,7 @@
             <Game>
                 <Name>Oink!</Name>
                 <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Activision</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -236,6 +261,7 @@
             <Game>
                 <Name>Pitfall!</Name>
                 <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -244,6 +270,7 @@
             <Game>
                 <Name>River Raid</Name>
                 <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Activision</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -252,6 +279,7 @@
             <Game>
                 <Name>Smurf</Name>
                 <Mapper>F8</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -260,6 +288,7 @@
             <Game>
                 <Name>Star Wars - The Arcade Game</Name>
                 <Mapper>F8</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Parker Brothers</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -268,6 +297,7 @@
             <Game>
                 <Name>TRON</Name>
                 <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Activision</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -276,6 +306,7 @@
             <Game>
                 <Name>Taz</Name>
                 <Mapper>F8</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -284,6 +315,7 @@
             <Game>
                 <Name>Vanguard</Name>
                 <Mapper>F8</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
@@ -292,6 +324,7 @@
             <Game>
                 <Name>Worm War I</Name>
                 <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Sirius Software</Company>
                 <ScreenType>NTSC</ScreenType>

@@ -108,6 +108,10 @@ namespace oa
                                                 {
                                                     game->SetMapper(xml.readElementText());
                                                 }
+                                                if (xml.name() == "SuperChip")
+                                                {
+                                                    game->SetHasSuperChip(xml.readElementText() == "true" ? true : false);
+                                                }
                                                 if (xml.name() == "Controller")
                                                 {
                                                     game->SetController(xml.readElementText());
@@ -202,6 +206,7 @@ namespace oa
                 xml.writeStartElement("Game");
                 xml.writeTextElement("Name", vcsGame->GetName());
                 xml.writeTextElement("Mapper", vcsGame->GetMapper());
+                xml.writeTextElement("SuperChip", (vcsGame->GetHasSuperChip() ? "true" : "false"));
                 xml.writeTextElement("Controller", vcsGame->GetController());
                 xml.writeTextElement("Company", vcsGame->GetCompany());
                 xml.writeTextElement("ScreenType", vcsGame->GetScreenType());

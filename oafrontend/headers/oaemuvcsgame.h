@@ -15,6 +15,8 @@ namespace oa
             void SetName(QString name);
             QString GetMapper();
             void SetMapper(QString mapper);
+            bool GetHasSuperChip();
+            void SetHasSuperChip(bool hasSuperChip);
             QString GetController();
             void SetController(QString controller);
             QString GetCompany();
@@ -28,6 +30,7 @@ namespace oa
         private:
             QString name_;
             QString mapper_;
+            bool hasSuperChip_;
             QString controller_;
             QString company_;
             QString screenType_;

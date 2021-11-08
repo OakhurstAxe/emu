@@ -24,16 +24,6 @@ namespace oa
             MemoryRam(0x80, "VCS RIOT Registers"),
             m_gamepad_(*QGamepadManager::instance()->connectedGamepads().begin())
         {
-            regSwcha_ = 255;
-            regSwchb_ = 11;
-            regSwcnt_ = 255;
-            regInpt0_ = 255;
-            regInpt1_ = 255;
-            regInpt2_ = 255;
-            regInpt3_ = 255;
-            regInpt4_ = 255;
-            regInpt5_ = 255;
-
             connect(&m_gamepad_, SIGNAL(buttonXChanged(bool)), this, SLOT(LeftControllerReset(bool)));
             connect(&m_gamepad_, SIGNAL(buttonYChanged(bool)), this, SLOT(LeftControllerSelect(bool)));
             connect(&m_gamepad_, SIGNAL(axisLeftXChanged(double)), this, SLOT(LeftControllerLeftRight(double)));
@@ -45,6 +35,10 @@ namespace oa
             step_ = 1;
             prevStep_ = 1;
             MemoryRam::Write(REG_INSTAT, 0);
+            memory_[REG_SWCHA] = 255;
+            memory_[REG_SWCHB] = 11;
+            memory_[REG_SWCNT] = 255;
+            memory_[REG_SWBCNT] = 255;            
         }
         
         void VcsRiot::ExecuteTick()
@@ -68,97 +62,85 @@ namespace oa
         
         void VcsRiot::LeftControllerReset(bool value)
         {
-            //qDebug() << "A" << value;
+            uint8_t byte = memory_[REG_SWCHB];
             if (value != 0)
             {
-                regSwchb_ &= 0xFE;
+                byte &= 0xFE;
             }
             else
             {
-                regSwchb_ |= 0x01;
+                byte |= 0x01;
             }
+            memory_[REG_SWCHB] = byte;
         }
 
         void VcsRiot::LeftControllerSelect(bool value)
         {
-            //qDebug() << "A" << value;
+            uint8_t byte = memory_[REG_SWCHB];
             if (value != 0)
             {
-                regSwchb_ &= 0xFD;
+                byte &= 0xFD;
             }
             else
             {
-                regSwchb_ |= 0x02;
+                byte |= 0x02;
             }
+            memory_[REG_SWCHB] = byte;
         }
 
         void VcsRiot::LeftControllerUpDown(double value)
         {
-            //qDebug() << "Button Up" << value;
+            uint8_t byte = memory_[REG_SWCHA];
             if (value < 0)
             {
-                regSwcha_ |= 0x30;
-                regSwcha_ &= 0xEF;
+                byte |= 0x30;
+                byte &= 0xEF;
             }
             else if (value > 0)
             {
-                regSwcha_ |= 0x30;
-                regSwcha_ &= 0xDF;
+                byte |= 0x30;
+                byte &= 0xDF;
             }
             else if (value == 0)
             {
-                regSwcha_ |= 0x30;
+                byte |= 0x30;
             }
+            memory_[REG_SWCHA] = byte;
         }
             
         void VcsRiot::LeftControllerLeftRight(double value)
         {
-            //qDebug() << "Left X" << value;
+            uint8_t byte = memory_[REG_SWCHA];
             if (value < 0)
             {
-                regSwcha_ |= 0xC0;
-                regSwcha_ &= 0xBF;
+                byte |= 0xC0;
+                byte &= 0xBF;
             }
             else if (value > 0)
             {
-                regSwcha_ |= 0xC0;
-                regSwcha_ &= 0x7F;
+                byte |= 0xC0;
+                byte &= 0x7F;
             }
             else if (value == 0)
             {
-                regSwcha_ |= 0xC0;
+                byte |= 0xC0;
             }
+            memory_[REG_SWCHA] = byte;
         }
         
         uint8_t VcsRiot::Read(uint16_t location)
         {
             location &= 0x7F;
 
-            if (location == REG_SWCHA)
-            {
-                return regSwcha_;
-            }
-            else if (location == REG_SWCNT)
-            {
-                return regInpt4_;
-            }
-            else if (location == REG_SWCHB)
-            {
-                return regSwchb_;
-            }
-            else if (location == REG_SWBCNT)
-            {
-                return regSwcnt_;
-            }
-            else if (location == REG_INTIM)
+            if (location == REG_INTIM)
             {
                 step_ = prevStep_;
             }
             else if (location == REG_INSTAT)
             {
-                uint8_t byte = MemoryRam::Read(REG_INSTAT);
+                uint8_t byte = memory_[REG_INSTAT];
                 byte = byte & 0xBF;
-                MemoryRam::Write(REG_INSTAT, byte);
+                memory_[REG_INSTAT] = byte;
             }
             return MemoryRam::Read(location);
         }
@@ -169,11 +151,11 @@ namespace oa
             
             if (location == REG_TIMI1T)
             {
-                uint8_t byte = MemoryRam::Read(REG_INSTAT);
-                byte = byte & 0xEF;
-                MemoryRam::Write(REG_INSTAT, byte);
+                uint8_t byte = memory_[REG_INSTAT];
+                byte = byte & 0x7F;
+                memory_[REG_INSTAT] = byte;
 
-                MemoryRam::Write(REG_INTIM, byte - 1);
+                memory_[REG_INTIM] = byte - 1;
                 step_ = 1;
                 prevStep_ = step_;
                 stepCount_ = 0;
@@ -181,11 +163,11 @@ namespace oa
             }
             else if (location == REG_TIM8T)
             {
-                uint8_t byte = MemoryRam::Read(REG_INSTAT);
-                byte = byte & 0xEF;
-                MemoryRam::Write(REG_INSTAT, byte);
+                uint8_t byte = memory_[REG_INSTAT];
+                byte = byte & 0x7F;
+                memory_[REG_INSTAT] = byte;
 
-                MemoryRam::Write(REG_INTIM, byte - 1);
+                memory_[REG_INTIM] = byte - 1;
                 step_ = 8;
                 prevStep_ = step_;
                 stepCount_ = 0;
@@ -193,11 +175,11 @@ namespace oa
             }
             else if (location == REG_TIM64T)
             {
-                uint8_t byte = MemoryRam::Read(REG_INSTAT);
-                byte = byte & 0xEF;
-                MemoryRam::Write(REG_INSTAT, byte);
+                uint8_t byte = memory_[REG_INSTAT];
+                byte = byte & 0x7F;
+                memory_[REG_INSTAT] = byte;
 
-                MemoryRam::Write(REG_INTIM, byte - 1);
+                memory_[REG_INTIM] = byte - 1;
                 step_ = 64;
                 prevStep_ = step_;
                 stepCount_ = 0;
@@ -205,11 +187,11 @@ namespace oa
             }
             else if (location == REG_T102T)
             {
-                uint8_t byte = MemoryRam::Read(REG_INSTAT);
-                byte = byte & 0xEF;
-                MemoryRam::Write(REG_INSTAT, byte);
+                uint8_t byte = memory_[REG_INSTAT];
+                byte = byte & 0x7F;
+                memory_[REG_INSTAT] = byte;
 
-                MemoryRam::Write(REG_INTIM, byte - 1);
+                memory_[REG_INTIM] = byte - 1;
                 step_ = 1024;
                 prevStep_ = step_;
                 stepCount_ = 0;

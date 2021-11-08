@@ -54,6 +54,7 @@ namespace oa
             connect(ui_.btnRun, SIGNAL(clicked(bool)), this, SLOT(RunClicked(bool)));
             connect(ui_.leName, SIGNAL(textEdited(QString)), this, SLOT(VcsGameNameEdit(QString)));
             connect(ui_.cmbMapper, SIGNAL(currentTextChanged(QString)), this, SLOT(VcsGameMapperEdit(QString)));
+            connect(ui_.cbSuperChip, SIGNAL(stateChanged(int)), this, SLOT(VcsGameSuperChipEdit(int)));
             connect(ui_.cmbController, SIGNAL(currentTextChanged(QString)), this, SLOT(VcsGameControllerEdit(QString)));
             connect(ui_.cmbCompany, SIGNAL(currentTextChanged(QString)), this, SLOT(VcsGameCompanyEdit(QString)));
             connect(ui_.cmbScreen, SIGNAL(currentTextChanged(QString)), this, SLOT(VcsGameScreenEdit(QString)));
@@ -80,6 +81,7 @@ namespace oa
                     
                     ui_.lblNameValue->setText(game->GetName());
                     ui_.lblMapperValue->setText(game->GetMapper());
+                    ui_.lblSuperChip->setVisible(game->GetHasSuperChip());
                     ui_.lblControllerValue->setText(game->GetController());
                     ui_.lblCompanyValue->setText(game->GetCompany());
                     ui_.lblScreenValue->setText(game->GetScreenType());
@@ -87,6 +89,7 @@ namespace oa
                     
                     ui_.leName->setText(game->GetName());
                     ui_.cmbMapper->setCurrentText(game->GetMapper());
+                    ui_.cbSuperChip->setCheckState(game->GetHasSuperChip() ? Qt::Checked : Qt::Unchecked);
                     ui_.cmbController->setCurrentText(game->GetController());
                     ui_.cmbCompany->setCurrentText(game->GetCompany());
                     ui_.cmbScreen->setCurrentText(game->GetScreenType());
@@ -102,12 +105,14 @@ namespace oa
             isEdit_ = !isEdit_;
             ui_.leName->setVisible(isEdit_);
             ui_.cmbMapper->setVisible(isEdit_);
+            ui_.cbSuperChip->setVisible(isEdit_);
             ui_.cmbController->setVisible(isEdit_);
             ui_.cmbCompany->setVisible(isEdit_);
             ui_.cmbScreen->setVisible(isEdit_);
             ui_.leRomFile->setVisible(isEdit_);
             ui_.lblNameValue->setVisible(!isEdit_);
             ui_.lblMapperValue->setVisible(!isEdit_);
+            ui_.lblSuperChip->setVisible(!isEdit_ && vcsGameSelected_->GetHasSuperChip());
             ui_.lblControllerValue->setVisible(!isEdit_);
             ui_.lblCompanyValue->setVisible(!isEdit_);
             ui_.lblScreenValue->setVisible(!isEdit_);
@@ -153,6 +158,12 @@ namespace oa
             vcsGameSelected_->SetMapper(text);
             ui_.lblMapperValue->setText(vcsGameSelected_->GetMapper());
         }
+        
+        void MainWindow::VcsGameSuperChipEdit(const int state)
+        {
+            vcsGameSelected_->SetHasSuperChip(state == Qt::Checked);
+        }
+
         
         void MainWindow::VcsGameControllerEdit(const QString &text)
         {
@@ -250,6 +261,7 @@ namespace oa
             vcsParameters_.SetConsoleType(consoleType);
             vcsParameters_.SetCartData(buffer, bufferSize);
             vcsParameters_.SetMapper(ui_.lblMapperValue->text());
+            vcsParameters_.SetHasSuperChip(ui_.cbSuperChip->checkState() == Qt::Checked ? true : false);
             
             free(buffer);
 

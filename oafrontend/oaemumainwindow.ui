@@ -18,7 +18,7 @@
     <rect>
      <x>0</x>
      <y>10</y>
-     <width>471</width>
+     <width>481</width>
      <height>584</height>
     </rect>
    </property>
@@ -36,8 +36,8 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>230</y>
-      <width>451</width>
+      <y>240</y>
+      <width>471</width>
       <height>261</height>
      </rect>
     </property>
@@ -260,6 +260,32 @@
       </rect>
      </property>
     </widget>
+    <widget class="QCheckBox" name="cbSuperChip">
+     <property name="geometry">
+      <rect>
+       <x>420</x>
+       <y>80</y>
+       <width>51</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>SC</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblSuperChip">
+     <property name="geometry">
+      <rect>
+       <x>420</x>
+       <y>80</y>
+       <width>21</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>SC</string>
+     </property>
+    </widget>
     <zorder>lblName</zorder>
     <zorder>lblController</zorder>
     <zorder>lblCompany</zorder>
@@ -278,6 +304,8 @@
     <zorder>lblMapper</zorder>
     <zorder>lblMapperValue</zorder>
     <zorder>cmbMapper</zorder>
+    <zorder>cbSuperChip</zorder>
+    <zorder>lblSuperChip</zorder>
    </widget>
    <widget class="QPushButton" name="btnRun">
     <property name="geometry">

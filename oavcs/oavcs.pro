@@ -12,7 +12,7 @@ HEADERS += headers/vcstia.h headers/m6507.h headers/vcspalette.h
 HEADERS += headers/vcsriot.h
 HEADERS += headers/vcsaudio.h headers/vcsaudiochannel.h
 HEADERS += headers/vcsconsoletype.h headers/vcsparameters.h
-HEADERS += headers/vcscartridge2k.h headers/vcscartridge4k.h headers/vcscartridgesc.h headers/vcscartridgee7.h
+HEADERS += headers/vcscartridge2k.h headers/vcscartridge4k.h headers/vcscartridgee7.h
 HEADERS += headers/vcscartridgef6.h headers/vcscartridgef8.h
 
 SOURCES += vcscartridge.cc vcsconsole.cc vcsmemory.cc 
@@ -20,7 +20,7 @@ SOURCES += vcstia.cc m6507.cc vcspalette.cc
 SOURCES += vcsriot.cc
 SOURCES += vcsaudio.cc vcsaudiochannel.cc
 SOURCES += vcsconsoletype.cc vcsparameters.cc
-SOURCES += vcscartridge2k.cc vcscartridge4k.cc vcscartridgesc.cc vcscartridgee7.cc
+SOURCES += vcscartridge2k.cc vcscartridge4k.cc vcscartridgee7.cc
 SOURCES += vcscartridgef6.cc vcscartridgef8.cc
 
 LIBS += -L"$$_PRO_FILE_PWD_/../oaemumemory/build" -loaemumemory
