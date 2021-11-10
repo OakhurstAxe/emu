@@ -35,6 +35,7 @@ namespace oa
             vcsRiot_.Reset();
             vcsTia_.Reset();
 
+            totalTicks_ = 0;
             connect(&cpuTimer_, SIGNAL(timeout()), SLOT(StartNextFrame()));
             cpuTimer_.setTimerType(Qt::PreciseTimer);
             cpuTimer_.setInterval(16);
@@ -56,19 +57,12 @@ namespace oa
         void VcsConsole::StartNextFrame()
         {
             //qDebug() << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-            uint32_t ticks = 0;
+            uint32_t frameTicks = 0;
             vcsAudio_.ExecuteTick();
-            while (ticks < ticksPerFrame_)
+            while (frameTicks < ticksPerFrame_)
             {
                 vcsRiot_.ExecuteTick();
-                if (vcsTia_.IsCycleZero())
-                {
-                    while (ticks % 3 != 0)
-                    {
-                        ticks ++;
-                    }
-                }
-                if ((ticks % 3) == 0 && !vcsTia_.IsCpuBlocked())
+                if ((totalTicks_ % 3) == 0 && !vcsTia_.IsCpuBlocked())
                 {
                     cpu_.ExecuteTick();
                 }
@@ -77,7 +71,8 @@ namespace oa
                 {
                     this->repaint();
                 }
-                ticks++;
+                totalTicks_++;
+                frameTicks++;
             }
         }
     }

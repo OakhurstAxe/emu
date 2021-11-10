@@ -175,11 +175,6 @@ namespace oa
             return (cycle_ == 0 && scanLine_ == 3);
         }
         
-        bool VcsTia::IsCycleZero()
-        {
-            return (cycle_ == 0);
-        }
-                    
         QRgb* VcsTia::GetScreen()
         {
             return screen_;
@@ -799,9 +794,7 @@ namespace oa
             {
                 if ((byte & 0x02) == 0 && (memory_[REG_VBLANK] & 0x02) > 0)
                 {
-                    {
-                        scanLine_ = 2 + vcsConsoleType_->GetVBlankLines();
-                    }
+                    scanLine_ = 2 + vcsConsoleType_->GetVBlankLines();
                 }
                 memory_[REG_VBLANK] = byte;
             }

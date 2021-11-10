@@ -26,7 +26,6 @@ namespace oa
             virtual uint8_t Read(uint16_t location) override;
             virtual void Write(uint16_t location, uint8_t byte) override;
             bool Repaint();
-            bool IsCycleZero();
             
             uint8_t GetAudioC0();
             uint8_t GetAudioC1();

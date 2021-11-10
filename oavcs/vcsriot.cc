@@ -13,7 +13,7 @@
 #define REG_TIMI1T (0x294 - REG_OFFSET)
 #define REG_TIM8T  (0x295 - REG_OFFSET)
 #define REG_TIM64T (0x296 - REG_OFFSET)
-#define REG_T102T  (0x297 - REG_OFFSET)
+#define REG_T1024T (0x297 - REG_OFFSET)
 
 namespace oa
 {
@@ -34,30 +34,11 @@ namespace oa
         {
             step_ = 1;
             prevStep_ = 1;
-            MemoryRam::Write(REG_INSTAT, 0);
+            memory_[REG_INSTAT] = 0;
             memory_[REG_SWCHA] = 255;
             memory_[REG_SWCHB] = 11;
             memory_[REG_SWCNT] = 255;
             memory_[REG_SWBCNT] = 255;            
-        }
-        
-        void VcsRiot::ExecuteTick()
-        {
-            stepCount_++;
-            if (stepCount_ < step_)
-            {
-                return;
-            }
-
-            stepCount_ = 0;
-            uint8_t timer = MemoryRam::Read(REG_INTIM);
-            timer--;
-            if (timer == 0xFF)
-            {
-                step_ = 1;
-                MemoryRam::Write(REG_INSTAT, 0xC0);
-            }
-            MemoryRam::Write(REG_INTIM, timer);
         }
         
         void VcsRiot::LeftControllerReset(bool value)
@@ -128,19 +109,45 @@ namespace oa
             memory_[REG_SWCHA] = byte;
         }
         
+        void VcsRiot::ExecuteTick()
+        {
+            stepCount_++;
+            if (stepCount_ < step_)
+            {
+                return;
+            }
+
+            stepCount_ = 0;
+            uint8_t timer = memory_[REG_INTIM];
+            timer--;
+            if (timer == 0xFF)
+            {
+                step_ = 1;
+                uint8_t statusByte = memory_[REG_INSTAT];
+                statusByte = statusByte | 0xC0;
+                memory_[REG_INSTAT] = statusByte;
+            }
+            memory_[REG_INTIM] = timer;
+        }
+
         uint8_t VcsRiot::Read(uint16_t location)
         {
             location &= 0x7F;
 
             if (location == REG_INTIM)
             {
+                if (step_ != prevStep_)
+                {
+                    memory_[REG_INTIM] = previousTimerStart_;
+                }
                 step_ = prevStep_;
             }
             else if (location == REG_INSTAT)
             {
-                uint8_t byte = memory_[REG_INSTAT];
-                byte = byte & 0xBF;
+                uint8_t result = memory_[REG_INSTAT];
+                uint8_t byte = result & 0xBF;
                 memory_[REG_INSTAT] = byte;
+                return result;
             }
             return MemoryRam::Read(location);
         }
@@ -151,10 +158,9 @@ namespace oa
             
             if (location == REG_TIMI1T)
             {
-                uint8_t byte = memory_[REG_INSTAT];
-                byte = byte & 0x7F;
-                memory_[REG_INSTAT] = byte;
+                ClearTIMnnTUnderflow();
 
+                previousTimerStart_ = byte - 1;
                 memory_[REG_INTIM] = byte - 1;
                 step_ = 1;
                 prevStep_ = step_;
@@ -163,10 +169,9 @@ namespace oa
             }
             else if (location == REG_TIM8T)
             {
-                uint8_t byte = memory_[REG_INSTAT];
-                byte = byte & 0x7F;
-                memory_[REG_INSTAT] = byte;
+                ClearTIMnnTUnderflow();
 
+                previousTimerStart_ = byte - 1;
                 memory_[REG_INTIM] = byte - 1;
                 step_ = 8;
                 prevStep_ = step_;
@@ -175,22 +180,20 @@ namespace oa
             }
             else if (location == REG_TIM64T)
             {
-                uint8_t byte = memory_[REG_INSTAT];
-                byte = byte & 0x7F;
-                memory_[REG_INSTAT] = byte;
+                ClearTIMnnTUnderflow();
 
+                previousTimerStart_ = byte - 1;
                 memory_[REG_INTIM] = byte - 1;
                 step_ = 64;
                 prevStep_ = step_;
                 stepCount_ = 0;
                 return;
             }
-            else if (location == REG_T102T)
+            else if (location == REG_T1024T)
             {
-                uint8_t byte = memory_[REG_INSTAT];
-                byte = byte & 0x7F;
-                memory_[REG_INSTAT] = byte;
-
+                ClearTIMnnTUnderflow();
+                
+                previousTimerStart_ = byte - 1;
                 memory_[REG_INTIM] = byte - 1;
                 step_ = 1024;
                 prevStep_ = step_;
@@ -200,5 +203,11 @@ namespace oa
             MemoryRam::Write(location, byte);            
         }
         
+        void VcsRiot::ClearTIMnnTUnderflow()
+        {
+            uint8_t statusByte = memory_[REG_INSTAT];
+            statusByte = statusByte & 0x7F;
+            memory_[REG_INSTAT] = statusByte;
+        }
     }
 }

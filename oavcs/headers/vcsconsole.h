@@ -21,7 +21,7 @@ namespace oa
             Q_OBJECT
             
         public:
-            VcsConsole(/*VcsMainWindow* vcsMainWindow,*/ VcsParameters* vcsParameters);
+            VcsConsole(VcsParameters* vcsParameters);
             virtual ~VcsConsole();
             void StartUp();
         public slots:
@@ -35,8 +35,8 @@ namespace oa
             VcsMemory vcsMemory_;
             VcsAudio vcsAudio_;
             M6507 cpu_;
+            uint32_t totalTicks_;
             
-            //VcsMainWindow *vcsMainWindow_;
             QTimer cpuTimer_;
             uint32_t ticksPerFrame_;
             
