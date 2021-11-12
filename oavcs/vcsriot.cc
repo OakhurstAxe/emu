@@ -33,7 +33,6 @@ namespace oa
         void VcsRiot::Reset()
         {
             step_ = 1;
-            prevStep_ = 1;
             memory_[REG_INSTAT] = 0;
             memory_[REG_SWCHA] = 255;
             memory_[REG_SWCHB] = 11;
@@ -118,96 +117,84 @@ namespace oa
             }
 
             stepCount_ = 0;
+            overflowTick_ = false;
             uint8_t timer = memory_[REG_INTIM];
             timer--;
             if (timer == 0xFF)
             {
-                step_ = 1;
                 uint8_t statusByte = memory_[REG_INSTAT];
-                statusByte = statusByte | 0xC0;
+                statusByte = statusByte | 0xFF;
                 memory_[REG_INSTAT] = statusByte;
-            }
+                step_ = 1;
+                overflowTick_ = true;
+            }            
             memory_[REG_INTIM] = timer;
         }
 
         uint8_t VcsRiot::Read(uint16_t location)
         {
-            location &= 0x7F;
-
             if (location == REG_INTIM)
             {
-                if (step_ != prevStep_)
-                {
-                    memory_[REG_INTIM] = previousTimerStart_;
-                }
-                step_ = prevStep_;
+                ClearTIMnnTUnderflow();
             }
             else if (location == REG_INSTAT)
             {
-                uint8_t result = memory_[REG_INSTAT];
-                uint8_t byte = result & 0xBF;
-                memory_[REG_INSTAT] = byte;
-                return result;
+                ClearInstatUnderflow();
             }
             return MemoryRam::Read(location);
         }
 
         void VcsRiot::Write(uint16_t location, uint8_t byte)
         {
-            location &= 0x7F;
-            
             if (location == REG_TIMI1T)
             {
                 ClearTIMnnTUnderflow();
-
-                previousTimerStart_ = byte - 1;
                 memory_[REG_INTIM] = byte - 1;
                 step_ = 1;
-                prevStep_ = step_;
                 stepCount_ = 0;
-                return;
             }
             else if (location == REG_TIM8T)
             {
                 ClearTIMnnTUnderflow();
-
-                previousTimerStart_ = byte - 1;
                 memory_[REG_INTIM] = byte - 1;
                 step_ = 8;
-                prevStep_ = step_;
                 stepCount_ = 0;
-                return;
             }
             else if (location == REG_TIM64T)
             {
                 ClearTIMnnTUnderflow();
-
-                previousTimerStart_ = byte - 1;
                 memory_[REG_INTIM] = byte - 1;
                 step_ = 64;
-                prevStep_ = step_;
                 stepCount_ = 0;
-                return;
             }
             else if (location == REG_T1024T)
             {
                 ClearTIMnnTUnderflow();
-                
-                previousTimerStart_ = byte - 1;
                 memory_[REG_INTIM] = byte - 1;
                 step_ = 1024;
-                prevStep_ = step_;
                 stepCount_ = 0;
-                return;
             }
             MemoryRam::Write(location, byte);            
         }
         
+        void VcsRiot::ClearInstatUnderflow()
+        {
+            if (!overflowTick_)
+            {
+                uint8_t statusByte = memory_[REG_INSTAT];
+                statusByte = statusByte & 0xBF;
+                memory_[REG_INSTAT] = statusByte;
+            }
+        }
+        
         void VcsRiot::ClearTIMnnTUnderflow()
         {
-            uint8_t statusByte = memory_[REG_INSTAT];
-            statusByte = statusByte & 0x7F;
-            memory_[REG_INSTAT] = statusByte;
+            if (!overflowTick_)
+            {
+                uint8_t statusByte = memory_[REG_INSTAT];
+                statusByte = statusByte & 0x7F;
+                memory_[REG_INSTAT] = statusByte;
+            }
         }
     }
 }

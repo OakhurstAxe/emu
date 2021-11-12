@@ -28,10 +28,10 @@ namespace oa
             void LeftControllerLeftRight(double value);            
         private:
             void ClearTIMnnTUnderflow();
+            void ClearInstatUnderflow();
             uint16_t step_;
-            uint16_t prevStep_;
             uint16_t stepCount_;
-            uint8_t previousTimerStart_;
+            bool overflowTick_;
             
             QGamepad m_gamepad_;
         };

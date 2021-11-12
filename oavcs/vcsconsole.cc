@@ -61,9 +61,9 @@ namespace oa
             vcsAudio_.ExecuteTick();
             while (frameTicks < ticksPerFrame_)
             {
-                vcsRiot_.ExecuteTick();
                 if ((totalTicks_ % 3) == 0 && !vcsTia_.IsCpuBlocked())
                 {
+                    vcsRiot_.ExecuteTick();
                     cpu_.ExecuteTick();
                 }
                 vcsTia_.ExecuteTick();

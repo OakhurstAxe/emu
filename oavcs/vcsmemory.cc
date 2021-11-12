@@ -48,7 +48,7 @@ namespace oa
                 location &= 0x1F;
                 
                 // Timer locations duplicated in each block
-                if (location == 0x05 || location == 0x07)
+                if (location == 0x06 || location == 0x07)
                 {
                     location -= 2;
                 }
@@ -94,10 +94,10 @@ namespace oa
             else if ((location & 0x1280) == 0x0280)
             {
                 // copies of PIA
-                location &= 0x1F;
+                location &= 0x7F;
                 
                 // Timer locations duplicated in each block
-                if (location == 0x05 || location == 0x07)
+                if (location == 0x06 || location == 0x07)
                 {
                     location -= 2;
                 }
