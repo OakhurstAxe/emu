@@ -21,6 +21,8 @@ namespace oa
 
         uint8_t VcsMemory::CpuRead(uint16_t location)
         {
+            // trick for the EF cartridge mapper
+            bool a13Set = (0x2000 & location) > 0;
             uint16_t originalLocation = location;
 
             // Only 13 bit address
@@ -59,7 +61,7 @@ namespace oa
             else if (location >= 0x1000 && location < 0x2000)
             {
                 location -= 0x1000;
-                return vcsCartridge_->Read(location);
+                return vcsCartridge_->ReadA13(location, a13Set);
             }    
 
             throw std::out_of_range(QString("Invalid VCS memory location for read %1").arg(originalLocation).toLocal8Bit().data());

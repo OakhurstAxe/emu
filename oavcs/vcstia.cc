@@ -189,14 +189,6 @@ namespace oa
                 moveValue = moveValue | 0xF8;
             }
             *objectCycle -= moveValue;
-            if (*objectCycle < 68)
-            {
-                *objectCycle = 225;
-            }
-            if (*objectCycle > 228)
-            {
-                *objectCycle = 68 + 3;
-            }
         }
         
         void VcsTia::ApplyMovement()
@@ -792,7 +784,7 @@ namespace oa
             }
             else if (location == REG_VBLANK)
             {
-                if ((byte & 0x02) == 0 && (memory_[REG_VBLANK] & 0x02) > 0)
+                if ((byte & 0x02) == 0 && (memory_[REG_VBLANK] & 0x02) > 0 && scanLine_ > 30)
                 {
                     scanLine_ = 2 + vcsConsoleType_->GetVBlankLines();
                 }

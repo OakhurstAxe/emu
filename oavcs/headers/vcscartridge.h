@@ -16,6 +16,7 @@ namespace oa
         public:
             VcsCartridge(uint16_t size, QString name, VcsParameters *vcsParameters);
             virtual ~VcsCartridge() {};
+            virtual uint8_t ReadA13(uint16_t location, bool a13Set);
             void Write(uint16_t location, uint8_t byte) override;
             static VcsCartridge* GetCartridge(VcsParameters *vcsParameters);
         private:

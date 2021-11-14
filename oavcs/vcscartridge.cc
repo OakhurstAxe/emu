@@ -3,9 +3,11 @@
 
 #include "headers/vcscartridge2k.h"
 #include "headers/vcscartridge4k.h"
+#include "headers/vcscartridgee0.h"
+#include "headers/vcscartridgee7.h"
 #include "headers/vcscartridgef6.h"
 #include "headers/vcscartridgef8.h"
-#include "headers/vcscartridgee7.h"
+#include "headers/vcscartridgefe.h"
 
 namespace oa
 {
@@ -15,6 +17,11 @@ namespace oa
         VcsCartridge::VcsCartridge(uint16_t size, QString name, VcsParameters *vcsParameters) : emu::MemoryRom(size, name)
         {
             hasSuperChip_ = vcsParameters->GetHasSuperChip();
+        }
+        
+        uint8_t VcsCartridge::ReadA13(uint16_t location, bool a13Set)
+        {
+            return Read(location);
         }
         
         void VcsCartridge::Write(uint16_t location, uint8_t byte)
@@ -39,6 +46,10 @@ namespace oa
             {
                 cart = new VcsCartridge4K(vcsParameters);
             }
+            else if (vcsParameters->GetMapper() == "E0")
+            {
+                cart = new VcsCartridgeE0(vcsParameters);
+            }
             else if (vcsParameters->GetMapper() == "E7")
             {
                 cart = new VcsCartridgeE7(vcsParameters);
@@ -50,6 +61,10 @@ namespace oa
             else if (vcsParameters->GetMapper() == "F8")
             {
                 cart = new VcsCartridgeF8(vcsParameters);
+            }
+            else if (vcsParameters->GetMapper() == "FE")
+            {
+                cart = new VcsCartridgeFE(vcsParameters);
             }
             else
             {

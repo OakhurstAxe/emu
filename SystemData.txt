@@ -10,10 +10,11 @@
         <MapperTypes>
             <Name>2K</Name>
             <Name>4K</Name>
+            <Name>E0</Name>
             <Name>E7</Name>
             <Name>F6</Name>
             <Name>F8</Name>
-            <Name>SC</Name>
+            <Name>FE</Name>
         </MapperTypes>
         <ControllerTypes>
             <Name>Joystick</Name>
@@ -23,14 +24,18 @@
             <Name>Keyboard</Name>
         </ControllerTypes>
         <Companies>
+            <Name>20th Century Fox</Name>
             <Name>Activision</Name>
             <Name>Atari</Name>
+            <Name>CBS</Name>
+            <Name>CCE</Name>
             <Name>Data Age</Name>
             <Name>Imagic</Name>
             <Name>Parker Brothers</Name>
             <Name>Salu</Name>
             <Name>Sega</Name>
             <Name>Sirius Software</Name>
+            <Name>Telegames</Name>
         </Companies>
         <RomFiles>
             <Game>
@@ -41,6 +46,24 @@
                 <Company>Salu</Company>
                 <ScreenType>PAL</ScreenType>
                 <RomFile>Acid Drop (1992) (Salu, Dennis M. Kiss) (460758) (PAL) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Actionauts</Name>
+                <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>Imagic</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Actionauts (Microbots) (1984-2008) (Imagic - Advanced Program Technology, Rob Fulop) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Activision Decathlon</Name>
+                <Mapper>FE</Mapper>
+                <SuperChip>false</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>Activision</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Activision Decathlon, The (1983) (Activision, David Crane) (AG-930-04, AZ-030) [fixed] ~.bin</RomFile>
             </Game>
             <Game>
                 <Name>Adventure</Name>
@@ -74,9 +97,9 @@
                 <Mapper>4K</Mapper>
                 <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
-                <Company>Atari</Company>
+                <Company>20th Century Fox</Company>
                 <ScreenType>NTSC</ScreenType>
-                <RomFile>Alien (1982) (20th Century Fox Video Games, Douglas 'Dallas North' Neubauer) (11006) ~.bin</RomFile>
+                <RomFile>Alien (CCE).bin</RomFile>
             </Game>
             <Game>
                 <Name>Alligator People</Name>
@@ -106,11 +129,29 @@
                 <RomFile>Apples and Dolls (AKA Open, Sesame!) (CCE).bin</RomFile>
             </Game>
             <Game>
-                <Name>Atlantis</Name>
+                <Name>Aquaventure</Name>
+                <Mapper>F8</Mapper>
+                <SuperChip>false</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>CCE</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Aquaventure (CCE).bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Armor Ambush</Name>
                 <Mapper>4K</Mapper>
                 <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Armor Ambush (Tank Battle) (1982) (M Network - INTV - APh Technological Consulting, Hal Finney) (MT5661) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Atlantis</Name>
+                <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>CCE</Company>
                 <ScreenType>NTSC</ScreenType>
                 <RomFile>Atlantis (1983) (CCE) (C-832).bin</RomFile>
             </Game>
@@ -185,6 +226,15 @@
                 <Company>Imagic</Company>
                 <ScreenType>NTSC</ScreenType>
                 <RomFile>Fathom (Scuba) (1983) (Imagic, Wilfredo Aguilar, Michael Becker, Rob Fulop) (720111-1A, 03205) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Frogs and Flies</Name>
+                <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>Telegames</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Frogs and Flies - Frogs 'n' Flies (1982) (M Network - INTV - APh Technological Consulting, David Rolfe) (MT5664) ~.bin</RomFile>
             </Game>
             <Game>
                 <Name>Frostbite</Name>
@@ -277,7 +327,7 @@
                 <RomFile>River Raid (Digivision).bin</RomFile>
             </Game>
             <Game>
-                <Name>Smurf</Name>
+                <Name>Smurfs</Name>
                 <Mapper>F8</Mapper>
                 <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
@@ -286,13 +336,40 @@
                 <RomFile>Smurf - Rescue in Gargamel's Castle (Smurf, Smurf Action) (1983) (Coleco - JWDA, Todd Marshall, Robin McDaniel, Henry Will IV) (2465) ~.bin</RomFile>
             </Game>
             <Game>
-                <Name>Star Wars - The Arcade Game</Name>
+                <Name>Spider Man</Name>
+                <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>Parker Brothers</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Spider-Man (1982) (Parker Brothers, David Lamkins, Laura Nikolich) (PB5900) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Star Trek</Name>
                 <Mapper>F8</Mapper>
+                <SuperChip>false</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>Sega</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Star Trek - Strategic Operations Simulator (1983) (SEGA, Jeff Lorenz) (004-01) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Star Wars - The Arcade Game</Name>
+                <Mapper>E0</Mapper>
                 <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
                 <Company>Parker Brothers</Company>
                 <ScreenType>NTSC</ScreenType>
                 <RomFile>Star Wars - The Arcade Game (1984) (Parker Brothers, Wilfredo Aguilar, Michael Becker, Neil McKenzie, Bob Smith, Brad Stewart) (PB5540) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Superman</Name>
+                <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>CCE</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Superman (1983) (CCE) (C-857).bin</RomFile>
             </Game>
             <Game>
                 <Name>TRON</Name>
@@ -322,6 +399,24 @@
                 <RomFile>Vanguard (1983) (Atari - GCC, Dave Payne) (CX2669) ~.bin</RomFile>
             </Game>
             <Game>
+                <Name>Video Pinball</Name>
+                <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Video Pinball - Arcade Pinball (1981) (Atari, Bob Smith - Sears) (CX2648 - 49-75161) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Wizard of Wor</Name>
+                <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Wizard of Wor (1982) (CBS Electronics - Roklan, Joe Hellesen, Joe Wagner) (M8774, M8794) ~.bin</RomFile>
+            </Game>
+            <Game>
                 <Name>Worm War I</Name>
                 <Mapper>4K</Mapper>
                 <SuperChip>false</SuperChip>
@@ -329,6 +424,24 @@
                 <Company>Sirius Software</Company>
                 <ScreenType>NTSC</ScreenType>
                 <RomFile>Worm War I (1983) (CCE) (C-843).bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Yars' Revenge</Name>
+                <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Yars' Revenge (Time Freeze) (1982) (Atari, Howard Scott Warshaw - Sears) (CX2655 - 49-75167) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Solar Fox</Name>
+                <Mapper>F8</Mapper>
+                <SuperChip>false</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>CBS</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Solar Fox (1983) (CBS Electronics, Bob Curtiss) (4L 2487 5000) ~.bin</RomFile>
             </Game>
         </RomFiles>
     </VCS>

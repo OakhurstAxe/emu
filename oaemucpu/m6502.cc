@@ -950,7 +950,7 @@ namespace oa
             if (statusRegister_.zeroFlag == false)
             {
                 programCounter_ += relativeAddress;
-            }
+            }                
         }
         void M6502::OpBPL(AddressMethod addressMethod) 
         {

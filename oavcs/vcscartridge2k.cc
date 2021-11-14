@@ -16,7 +16,7 @@ namespace oa
                 location -= 0x800;
             }
 
-            return VcsCartridge::Read(location);
+            return memory_[location];
         }
         
         void VcsCartridge2K::LoadData(uint8_t* data, uint16_t size)

@@ -35,37 +35,34 @@ namespace oa
             step_ = 1;
             memory_[REG_INSTAT] = 0;
             memory_[REG_SWCHA] = 255;
-            memory_[REG_SWCHB] = 11;
             memory_[REG_SWCNT] = 255;
-            memory_[REG_SWBCNT] = 255;            
+            memory_[REG_SWBCNT] = 255;
+            selectPressed_ = false;
+            resetPressed_ = false;
         }
         
         void VcsRiot::LeftControllerReset(bool value)
         {
-            uint8_t byte = memory_[REG_SWCHB];
             if (value != 0)
             {
-                byte &= 0xFE;
+                resetPressed_ = true;
             }
             else
             {
-                byte |= 0x01;
+                resetPressed_ = false;
             }
-            memory_[REG_SWCHB] = byte;
         }
 
         void VcsRiot::LeftControllerSelect(bool value)
         {
-            uint8_t byte = memory_[REG_SWCHB];
             if (value != 0)
             {
-                byte &= 0xFD;
+                selectPressed_ = true;
             }
             else
             {
-                byte |= 0x02;
+                selectPressed_ = false;
             }
-            memory_[REG_SWCHB] = byte;
         }
 
         void VcsRiot::LeftControllerUpDown(double value)
@@ -141,11 +138,29 @@ namespace oa
             {
                 ClearInstatUnderflow();
             }
+            if (location == REG_SWCHB)
+            {
+                uint8_t result = 11;
+                if (selectPressed_)
+                {
+                    result &= 0xFD;
+                }
+                if (resetPressed_)
+                {
+                    result &= 0xFE;
+                }
+                return result;
+            }
             return MemoryRam::Read(location);
         }
 
         void VcsRiot::Write(uint16_t location, uint8_t byte)
         {
+            if (location == REG_SWCHB)
+            {
+                uint8_t result = memory_[REG_SWCHB];
+                int x = 10;
+            }
             if (location == REG_TIMI1T)
             {
                 ClearTIMnnTUnderflow();

@@ -33,6 +33,8 @@ namespace oa
             uint16_t stepCount_;
             bool overflowTick_;
             
+            bool selectPressed_;
+            bool resetPressed_;
             QGamepad m_gamepad_;
         };
         
