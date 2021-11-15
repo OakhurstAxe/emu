@@ -23,7 +23,6 @@ namespace oa
 
         private:
             VcsTia* vcsTia_;
-            emu::MemoryRam ram_;
             VcsRiot *vcsRiot_;
             VcsCartridge* vcsCartridge_;
         };

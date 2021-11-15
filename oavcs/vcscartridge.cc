@@ -21,7 +21,17 @@ namespace oa
         
         uint8_t VcsCartridge::ReadA13(uint16_t location, bool a13Set)
         {
+            Q_UNUSED(a13Set);
             return Read(location);
+        }
+        
+        uint8_t VcsCartridge::ReadOffset(uint16_t location, uint16_t memoryOffest)
+        {
+            if ((location < 0x100) & hasSuperChip_)
+            {
+                memoryOffest = 0;
+            }
+            return memory_[location + memoryOffest];
         }
         
         void VcsCartridge::Write(uint16_t location, uint8_t byte)

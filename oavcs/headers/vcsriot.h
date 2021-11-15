@@ -21,6 +21,8 @@ namespace oa
             void ExecuteTick();
             virtual uint8_t Read(uint16_t location) override;
             virtual void Write(uint16_t location, uint8_t byte) override;
+            uint8_t ReadRam(uint16_t location);
+            void WriteRam(uint16_t location, uint8_t byte);
         public slots:            
             void LeftControllerReset(bool value);
             void LeftControllerSelect(bool value);
@@ -28,7 +30,8 @@ namespace oa
             void LeftControllerLeftRight(double value);            
         private:
             void ClearTIMnnTUnderflow();
-            void ClearInstatUnderflow();
+            void ClearInstatUnderflow();\
+            MemoryRam systemRam_;
             uint16_t step_;
             uint16_t stepCount_;
             bool overflowTick_;

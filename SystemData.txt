@@ -151,9 +151,18 @@
                 <Mapper>4K</Mapper>
                 <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
-                <Company>CCE</Company>
+                <Company>Imagic</Company>
                 <ScreenType>NTSC</ScreenType>
-                <RomFile>Atlantis (1983) (CCE) (C-832).bin</RomFile>
+                <RomFile>Atlantis (Lost City of Atlantis) (1982) (Imagic, Dennis Koble) (720103-1A, 720103-1B, IA3203, IX-010-04) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Barnstorming</Name>
+                <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>Activision</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Barnstorming (1982) (Activision, Steve Cartwright) (AX-013) ~.bin</RomFile>
             </Game>
             <Game>
                 <Name>Berzerk</Name>
@@ -192,6 +201,33 @@
                 <RomFile>Congo Bongo (1983) (SEGA - Beck-Tech, Steve Beck, Phat Ho) (006-01) ~.bin</RomFile>
             </Game>
             <Game>
+                <Name>Cosmic Ark</Name>
+                <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>Imagic</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Cosmic Ark (Reaction) (1982) (Imagic, Rob Fulop) (720104-1A, 720104-1B, IA3204) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Cosmic Commuter</Name>
+                <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>Activision</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Cosmic Commuter (1984) (Activision, John Van Ryzin) (AG-038-04) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Crazy Climber</Name>
+                <Mapper>F8</Mapper>
+                <SuperChip>false</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Crazy Climber (1983) (Atari - Roklan, Joe Gaucher, Alex Leavens) (CX2683) ~.bin</RomFile>
+            </Game>
+            <Game>
                 <Name>Demon Attack</Name>
                 <Mapper>4K</Mapper>
                 <SuperChip>false</SuperChip>
@@ -217,6 +253,15 @@
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
                 <RomFile>E.T. - The Extra-Terrestrial (1982) (Atari, Jerome Domurat, Howard Scott Warshaw) (CX2674) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Elevator Action</Name>
+                <Mapper>F8</Mapper>
+                <SuperChip>true</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Elevator Action (1983) (Atari, Dan Hitchens) (CX26126) (Prototype) ~.bin</RomFile>
             </Game>
             <Game>
                 <Name>Fathom</Name>
@@ -336,6 +381,15 @@
                 <RomFile>Smurf - Rescue in Gargamel's Castle (Smurf, Smurf Action) (1983) (Coleco - JWDA, Todd Marshall, Robin McDaniel, Henry Will IV) (2465) ~.bin</RomFile>
             </Game>
             <Game>
+                <Name>Solar Fox</Name>
+                <Mapper>F8</Mapper>
+                <SuperChip>false</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>CBS</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Solar Fox (1983) (CBS Electronics, Bob Curtiss) (4L 2487 5000) ~.bin</RomFile>
+            </Game>
+            <Game>
                 <Name>Spider Man</Name>
                 <Mapper>4K</Mapper>
                 <SuperChip>false</SuperChip>
@@ -435,13 +489,13 @@
                 <RomFile>Yars' Revenge (Time Freeze) (1982) (Atari, Howard Scott Warshaw - Sears) (CX2655 - 49-75167) ~.bin</RomFile>
             </Game>
             <Game>
-                <Name>Solar Fox</Name>
+                <Name>Defender II</Name>
                 <Mapper>F8</Mapper>
-                <SuperChip>false</SuperChip>
+                <SuperChip>true</SuperChip>
                 <Controller>Joystick</Controller>
-                <Company>CBS</Company>
+                <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
-                <RomFile>Solar Fox (1983) (CBS Electronics, Bob Curtiss) (4L 2487 5000) ~.bin</RomFile>
+                <RomFile>Defender II (AKA Stargate) (1987) (Atari, Bill Aspromonte, Andrew Fuchs) (CX26120).bin</RomFile>
             </Game>
         </RomFiles>
     </VCS>

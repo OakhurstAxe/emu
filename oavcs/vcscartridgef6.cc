@@ -13,8 +13,7 @@ namespace oa
         uint8_t VcsCartridgeF6::Read(uint16_t location)
         {
             SetMemoryOffset(location);
-
-            return VcsCartridge::Read(location + memoryOffset_);
+            return VcsCartridge::ReadOffset(location, memoryOffset_);
         }
         
         void VcsCartridgeF6::Write(uint16_t location, uint8_t byte)
@@ -23,9 +22,7 @@ namespace oa
             {
                 return;
             }
-
-            Q_UNUSED(byte);
-            throw std::out_of_range(QString("Cannot write to Cart ROM %1").arg(location).toLocal8Bit().data());
+            VcsCartridge::Write(location, byte);
         }
         
         bool VcsCartridgeF6::SetMemoryOffset(uint16_t location)

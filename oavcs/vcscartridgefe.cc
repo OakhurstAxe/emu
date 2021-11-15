@@ -19,12 +19,6 @@ namespace oa
             }
         }
         
-        void VcsCartridgeFE::Write(uint16_t location, uint8_t byte)
-        {
-            Q_UNUSED(byte);
-            throw std::out_of_range(QString("Cannot write to Cart ROM %1").arg(location).toLocal8Bit().data());
-        }
-        
     }
 }
 

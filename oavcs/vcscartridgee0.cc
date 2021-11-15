@@ -16,33 +16,30 @@ namespace oa
         {
             SetMemoryOffset(location);
 
-            if (location >= 0x000 && location < 0x400)
+            if (location < 0x400)
             {
-                return VcsCartridge::Read(location + memoryOffset0_);
+                return VcsCartridge::ReadOffset(location, memoryOffset0_);
             }
             else if (location >= 0x400 && location < 0x800)
             {
                 location -= 0x400;
-                return VcsCartridge::Read(location + memoryOffset1_);
+                return VcsCartridge::ReadOffset(location, memoryOffset1_);
             }
             else if (location >= 0x800 && location < 0xC00)
             {
                 location -= 0x800;
-                return VcsCartridge::Read(location + memoryOffset2_);
+                return VcsCartridge::ReadOffset(location, memoryOffset2_);
             }
-            return VcsCartridge::Read(location + 0x1000);                
+            return VcsCartridge::ReadOffset(location, 0x1000);
         }
         
         void VcsCartridgeE0::Write(uint16_t location, uint8_t byte)
         {
-            Q_UNUSED(byte);
-
             if (SetMemoryOffset(location))
             {
                 return;
             }
-
-            throw std::out_of_range(QString("Cannot write to Cart ROM %1").arg(location).toLocal8Bit().data());
+            VcsCartridge::Write(location, byte);
         }
         
         bool VcsCartridgeE0::SetMemoryOffset(uint16_t location)

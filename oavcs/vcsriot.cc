@@ -22,6 +22,7 @@ namespace oa
  
         VcsRiot::VcsRiot() : 
             MemoryRam(0x80, "VCS RIOT Registers"),
+            systemRam_(0x80, "VCS RAM"),
             m_gamepad_(*QGamepadManager::instance()->connectedGamepads().begin())
         {
             connect(&m_gamepad_, SIGNAL(buttonXChanged(bool)), this, SLOT(LeftControllerReset(bool)));
@@ -156,11 +157,6 @@ namespace oa
 
         void VcsRiot::Write(uint16_t location, uint8_t byte)
         {
-            if (location == REG_SWCHB)
-            {
-                uint8_t result = memory_[REG_SWCHB];
-                int x = 10;
-            }
             if (location == REG_TIMI1T)
             {
                 ClearTIMnnTUnderflow();
@@ -190,6 +186,16 @@ namespace oa
                 stepCount_ = 0;
             }
             MemoryRam::Write(location, byte);            
+        }
+        
+        uint8_t VcsRiot::ReadRam(uint16_t location)
+        {
+            return systemRam_.Read(location);
+        }
+        
+        void VcsRiot::WriteRam(uint16_t location, uint8_t byte)
+        {
+            systemRam_.Write(location, byte);
         }
         
         void VcsRiot::ClearInstatUnderflow()

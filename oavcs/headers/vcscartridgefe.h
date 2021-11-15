@@ -14,7 +14,6 @@ namespace oa
             VcsCartridgeFE(VcsParameters *vcsParameters);
             
             uint8_t ReadA13(uint16_t location, bool a13Set) override;
-            void Write(uint16_t location, uint8_t byte) override;
         };
         
     }

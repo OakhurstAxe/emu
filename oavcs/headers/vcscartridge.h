@@ -19,7 +19,8 @@ namespace oa
             virtual uint8_t ReadA13(uint16_t location, bool a13Set);
             void Write(uint16_t location, uint8_t byte) override;
             static VcsCartridge* GetCartridge(VcsParameters *vcsParameters);
-        private:
+        protected:
+            uint8_t ReadOffset(uint16_t location, uint16_t memoryOffest);
             bool hasSuperChip_;
         };
         

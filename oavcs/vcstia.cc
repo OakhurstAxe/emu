@@ -784,6 +784,7 @@ namespace oa
             }
             else if (location == REG_VBLANK)
             {
+                // the scanLine_ > 30 is a hack that seems to work,  Probably a more accurate way to do it
                 if ((byte & 0x02) == 0 && (memory_[REG_VBLANK] & 0x02) > 0 && scanLine_ > 30)
                 {
                     scanLine_ = 2 + vcsConsoleType_->GetVBlankLines();

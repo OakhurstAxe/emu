@@ -6,8 +6,7 @@ namespace oa
     namespace vcs
     {
         
-        VcsMemory::VcsMemory(VcsTia *vcsTia, VcsRiot *vcsRiot, VcsParameters* vcsParameters):
-            ram_(0x80, "VCS Ram")
+        VcsMemory::VcsMemory(VcsTia *vcsTia, VcsRiot *vcsRiot, VcsParameters* vcsParameters)
         {
             vcsTia_ = vcsTia;
             vcsRiot_ = vcsRiot;
@@ -40,7 +39,7 @@ namespace oa
             else if ((location & 0x1280) == 0x0080)
             {
                 location &= 0x7F;
-                return ram_.Read(location);
+                return vcsRiot_->ReadRam(location);
             }
             
             // PIA I/O Mirrors - A12=0, A9=1, A7=1  0 **1* 1*** ****
@@ -89,7 +88,7 @@ namespace oa
             else if ((location & 0x1280) == 0x0080)
             {
                 location &= 0x7F;
-                return ram_.Write(location, byte);
+                return vcsRiot_->WriteRam(location, byte);
             }
             
             // PIA I/O Mirrors - A12=0, A9=1, A7=1  0 **1* 1*** ****
