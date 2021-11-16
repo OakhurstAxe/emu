@@ -31,11 +31,13 @@
             <Name>CCE</Name>
             <Name>Data Age</Name>
             <Name>Imagic</Name>
+            <Name>M-Network</Name>
             <Name>Parker Brothers</Name>
             <Name>Salu</Name>
             <Name>Sega</Name>
             <Name>Sirius Software</Name>
             <Name>Telegames</Name>
+            <Name>Ultravision</Name>
         </Companies>
         <RomFiles>
             <Game>
@@ -133,9 +135,9 @@
                 <Mapper>F8</Mapper>
                 <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
-                <Company>CCE</Company>
+                <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
-                <RomFile>Aquaventure (CCE).bin</RomFile>
+                <RomFile>Aquaventure (Sea Sentinel) (08-12-1983) (Atari, Tod Frye, Gary Shannon) (Prototype) ~.bin</RomFile>
             </Game>
             <Game>
                 <Name>Armor Ambush</Name>
@@ -165,6 +167,15 @@
                 <RomFile>Barnstorming (1982) (Activision, Steve Cartwright) (AX-013) ~.bin</RomFile>
             </Game>
             <Game>
+                <Name>Battlezone</Name>
+                <Mapper>F8</Mapper>
+                <SuperChip>false</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Battlezone (05-12-1983) (Atari - GCC, Mike Feinstein, Brad Rice) (CX2681) (Prototype).bin</RomFile>
+            </Game>
+            <Game>
                 <Name>Berzerk</Name>
                 <Mapper>4K</Mapper>
                 <SuperChip>false</SuperChip>
@@ -183,6 +194,15 @@
                 <RomFile>Bugs Bunny (1983) (Atari, Alan J. Murphy, Robert C. Polaro) (CX26100) (Prototype).bin</RomFile>
             </Game>
             <Game>
+                <Name>BurgerTime</Name>
+                <Mapper>E7</Mapper>
+                <SuperChip>false</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>M-Network</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>BurgerTime (1983) (M Network - INTV, Patricia Lewis Du Long, Ron Surratt) (MT4518) ~.bin</RomFile>
+            </Game>
+            <Game>
                 <Name>Combat</Name>
                 <Mapper>2K</Mapper>
                 <SuperChip>false</SuperChip>
@@ -190,6 +210,15 @@
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
                 <RomFile>Combat - Tank-Plus (Tank) (1977) (Atari, Joe Decuir, Larry Kaplan, Steve Mayer, Larry Wagner - Sears) (CX2601 - 99801, 6-99801, 49-75101, 49-75124) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Condor Attack</Name>
+                <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>Ultravision</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Condor Attack (1982) (Ultravision) (1043) ~.bin</RomFile>
             </Game>
             <Game>
                 <Name>Congo Bongo</Name>
@@ -226,6 +255,15 @@
                 <Company>Atari</Company>
                 <ScreenType>NTSC</ScreenType>
                 <RomFile>Crazy Climber (1983) (Atari - Roklan, Joe Gaucher, Alex Leavens) (CX2683) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Defender II</Name>
+                <Mapper>F8</Mapper>
+                <SuperChip>true</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>Atari</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Defender II (AKA Stargate) (1987) (Atari, Bill Aspromonte, Andrew Fuchs) (CX26120).bin</RomFile>
             </Game>
             <Game>
                 <Name>Demon Attack</Name>
@@ -289,6 +327,24 @@
                 <Company>Activision</Company>
                 <ScreenType>NTSC</ScreenType>
                 <RomFile>Frostbite (1983) (Activision, Steve Cartwright) (AX-031) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Gorf</Name>
+                <Mapper>4K</Mapper>
+                <SuperChip>false</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>CBS</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Gorf (1982) (CBS Electronics - Roklan, Joe Gaucher, Alex Leavens) (M8776, M8793) ~.bin</RomFile>
+            </Game>
+            <Game>
+                <Name>Gyruss</Name>
+                <Mapper>E0</Mapper>
+                <SuperChip>false</SuperChip>
+                <Controller>Joystick</Controller>
+                <Company>Parker Brothers</Company>
+                <ScreenType>NTSC</ScreenType>
+                <RomFile>Gyruss (1984) (Parker Brothers - Roklan, Joe Gaucher) (PB5080) ~.bin</RomFile>
             </Game>
             <Game>
                 <Name>Haunted House</Name>
@@ -489,13 +545,13 @@
                 <RomFile>Yars' Revenge (Time Freeze) (1982) (Atari, Howard Scott Warshaw - Sears) (CX2655 - 49-75167) ~.bin</RomFile>
             </Game>
             <Game>
-                <Name>Defender II</Name>
-                <Mapper>F8</Mapper>
-                <SuperChip>true</SuperChip>
+                <Name>Masters of the Universe - The Power of He-Man</Name>
+                <Mapper>E7</Mapper>
+                <SuperChip>false</SuperChip>
                 <Controller>Joystick</Controller>
-                <Company>Atari</Company>
+                <Company>M-Network</Company>
                 <ScreenType>NTSC</ScreenType>
-                <RomFile>Defender II (AKA Stargate) (1987) (Atari, Bill Aspromonte, Andrew Fuchs) (CX26120).bin</RomFile>
+                <RomFile>Masters of the Universe - The Power of He-Man (1983) (M Network - INTV, Connie Goldman, Joe King, Patricia Lewis Du Long, Gerald Moore, Mike Sanders, Jossef Wagner) (MT4319) ~.bin</RomFile>
             </Game>
         </RomFiles>
     </VCS>

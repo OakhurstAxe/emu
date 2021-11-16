@@ -776,7 +776,6 @@ namespace oa
             {
                 if ((byte & 0x02) == 0 && (memory_[REG_VSYNC] & 0x02) > 0)
                 {
-                    cycle_ = 0;
                     scanLine_ = 2;
                     memory_[REG_VBLANK] = memory_[REG_VBLANK] | 0x02;
                 }
